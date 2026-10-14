@@ -30,10 +30,10 @@ stewardship:
     contract_spec: steward.yaml
     maturity_model: general_stewardship
   skill_lifecycle:
-    installable_skills: false
+    installable_skills: true
     registry: skills.json
   quality:
-    validate: 'dart test'
+    validate: 'dart analyze pkgs/universal_storage_interface pkgs/universal_storage_filesystem pkgs/universal_storage_live_apply'
     evidence: .steward/evidence
   harness:
     enabled: false

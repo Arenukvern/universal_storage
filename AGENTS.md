@@ -2,6 +2,11 @@
 
 Welcome. This project uses **Skill Steward** to make repository purpose, validation, docs, and agent handoff legible.
 
+`universal_storage_*` family (events, sync, mesh, live_apply). Extracted
+from DFP 2026-10-14. Different product from computer-use automation.
+Private GitHub until an explicit public cut; MIT; pub.dev-ready.
+Stewardship follows the mcp_flutter OSS pattern.
+
 ## Operational Desk
 
 Run the following commands to interact with the project's agentic tools:
