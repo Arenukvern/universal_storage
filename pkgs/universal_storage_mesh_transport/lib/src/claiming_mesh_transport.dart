@@ -33,8 +33,8 @@ import 'mesh_transport.dart';
 /// ```
 final class ClaimingMeshTransport implements MeshTransport {
   ClaimingMeshTransport({
-    required final MeshTransport inner,
-    required final bool Function(Uint8List firstFrame) claim,
+    required MeshTransport inner,
+    required bool Function(Uint8List firstFrame) claim,
     this.claimTimeout = const Duration(seconds: 10),
   }) : _inner = inner,
        _claim = claim {
@@ -66,20 +66,20 @@ final class ClaimingMeshTransport implements MeshTransport {
   /// inner transports (a client dials the sync plane by simply speaking
   /// sync first on its session).
   @override
-  Future<MeshSession> connect(final MeshPeerRecord peer) =>
+  Future<MeshSession> connect(MeshPeerRecord peer) =>
       _inner.connect(peer);
 
   /// Transport view over the NOT-claimed sessions (rejected plane, or
   /// silent past [claimTimeout]). The realtime consumer attaches here.
   MeshTransport get passthrough => _PassthroughTransport(this);
 
-  void _park(final MeshSession session) {
+  void _park(MeshSession session) {
     final parked = _ParkedSession._(session, this);
     _parked.add(parked);
     parked._start();
   }
 
-  void _route(final _ParkedSession parked, final bool claimed) {
+  void _route(_ParkedSession parked, bool claimed) {
     _parked.remove(parked);
     if (claimed) {
       _claimed.add(parked);
@@ -110,7 +110,7 @@ final class _PassthroughTransport implements MeshTransport {
   Stream<MeshSession> get incoming => _owner._rejected.stream;
 
   @override
-  Future<MeshSession> connect(final MeshPeerRecord peer) =>
+  Future<MeshSession> connect(MeshPeerRecord peer) =>
       _owner._inner.connect(peer);
 }
 
@@ -142,11 +142,11 @@ final class _ParkedSession implements MeshSession {
     _subscription = _inner.inbound.listen(
       _onFrame,
       onDone: _onDone,
-      onError: (final Object _) => _onDone(),
+      onError: (Object _) => _onDone(),
     );
   }
 
-  void _onFrame(final Uint8List frame) {
+  void _onFrame(Uint8List frame) {
     if (_routed) {
       _forward(frame);
       return;
@@ -157,7 +157,7 @@ final class _ParkedSession implements MeshSession {
     _forward(frame);
   }
 
-  void _route(final bool claimed) {
+  void _route(bool claimed) {
     if (_routed) return;
     _routed = true;
     _timer?.cancel();
@@ -179,12 +179,12 @@ final class _ParkedSession implements MeshSession {
     _owner._parked.remove(this);
   }
 
-  void _forward(final Uint8List frame) {
+  void _forward(Uint8List frame) {
     if (!_dead && !_outboundSealed) _outbound.add(frame);
   }
 
   @override
-  Future<void> send(final Uint8List payload) => _inner.send(payload);
+  Future<void> send(Uint8List payload) => _inner.send(payload);
 
   @override
   Future<void> close() async {

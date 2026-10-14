@@ -66,7 +66,7 @@ namespaces:
         expect(result.isValid, isFalse);
         expect(
           result.errors.any(
-            (final issue) => issue.code == 'remote_engine_required',
+            (issue) => issue.code == 'remote_engine_required',
           ),
           isTrue,
         );
@@ -90,12 +90,12 @@ namespaces:
       expect(result.isValid, isTrue);
       expect(
         result.warnings.any(
-          (final issue) => issue.code == 'unknown_top_level_key',
+          (issue) => issue.code == 'unknown_top_level_key',
         ),
         isTrue,
       );
       expect(
-        result.warnings.any((final issue) => issue.code == 'version_mismatch'),
+        result.warnings.any((issue) => issue.code == 'version_mismatch'),
         isTrue,
       );
     });
@@ -117,7 +117,7 @@ namespaces:
       expect(invalid.isValid, isFalse);
       expect(
         invalid.errors.any(
-          (final issue) => issue.code == 'queue_policy_value_invalid',
+          (issue) => issue.code == 'queue_policy_value_invalid',
         ),
         isTrue,
       );

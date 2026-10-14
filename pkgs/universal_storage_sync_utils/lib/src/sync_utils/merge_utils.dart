@@ -52,8 +52,8 @@ enum MergeDecision {
 /// @ai Use this for "pull" or "accept theirs" merge strategies.
 /// {@endtemplate}
 ({String merged, MergeDecision decision}) preferIncoming(
-  final String current,
-  final String incoming,
+  String current,
+  String incoming,
 ) {
   if (current.trim() == incoming.trim()) {
     return (merged: current, decision: MergeDecision.identical);
@@ -77,8 +77,8 @@ enum MergeDecision {
 /// @ai Use this for "push" or "accept ours" merge strategies.
 /// {@endtemplate}
 ({String merged, MergeDecision decision}) preferCurrent(
-  final String current,
-  final String incoming,
+  String current,
+  String incoming,
 ) {
   if (current.trim() == incoming.trim()) {
     return (merged: current, decision: MergeDecision.identical);

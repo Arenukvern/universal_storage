@@ -13,13 +13,13 @@ void registerCloudKitAppleBridge() {
 
 /// Pigeon-backed CloudKit bridge for iOS/macOS.
 class MethodChannelCloudKitAppleBridge implements CloudKitBridge {
-  MethodChannelCloudKitAppleBridge({final CloudKitAppleApiClient? apiClient})
+  MethodChannelCloudKitAppleBridge({CloudKitAppleApiClient? apiClient})
     : _apiClient = apiClient ?? PigeonCloudKitAppleApiClient();
 
   final CloudKitAppleApiClient _apiClient;
 
   @override
-  Future<void> initialize(final CloudKitBridgeConfig config) async {
+  Future<void> initialize(CloudKitBridgeConfig config) async {
     await _invoke<void>(
       () => _apiClient.initialize(
         CloudKitAppleConfigData(
@@ -36,7 +36,7 @@ class MethodChannelCloudKitAppleBridge implements CloudKitBridge {
   }
 
   @override
-  Future<CloudKitRecord?> fetchRecordByPath(final String path) async =>
+  Future<CloudKitRecord?> fetchRecordByPath(String path) async =>
       _invoke<CloudKitRecord?>(() async {
         final response = await _apiClient.fetchRecordByPath(path);
         if (response == null) {
@@ -47,7 +47,7 @@ class MethodChannelCloudKitAppleBridge implements CloudKitBridge {
       });
 
   @override
-  Future<void> saveRecord(final CloudKitRecord record) async {
+  Future<void> saveRecord(CloudKitRecord record) async {
     await _invoke<void>(
       () => _apiClient.saveRecord(
         CloudKitAppleRecordData(
@@ -64,20 +64,20 @@ class MethodChannelCloudKitAppleBridge implements CloudKitBridge {
   }
 
   @override
-  Future<void> deleteRecord(final String recordName) async {
+  Future<void> deleteRecord(String recordName) async {
     await _invoke<void>(() => _apiClient.deleteRecord(recordName));
   }
 
   @override
   Future<List<CloudKitRecord>> queryByPathPrefix(
-    final String pathPrefix,
+    String pathPrefix,
   ) async => _invoke<List<CloudKitRecord>>(() async {
     final response = await _apiClient.queryByPathPrefix(pathPrefix);
     return response.map(_toRecord).toList(growable: false);
   });
 
   @override
-  Future<CloudKitDelta> fetchChanges({final String? serverChangeToken}) async =>
+  Future<CloudKitDelta> fetchChanges({String? serverChangeToken}) async =>
       _invoke<CloudKitDelta>(() async {
         final response = await _apiClient.fetchChanges(serverChangeToken);
         return CloudKitDelta(
@@ -94,7 +94,7 @@ class MethodChannelCloudKitAppleBridge implements CloudKitBridge {
     await _invoke<void>(_apiClient.dispose);
   }
 
-  Future<T> _invoke<T>(final Future<T> Function() callback) async {
+  Future<T> _invoke<T>(Future<T> Function() callback) async {
     try {
       return await callback();
     } on PlatformException catch (error) {
@@ -102,7 +102,7 @@ class MethodChannelCloudKitAppleBridge implements CloudKitBridge {
     }
   }
 
-  CloudKitRecord _toRecord(final CloudKitAppleRecordData data) =>
+  CloudKitRecord _toRecord(CloudKitAppleRecordData data) =>
       CloudKitRecord(
         recordName: data.recordName,
         path: data.path,
@@ -115,7 +115,7 @@ class MethodChannelCloudKitAppleBridge implements CloudKitBridge {
         changeTag: data.changeTag,
       );
 
-  CloudKitBridgeException _mapPlatformException(final PlatformException error) {
+  CloudKitBridgeException _mapPlatformException(PlatformException error) {
     final code = switch (error.code) {
       'auth' => CloudKitBridgeErrorCode.authentication,
       'network' => CloudKitBridgeErrorCode.network,

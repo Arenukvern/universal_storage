@@ -42,7 +42,7 @@ final class WebMeshKvStore implements MeshKeyValueStore {
   }
 
   @override
-  Future<String?> read(final String key) async {
+  Future<String?> read(String key) async {
     final storage = _storage;
     if (storage != null) {
       try {
@@ -56,7 +56,7 @@ final class WebMeshKvStore implements MeshKeyValueStore {
   }
 
   @override
-  Future<void> write(final String key, final String value) async {
+  Future<void> write(String key, String value) async {
     final storage = _storage;
     if (storage != null) {
       try {
@@ -70,7 +70,7 @@ final class WebMeshKvStore implements MeshKeyValueStore {
   }
 
   @override
-  Future<List<String>> list(final String prefix) async {
+  Future<List<String>> list(String prefix) async {
     final keys = <String>{};
     final storage = _storage;
     if (storage != null) {
@@ -94,5 +94,5 @@ final class WebMeshKvStore implements MeshKeyValueStore {
 
 /// Web-backed selection for the conditional import in
 /// `mesh_storage_provider.dart` / `mesh_peer_registry.dart`.
-MeshKeyValueStore createMeshKvStore(final String root) =>
+MeshKeyValueStore createMeshKvStore(String root) =>
     WebMeshKvStore(root: root);

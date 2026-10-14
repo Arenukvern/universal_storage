@@ -21,10 +21,10 @@ abstract interface class RealtimeArbiter {
   /// The active sender after [candidate]'s event: [active] (kept), the
   /// [candidate] (handoff/claim), or null (release).
   String? arbitrate({
-    required final String? active,
-    required final String candidate,
-    required final DateTime? activeLastEventAt,
-    required final DateTime now,
+    required String? active,
+    required String candidate,
+    required DateTime? activeLastEventAt,
+    required DateTime now,
   });
 }
 
@@ -40,10 +40,10 @@ final class FirstClaimArbiter implements RealtimeArbiter {
 
   @override
   String? arbitrate({
-    required final String? active,
-    required final String candidate,
-    required final DateTime? activeLastEventAt,
-    required final DateTime now,
+    required String? active,
+    required String candidate,
+    required DateTime? activeLastEventAt,
+    required DateTime now,
   }) {
     if (active == null || active == candidate) return candidate;
     final last = activeLastEventAt;
@@ -79,7 +79,7 @@ final class RealtimeSenderView {
 /// pause) is let go before anyone else may drive.
 final class RealtimeHost {
   RealtimeHost({
-    required final MeshTransport claimedPlane,
+    required MeshTransport claimedPlane,
     required this.selfId,
     this.arbiter = const FirstClaimArbiter(),
     this.onEvent,
@@ -157,7 +157,7 @@ final class RealtimeHost {
   /// UI snapshot of the live senders.
   List<RealtimeSenderView> get senders => _links.keys
       .map(
-        (final peerId) => RealtimeSenderView(
+        (peerId) => RealtimeSenderView(
           peerId: peerId,
           lastActiveAt: _lastActiveAt[peerId],
           active: peerId == _activeSenderId,
@@ -166,14 +166,14 @@ final class RealtimeHost {
       .toList(growable: false);
 
   /// Whether [event] came from the current authority.
-  bool eventIsAuthoritative(final RealtimeEvent event) =>
+  bool eventIsAuthoritative(RealtimeEvent event) =>
       event.senderPeerId == _activeSenderId;
 
   /// Starts accepting sender sessions from the claimed plane.
   void start() {
     if (_started) return;
     _started = true;
-    _subscription = _plane.incoming.listen((final session) {
+    _subscription = _plane.incoming.listen((session) {
       final peerId = session.remotePeerId;
       if (peerId.isEmpty) {
         session.close();
@@ -192,13 +192,13 @@ final class RealtimeHost {
         staleAfter: staleAfter,
         clock: clock,
         tickDriven: tickDriven,
-        onStale: (final reason) => _drop(peerId, reason),
+        onStale: (reason) => _drop(peerId, reason),
       );
       _links[peerId] = link;
       _lastActiveAt[peerId] = null;
       log?.call('sender $peerId adopted (${_links.length} live)');
       onAdopted?.call(peerId);
-      link.inbound.listen((final event) => _onEvent(peerId, event));
+      link.inbound.listen((event) => _onEvent(peerId, event));
     });
   }
 
@@ -206,7 +206,7 @@ final class RealtimeHost {
   /// claim was made. The reconnect law's primitive (see [onAdopted]):
   /// the claim is stamped as of NOW so another sender's next event does
   /// not immediately steal it via the idle-handoff path.
-  bool claimSender(final String peerId, final String reason) {
+  bool claimSender(String peerId, String reason) {
     if (_activeSenderId != null) return false;
     if (!_links.containsKey(peerId)) return false;
     _activeSenderId = peerId;
@@ -229,9 +229,9 @@ final class RealtimeHost {
   /// host-to-sender direction for app payloads — rebroadcasts, pushes).
   /// Returns false when the sender has no live link.
   Future<bool> sendTo(
-    final String peerId,
-    final String type,
-    final Map<String, Object?> payload,
+    String peerId,
+    String type,
+    Map<String, Object?> payload,
   ) async {
     final link = _links[peerId];
     if (link == null) return false;
@@ -240,14 +240,14 @@ final class RealtimeHost {
   }
 
   /// Clears the claim as if the sender asked to stop.
-  Future<void> releaseSender(final String peerId, final String reason) async {
+  Future<void> releaseSender(String peerId, String reason) async {
     if (_activeSenderId != peerId) return;
     onReleaseAll?.call(reason);
     _activeSenderId = null;
     onSenderChanged?.call(null, reason);
   }
 
-  void _onEvent(final String peerId, final RealtimeEvent event) {
+  void _onEvent(String peerId, RealtimeEvent event) {
     if (_links[peerId] == null) return; // A replaced link's late event.
     final claimable = isClaimable?.call(event) ?? true;
     if (claimable) _lastActiveAt[peerId] = clock();
@@ -268,7 +268,7 @@ final class RealtimeHost {
 
   /// Runs the arbiter and fires the change callbacks; returns whether
   /// [peerId] holds authority after this event.
-  bool _claimAfter(final String peerId) {
+  bool _claimAfter(String peerId) {
     final next = arbiter.arbitrate(
       active: _activeSenderId,
       candidate: peerId,
@@ -295,7 +295,7 @@ final class RealtimeHost {
     return _activeSenderId == peerId;
   }
 
-  void _drop(final String peerId, final String reason) {
+  void _drop(String peerId, String reason) {
     final link = _links.remove(peerId);
     _lastActiveAt.remove(peerId);
     unawaited(link?.close());

@@ -36,8 +36,8 @@ final class ChunkedBlobStore {
   /// the manifest. v1 stores chunks uncompressed (ADR 0042 §1: the
   /// address never depends on the codec; compression is a later layer).
   Future<ChunkManifest> putBytes(
-    final List<int> bytes, {
-    final String? mime,
+    List<int> bytes, {
+    String? mime,
   }) async {
     final root = chunkAddress(bytes);
     final addresses = <String>[];
@@ -59,8 +59,8 @@ final class ChunkedBlobStore {
   /// address and the result against [ChunkManifest.root]. Throws
   /// [MissingChunksException] when any chunk is unreachable.
   Future<Uint8List> getBytes(
-    final ChunkManifest manifest, {
-    final void Function(int materializedBytes)? onProgress,
+    ChunkManifest manifest, {
+    void Function(int materializedBytes)? onProgress,
   }) async {
     final missing = await manifest.missingChunks(chunks);
     if (missing.isNotEmpty) {
@@ -89,7 +89,7 @@ final class ChunkedBlobStore {
   /// earliest first — step 0 is just the leading chunk (the preview),
   /// the last step is the whole content. A shell renders from catalog
   /// metadata + the first step while the tail streams in.
-  ProgressivePlan planProgressive(final ChunkManifest manifest) {
+  ProgressivePlan planProgressive(ChunkManifest manifest) {
     final plans = <List<String>>[];
     for (var i = 0; i < manifest.chunks.length; i++) {
       plans.add(manifest.chunks.sublist(0, i + 1));
@@ -102,7 +102,7 @@ final class ChunkedBlobStore {
   /// collection candidate after a grace period; this helper only computes,
   /// never deletes.
   Future<Set<String>> reachableAddresses(
-    final Iterable<ChunkManifest> manifests,
+    Iterable<ChunkManifest> manifests,
   ) async {
     final reachable = <String>{};
     for (final manifest in manifests) {

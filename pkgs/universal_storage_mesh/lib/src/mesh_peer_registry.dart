@@ -21,7 +21,7 @@ final class MeshPeerRegistry {
   /// Registry persisted at the posix [filePath] of the registry file
   /// (e.g. `<storePath>/peers.json`). On web the path only feeds the
   /// persistence namespace; records survive reloads via `localStorage`.
-  factory MeshPeerRegistry({required final String filePath}) {
+  factory MeshPeerRegistry({required String filePath}) {
     final slash = filePath.lastIndexOf('/');
     final key = slash < 0 ? filePath : filePath.substring(slash + 1);
     final root = slash <= 0 ? '.' : filePath.substring(0, slash);
@@ -43,7 +43,7 @@ final class MeshPeerRegistry {
 
   final Map<String, MeshPeerRecord> _peers = {};
 
-  static Future<MeshPeerRegistry> load(final String filePath) {
+  static Future<MeshPeerRegistry> load(String filePath) {
     final slash = filePath.lastIndexOf('/');
     final key = slash < 0 ? filePath : filePath.substring(slash + 1);
     final root = slash <= 0 ? '.' : filePath.substring(0, slash);
@@ -58,9 +58,9 @@ final class MeshPeerRegistry {
   /// persistence medium. Used by [MeshStorageProvider] so registry and
   /// doc shards always land on the same backing.
   static Future<MeshPeerRegistry> loadFromStore({
-    required final MeshKeyValueStore store,
-    required final String key,
-    final String filePath = '',
+    required MeshKeyValueStore store,
+    required String key,
+    String filePath = '',
   }) async {
     final registry = MeshPeerRegistry._(store, key, filePath);
     final raw = await store.read(key);
@@ -83,9 +83,9 @@ final class MeshPeerRegistry {
 
   Iterable<MeshPeerRecord> get peers => _peers.values;
 
-  MeshPeerRecord? byId(final String peerId) => _peers[peerId];
+  MeshPeerRecord? byId(String peerId) => _peers[peerId];
 
-  Future<void> register(final MeshPeerRecord peer) async {
+  Future<void> register(MeshPeerRecord peer) async {
     _peers[peer.peerId] = peer;
     await persist();
   }
@@ -96,7 +96,7 @@ final class MeshPeerRegistry {
     if (store == null) return;
     await store.write(
       _key,
-      jsonEncode(_peers.values.map((final p) => p.toJson()).toList()),
+      jsonEncode(_peers.values.map((p) => p.toJson()).toList()),
     );
   }
 }

@@ -205,7 +205,7 @@ void main() {
         // List files in root directory
         final entries = await provider.listDirectory('.');
 
-        final names = entries.map((final e) => e.name).toList();
+        final names = entries.map((e) => e.name).toList();
         expect(names, contains('file1.txt'));
         expect(names, contains('file2.txt'));
         expect(names, contains('subdir'));
@@ -342,10 +342,10 @@ void main() {
 
         expect(branches, isNotEmpty);
         final names = branches
-            .map((final branch) => branch.name.value)
+            .map((branch) => branch.name.value)
             .toList();
         expect(names, contains('main'));
-        expect(branches.any((final branch) => branch.isDefault), isTrue);
+        expect(branches.any((branch) => branch.isDefault), isTrue);
       });
 
       test('should list sibling git repositories', () async {
@@ -368,7 +368,7 @@ void main() {
 
         final repositories = await provider.listRepositories();
         final repoNames = repositories
-            .map((final repository) => repository.name)
+            .map((repository) => repository.name)
             .toList();
 
         expect(repoNames, contains(path.basename(tempDir)));

@@ -22,7 +22,7 @@ abstract final class StorageProviderRegistry {
 
   /// Registers a provider factory for a `StorageConfig` subtype [T].
   static void register<T extends StorageConfig>(
-    final StorageProvider Function() factory,
+    StorageProvider Function() factory,
   ) {
     _factories[T] = factory;
   }
@@ -40,7 +40,7 @@ abstract final class StorageProviderRegistry {
 
   /// Resolves a provider instance for the given [config].
   /// Throws [ConfigurationException] if nothing is registered.
-  static StorageProvider resolve(final StorageConfig config) {
+  static StorageProvider resolve(StorageConfig config) {
     final factory = _factories[config.runtimeType];
     if (factory == null) {
       throw ConfigurationException(

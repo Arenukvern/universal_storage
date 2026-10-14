@@ -29,8 +29,8 @@ import 'mesh_sync_protocol.dart';
 /// enumerate).
 final class MeshBlobLane {
   MeshBlobLane({
-    required final StorageService storage,
-    required final ChunkedBlobStore blobs,
+    required StorageService storage,
+    required ChunkedBlobStore blobs,
     this.onPublished,
     this.onUnpublished,
   }) : _storage = storage,
@@ -59,9 +59,9 @@ final class MeshBlobLane {
   /// Consumes the CLAIMED blob plane of a claiming wrapper: every inbound
   /// session is chunk work; [MeshChunkExchange.serve] answers requests
   /// and absorbs unsolicited pushes until the peer closes the session.
-  void attachTransport(final MeshTransport blobPlane) {
+  void attachTransport(MeshTransport blobPlane) {
     _serving.add(
-      blobPlane.incoming.listen((final session) async {
+      blobPlane.incoming.listen((session) async {
         try {
           await MeshChunkExchange.serve(session: session, store: _blobs.chunks);
         } on Object {
@@ -78,9 +78,9 @@ final class MeshBlobLane {
   /// and writes the manifest as the member [docId]'s content register —
   /// from there the ordinary sync ships the reference like any member.
   Future<ChunkManifest> publish(
-    final String docId,
-    final List<int> bytes, {
-    final String? mime,
+    String docId,
+    List<int> bytes, {
+    String? mime,
   }) async {
     final manifest = await _blobs.putBytes(bytes, mime: mime);
     await _storage.saveFile(docId, jsonEncode(manifest.toJson()));
@@ -90,14 +90,14 @@ final class MeshBlobLane {
 
   /// Tombstones the manifest member (the chunks stay — the store is
   /// immutable and possibly shared; collection is a separate policy).
-  Future<void> unpublish(final String docId) async {
+  Future<void> unpublish(String docId) async {
     await _storage.removeFile(docId);
     onUnpublished?.call(docId);
   }
 
   /// The manifest stored at [docId], null when the member is absent or
   /// its content is not a manifest.
-  Future<ChunkManifest?> manifestOf(final String docId) async {
+  Future<ChunkManifest?> manifestOf(String docId) async {
     final raw = await _storage.readFile(docId);
     if (raw == null) return null;
     try {
@@ -111,9 +111,9 @@ final class MeshBlobLane {
   /// as meta (a peer can warm the first chunk — the preview — from this
   /// alone, before any session opens).
   static ZoneMemberEntry catalogEntryFor(
-    final String docId,
-    final ChunkManifest manifest, {
-    final String? title,
+    String docId,
+    ChunkManifest manifest, {
+    String? title,
   }) => ZoneMemberEntry(
     docId: docId,
     kind: 'blob',
@@ -132,10 +132,10 @@ final class MeshBlobLane {
   /// content (root-checked). Throws [MissingChunksException] listing the
   /// addresses the peer lacked — retry against another peer or pulse.
   Future<Uint8List> fetchFrom(
-    final String docId, {
-    required final MeshTransport dial,
-    required final MeshPeerRecord peer,
-    final void Function(int fetched, int total)? onProgress,
+    String docId, {
+    required MeshTransport dial,
+    required MeshPeerRecord peer,
+    void Function(int fetched, int total)? onProgress,
   }) async {
     final manifest = await manifestOf(docId);
     if (manifest == null) {
@@ -165,9 +165,9 @@ final class MeshBlobLane {
   /// fetch them elsewhere). This is the producer half of the
   /// dialer-only topology.
   Future<int> pushTo(
-    final String docId, {
-    required final MeshTransport dial,
-    required final MeshPeerRecord peer,
+    String docId, {
+    required MeshTransport dial,
+    required MeshPeerRecord peer,
   }) async {
     final manifest = await manifestOf(docId);
     if (manifest == null) {
@@ -190,7 +190,7 @@ final class MeshBlobLane {
 /// Byte-level plane classifier (ADR 0047 "one server, two planes"):
 /// whether a first inbound frame declares the BLOB plane — a
 /// `chunk-req` (fetch) or an unsolicited `chunk` (push).
-bool looksLikeChunkFrame(final Uint8List frame) {
+bool looksLikeChunkFrame(Uint8List frame) {
   return meshFrameTypeIs(frame, const {
     MeshChunkExchange.reqType,
     MeshChunkExchange.chunkType,

@@ -10,7 +10,7 @@ class _YamlLoaderFakeStorageProvider extends StorageProvider {
   var _initialized = false;
 
   @override
-  Future<void> initWithConfig(final StorageConfig config) async {
+  Future<void> initWithConfig(StorageConfig config) async {
     _initialized = true;
   }
 
@@ -19,22 +19,22 @@ class _YamlLoaderFakeStorageProvider extends StorageProvider {
 
   @override
   Future<FileOperationResult> createFile(
-    final String path,
-    final String content, {
-    final String? commitMessage,
+    String path,
+    String content, {
+    String? commitMessage,
   }) async {
     files[path] = content;
     return FileOperationResult.created(path: path);
   }
 
   @override
-  Future<String?> getFile(final String path) async => files[path];
+  Future<String?> getFile(String path) async => files[path];
 
   @override
   Future<FileOperationResult> updateFile(
-    final String path,
-    final String content, {
-    final String? commitMessage,
+    String path,
+    String content, {
+    String? commitMessage,
   }) async {
     files[path] = content;
     return FileOperationResult.updated(path: path);
@@ -42,18 +42,18 @@ class _YamlLoaderFakeStorageProvider extends StorageProvider {
 
   @override
   Future<FileOperationResult> deleteFile(
-    final String path, {
-    final String? commitMessage,
+    String path, {
+    String? commitMessage,
   }) async {
     files.remove(path);
     return FileOperationResult.deleted(path: path);
   }
 
   @override
-  Future<List<FileEntry>> listDirectory(final String directoryPath) async =>
+  Future<List<FileEntry>> listDirectory(String directoryPath) async =>
       files.keys
           .map(
-            (final path) => FileEntry(
+            (path) => FileEntry(
               name: path,
               isDirectory: false,
               size: files[path]!.length,
@@ -63,14 +63,14 @@ class _YamlLoaderFakeStorageProvider extends StorageProvider {
           .toList(growable: false);
 
   @override
-  Future<void> restore(final String path, {final String? versionId}) async {}
+  Future<void> restore(String path, {String? versionId}) async {}
 
   @override
   Future<void> dispose() async {}
 }
 
 Future<StorageService> _createService(
-  final _YamlLoaderFakeStorageProvider provider,
+  _YamlLoaderFakeStorageProvider provider,
 ) async {
   final tempDirectory = await Directory.systemTemp.createTemp(
     'yaml_loader_test_',
@@ -104,7 +104,7 @@ namespaces:
       const yamlLoader = YamlStorageProfileLoader();
       final result = await yamlLoader.load(
         yamlSource: yaml,
-        serviceFactory: (final _) async => service,
+        serviceFactory: (_) async => service,
       );
 
       await result.kernel.write(
@@ -116,7 +116,7 @@ namespaces:
       expect(provider.files['settings.json'], isNotNull);
       expect(
         result.warnings.any(
-          (final warning) => warning.contains('Schema v2 is parsed by v1'),
+          (warning) => warning.contains('Schema v2 is parsed by v1'),
         ),
         isTrue,
       );
@@ -137,7 +137,7 @@ namespaces:
       await expectLater(
         () => yamlLoader.load(
           yamlSource: yaml,
-          serviceFactory: (final _) => Future<StorageService>.error(
+          serviceFactory: (_) => Future<StorageService>.error(
             const ConfigurationException('Should not be called'),
           ),
         ),

@@ -74,8 +74,8 @@ abstract interface class RepositorySelectionUIDelegate {
   ///
   /// Returns the selected repository or null if cancelled.
   Future<VcRepository?> selectRepository(
-    final List<VcRepository> repositories, {
-    final String? suggestedName,
+    List<VcRepository> repositories, {
+    String? suggestedName,
   });
 
   /// Collects repository creation details from user.
@@ -84,13 +84,13 @@ abstract interface class RepositorySelectionUIDelegate {
   ///
   /// Returns repository creation details or null if cancelled.
   Future<VcCreateRepositoryRequest?> getRepositoryCreationDetails(
-    final RepositorySelectionConfig config,
+    RepositorySelectionConfig config,
   );
 
   /// Shows progress during repository operations.
   ///
   /// [message] - Progress message to display
-  Future<void> showProgress(final String message);
+  Future<void> showProgress(String message);
 
   /// Hides progress indicator.
   Future<void> hideProgress();
@@ -99,7 +99,7 @@ abstract interface class RepositorySelectionUIDelegate {
   ///
   /// [title] - Error title
   /// [message] - Error message
-  Future<void> showError(final String title, final String message);
+  Future<void> showError(String title, String message);
 }
 
 /// {@template repository_manager}
@@ -136,7 +136,7 @@ class RepositoryManager {
   /// Returns the selected or created repository details.
   /// Throws [RepositorySelectionException] if operation fails or is cancelled.
   Future<RepositorySelectionResult> selectOrCreateRepository(
-    final RepositorySelectionConfig config,
+    RepositorySelectionConfig config,
   ) async {
     try {
       await ui.showProgress('Loading repositories...');
@@ -152,7 +152,7 @@ class RepositoryManager {
       // Step 2: Check for suggested repository in existing list
       if (config.suggestedName != null && repositories.isNotEmpty) {
         final suggested = repositories
-            .where((final repo) => _extractName(repo) == config.suggestedName)
+            .where((repo) => _extractName(repo) == config.suggestedName)
             .firstOrNull;
 
         if (suggested != null) {
@@ -201,7 +201,7 @@ class RepositoryManager {
 
   /// Creates a new repository with user input.
   Future<RepositorySelectionResult> _createNewRepository(
-    final RepositorySelectionConfig config,
+    RepositorySelectionConfig config,
   ) async {
     // Get creation details from user
     final VcCreateRepositoryRequest? createDetails = await ui
@@ -299,8 +299,8 @@ class RepositoryManager {
   /// unsupported, [CapabilityMismatchException] is thrown without attempting a
   /// provider clone call.
   Future<void> cloneRepositoryToLocal({
-    required final VcRepository repository,
-    required final String localPath,
+    required VcRepository repository,
+    required String localPath,
   }) async {
     if (localPath.trim().isEmpty) {
       throw const RepositorySelectionException('localPath cannot be empty');
@@ -336,7 +336,7 @@ class RepositoryManager {
   ///
   /// VcRepository extension type provides a name getter that can be used
   /// to extract the repository name for suggested-name pre-selection.
-  String? _extractName(final VcRepository repo) {
+  String? _extractName(VcRepository repo) {
     try {
       return repo.name;
     } catch (_) {

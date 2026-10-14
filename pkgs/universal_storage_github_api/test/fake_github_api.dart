@@ -15,7 +15,7 @@ class FakeGitHubApi {
         _boundServer = server;
         _endpoint = 'http://127.0.0.1:${server.port}';
         server.listen(
-          (final request) {
+          (request) {
             unawaited(_handle(request));
           },
           onDone: () {
@@ -56,11 +56,11 @@ class FakeGitHubApi {
   final Map<String, _FakeFile> _files = <String, _FakeFile>{};
   var _shaCounter = 0;
 
-  Future<void> _handle(final HttpRequest request) async {
+  Future<void> _handle(HttpRequest request) async {
     // The github client may produce a double leading slash when the endpoint
     // ends with '/'; drop empty segments before routing.
     final segments = request.uri.pathSegments
-        .where((final segment) => segment.isNotEmpty)
+        .where((segment) => segment.isNotEmpty)
         .toList();
     final response = request.response;
 
@@ -99,8 +99,8 @@ class FakeGitHubApi {
   }
 
   Future<void> _handleGet(
-    final HttpRequest request,
-    final String filePath,
+    HttpRequest request,
+    String filePath,
   ) async {
     final response = request.response;
 
@@ -169,8 +169,8 @@ class FakeGitHubApi {
   }
 
   Future<void> _handlePut(
-    final HttpRequest request,
-    final String filePath,
+    HttpRequest request,
+    String filePath,
   ) async {
     final body =
         jsonDecode(await utf8.decoder.bind(request).join())
@@ -198,8 +198,8 @@ class FakeGitHubApi {
   }
 
   Future<void> _handleDelete(
-    final HttpRequest request,
-    final String filePath,
+    HttpRequest request,
+    String filePath,
   ) async {
     final body =
         jsonDecode(await utf8.decoder.bind(request).join())

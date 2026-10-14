@@ -56,17 +56,17 @@ final class ProfileCapabilityDecision {
 
   /// Whether all namespaces are strictly allowed.
   bool get allAllowed => namespaces.every(
-    (final entry) => entry.decision == CapabilityDecision.allowed,
+    (entry) => entry.decision == CapabilityDecision.allowed,
   );
 
   /// Whether there is at least one degraded namespace.
   bool get hasDegraded => namespaces.any(
-    (final entry) => entry.decision == CapabilityDecision.degraded,
+    (entry) => entry.decision == CapabilityDecision.degraded,
   );
 
   /// Whether there is at least one blocked namespace.
   bool get hasBlocked => namespaces.any(
-    (final entry) => entry.decision == CapabilityDecision.blocked,
+    (entry) => entry.decision == CapabilityDecision.blocked,
   );
 }
 
@@ -77,8 +77,8 @@ final class StorageProfileCapabilityGuard {
 
   /// Evaluates one namespace profile against available capabilities.
   NamespaceCapabilityDecision evaluateNamespace({
-    required final StorageNamespaceProfile profile,
-    required final StorageCapabilities availableCapabilities,
+    required StorageNamespaceProfile profile,
+    required StorageCapabilities availableCapabilities,
   }) {
     if (profile.requiresRemote &&
         (profile.remoteEngineId == null || profile.remoteEngineId!.isEmpty)) {
@@ -131,12 +131,12 @@ final class StorageProfileCapabilityGuard {
 
   /// Evaluates all namespaces in profile against per-namespace capabilities.
   ProfileCapabilityDecision evaluateProfile({
-    required final StorageProfile profile,
-    final Map<StorageNamespace, StorageCapabilities> capabilitiesByNamespace =
+    required StorageProfile profile,
+    Map<StorageNamespace, StorageCapabilities> capabilitiesByNamespace =
         const <StorageNamespace, StorageCapabilities>{},
   }) {
     final decisions = profile.namespaces
-        .map((final namespaceProfile) {
+        .map((namespaceProfile) {
           final available =
               capabilitiesByNamespace[namespaceProfile.namespace] ??
               StorageCapabilities.none;

@@ -42,7 +42,7 @@ class CloudKitBridgeConfig {
     this.webApiToken,
   });
 
-  factory CloudKitBridgeConfig.fromStorageConfig(final CloudKitConfig config) =>
+  factory CloudKitBridgeConfig.fromStorageConfig(CloudKitConfig config) =>
       CloudKitBridgeConfig(
         containerId: config.containerId,
         environment: config.environment,
@@ -84,7 +84,7 @@ class CloudKitRecord {
     this.changeTag,
   });
 
-  factory CloudKitRecord.fromMap(final Map<String, Object?> map) =>
+  factory CloudKitRecord.fromMap(Map<String, Object?> map) =>
       CloudKitRecord(
         recordName: (map['recordName'] ?? '').toString(),
         path: (map['path'] ?? '').toString(),

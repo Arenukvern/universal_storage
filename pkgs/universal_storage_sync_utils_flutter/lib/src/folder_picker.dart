@@ -10,7 +10,7 @@ import 'package:universal_storage_sync_utils/universal_storage_sync_utils.dart';
 import 'macos_bookmark_manager.dart';
 
 /// Disposes a [FilePathConfig] by stopping access to the macOS bookmark.
-Future<void> disposePathOfFileConfig(final FilePathConfig config) async {
+Future<void> disposePathOfFileConfig(FilePathConfig config) async {
   if (Platform.isMacOS) {
     final bookmark = config.macOSBookmarkData;
     if (bookmark.isNotEmpty) {
@@ -38,7 +38,7 @@ Future<FilePathConfig> resolveDefaultPath() async {
 
 /// Resolves a [FilePathConfig] to a [Directory] on the current platform.
 Future<Directory?> resolvePlatformDirectoryOfConfig(
-  final FilePathConfig config,
+  FilePathConfig config,
 ) async {
   final path = config.path.path;
   if (path.isEmpty) return null;
@@ -54,8 +54,8 @@ Future<Directory?> resolvePlatformDirectoryOfConfig(
 
 /// Resolves a [MacOSBookmark] to a [Directory] on macOS.
 Future<Directory?> resolvePlatformDirectory({
-  required final String path,
-  final MacOSBookmark? bookmark,
+  required String path,
+  MacOSBookmark? bookmark,
 }) async {
   if (path.isEmpty) return null;
   if (Platform.isMacOS) {
@@ -73,8 +73,8 @@ Future<Directory?> resolvePlatformDirectory({
 
 /// Picks a writable directory and returns [PickResult].
 Future<PickResult> pickWritableDirectory({
-  final BuildContext? context,
-  final String? initialDirectory,
+  BuildContext? context,
+  String? initialDirectory,
 }) async {
   // Kept for API compatibility with app call sites that pass context.
   final _ = context;

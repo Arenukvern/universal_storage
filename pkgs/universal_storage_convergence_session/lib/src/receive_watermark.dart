@@ -25,7 +25,7 @@ final class ReceiveWatermark {
   /// Restores a persisted watermark (see [toJson]). The actor id must be
   /// the replica's own — a restored watermark keeps issuing under this
   /// replica's identity.
-  factory ReceiveWatermark.fromJson(final Map<String, dynamic> json) =>
+  factory ReceiveWatermark.fromJson(Map<String, dynamic> json) =>
       ReceiveWatermark._(
         json['actor_id'] as String,
         json['value'] == null
@@ -67,7 +67,7 @@ final class ReceiveWatermark {
   /// (found during the ecsly ADR 0004 adoption, 2026-10-11). The
   /// issue-time strictness instead comes from the kernel's `lastIssued`
   /// tick seam — see [floorNow].
-  void observe(final Hlc remote) {
+  void observe(Hlc remote) {
     final current = _value;
     if (current != null &&
         (current.wallMillis > remote.wallMillis ||
@@ -81,7 +81,7 @@ final class ReceiveWatermark {
   /// Absorbs an adopted snapshot's creation timestamp, so local writes
   /// after adopting wholesale snapshot state order after the snapshot's
   /// content.
-  void observeSnapshot(final Snapshot snapshot) => observe(snapshot.createdAt);
+  void observeSnapshot(Snapshot snapshot) => observe(snapshot.createdAt);
 
   /// Floors the time handed to the next local write at the watermark's
   /// wall clock: a `now` below the watermark comes back raised to it, a
@@ -91,7 +91,7 @@ final class ReceiveWatermark {
   /// events comes from also passing [value] as the kernel's `lastIssued`
   /// (the counter seam). Use both together; [floorNow] alone cannot
   /// outrank a same-wall, higher-counter remote op.
-  DateTime floorNow(final DateTime now) {
+  DateTime floorNow(DateTime now) {
     final current = _value;
     if (current == null) return now;
     if (now.millisecondsSinceEpoch < current.wallMillis) {

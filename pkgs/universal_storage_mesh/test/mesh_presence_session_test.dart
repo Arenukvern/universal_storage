@@ -25,12 +25,12 @@ final class _FakeEndpoint implements EphemeralFrameTransport {
   Stream<MeshEphemeralFrame> get frames => _frames.stream;
 
   @override
-  Future<void> send(final MeshEphemeralFrame frame) async {
+  Future<void> send(MeshEphemeralFrame frame) async {
     sent.add(frame);
     _hub._deliverFrom(peerId, frame);
   }
 
-  void _receive(final MeshEphemeralFrame frame) {
+  void _receive(MeshEphemeralFrame frame) {
     _frames.add(frame);
   }
 
@@ -44,10 +44,10 @@ final class _FakeEndpoint implements EphemeralFrameTransport {
 final class _FakeHub {
   final Map<String, _FakeEndpoint> _endpoints = {};
 
-  _FakeEndpoint endpoint(final String peerId) =>
+  _FakeEndpoint endpoint(String peerId) =>
       _endpoints.putIfAbsent(peerId, () => _FakeEndpoint(peerId, this));
 
-  void _deliverFrom(final String from, final MeshEphemeralFrame frame) {
+  void _deliverFrom(String from, MeshEphemeralFrame frame) {
     for (final endpoint in _endpoints.values) {
       if (endpoint.peerId != from) endpoint._receive(frame);
     }
@@ -55,12 +55,12 @@ final class _FakeHub {
 }
 
 MeshPresenceSession _session({
-  required final _FakeEndpoint transport,
-  required final MeshPresenceTracker tracker,
-  final PresenceConfig presenceConfig = PresenceConfig.interactive,
-  final EphemeralFrameSigner? signer,
-  final EphemeralFrameAuthenticator? authenticator,
-  final DateTime Function()? clock,
+  required _FakeEndpoint transport,
+  required MeshPresenceTracker tracker,
+  PresenceConfig presenceConfig = PresenceConfig.interactive,
+  EphemeralFrameSigner? signer,
+  EphemeralFrameAuthenticator? authenticator,
+  DateTime Function()? clock,
 }) => MeshPresenceSession(
   transport: transport,
   tracker: tracker,

@@ -6,16 +6,16 @@ class MemoryStorageProvider extends StorageProvider {
   final Map<String, String> files = <String, String>{};
 
   @override
-  Future<void> initWithConfig(final StorageConfig config) async {}
+  Future<void> initWithConfig(StorageConfig config) async {}
 
   @override
   Future<bool> isAuthenticated() async => true;
 
   @override
   Future<FileOperationResult> createFile(
-    final String path,
-    final String content, {
-    final String? commitMessage,
+    String path,
+    String content, {
+    String? commitMessage,
   }) async {
     if (files.containsKey(path)) {
       throw const FileAlreadyExistsException('already exists');
@@ -25,13 +25,13 @@ class MemoryStorageProvider extends StorageProvider {
   }
 
   @override
-  Future<String?> getFile(final String path) async => files[path];
+  Future<String?> getFile(String path) async => files[path];
 
   @override
   Future<FileOperationResult> updateFile(
-    final String path,
-    final String content, {
-    final String? commitMessage,
+    String path,
+    String content, {
+    String? commitMessage,
   }) async {
     if (!files.containsKey(path)) {
       throw const FileNotFoundException('missing');
@@ -42,8 +42,8 @@ class MemoryStorageProvider extends StorageProvider {
 
   @override
   Future<FileOperationResult> deleteFile(
-    final String path, {
-    final String? commitMessage,
+    String path, {
+    String? commitMessage,
   }) async {
     if (!files.containsKey(path)) {
       throw const FileNotFoundException('missing');
@@ -53,13 +53,13 @@ class MemoryStorageProvider extends StorageProvider {
   }
 
   @override
-  Future<List<FileEntry>> listDirectory(final String directoryPath) async =>
+  Future<List<FileEntry>> listDirectory(String directoryPath) async =>
       files.keys
-          .map((final f) => FileEntry(name: f, isDirectory: false))
+          .map((f) => FileEntry(name: f, isDirectory: false))
           .toList();
 
   @override
-  Future<void> restore(final String path, {final String? versionId}) =>
+  Future<void> restore(String path, {String? versionId}) =>
       Future<void>.error(
         const UnsupportedOperationException('no restore in the fake'),
       );

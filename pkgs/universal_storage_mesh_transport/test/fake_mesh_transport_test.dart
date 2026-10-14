@@ -10,9 +10,9 @@ void main() {
     final bReceived = <String>[];
 
     // B is the responder: it listens for incoming sessions.
-    final subscription = pair.b.incoming.listen((final session) {
+    final subscription = pair.b.incoming.listen((session) {
       session.inbound.listen(
-        (final bytes) => bReceived.add(String.fromCharCodes(bytes)),
+        (bytes) => bReceived.add(String.fromCharCodes(bytes)),
       );
     });
     addTearDown(subscription.cancel);
@@ -50,7 +50,7 @@ void main() {
   test('frame codec round-trips split and concatenated writes', () {
     final decoder = FrameDecoder();
     final message = Uint8List.fromList(
-      List.generate(1000, (final i) => i % 256),
+      List.generate(1000, (i) => i % 256),
     );
     final framed = frameMessage(message);
 

@@ -82,7 +82,7 @@ void main() {
       tx.rollback(),
       throwsA(
         isA<LiveApplyDriftException>().having(
-          (final e) => e.paths,
+          (e) => e.paths,
           'paths',
           contains('a.txt'),
         ),

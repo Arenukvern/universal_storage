@@ -13,15 +13,15 @@ import 'package:universal_storage_interface/universal_storage_interface.dart';
 abstract interface class MeshSyncParticipant {
   /// Writes this participant's durable state into [storage] (before the
   /// exchange) so anti-entropy ships the latest state.
-  Future<void> flush(final StorageService storage);
+  Future<void> flush(StorageService storage);
 
   /// Folds durable state the exchange delivered (after the exchange).
   /// Snapshot-first when the participant carries compacted peers' state:
   /// the kernel adopts only snapshots its version vector does not already
   /// cover (the DocReplicaStore.absorbRemote ordering insight).
-  Future<void> absorb(final StorageService storage);
+  Future<void> absorb(StorageService storage);
 
   /// Post-absorb compaction. Fire only above the participant's own policy
   /// thresholds (cheap no-op below them).
-  Future<void> compact(final StorageService storage);
+  Future<void> compact(StorageService storage);
 }

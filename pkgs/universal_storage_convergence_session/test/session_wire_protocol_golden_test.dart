@@ -75,8 +75,8 @@ void main() {
       '"display_name":"Zürich Gerät"}';
 
   void expectGoldenBytes(
-    final String golden,
-    final Map<String, Object?> frame,
+    String golden,
+    Map<String, Object?> frame,
   ) {
     final bytes = MeshSyncProtocol.encode(frame);
     expect(utf8.decode(bytes), golden);

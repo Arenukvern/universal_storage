@@ -12,7 +12,7 @@ class _FailingStore extends LiveApplyJournalStore {
   int? failAt;
 
   @override
-  Future<void> write(final LiveApplyJournal journal) async {
+  Future<void> write(LiveApplyJournal journal) async {
     if (++writes == failAt) throw const FileSystemException('journal fault');
     await super.write(journal);
   }

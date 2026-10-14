@@ -11,7 +11,7 @@ import 'package:test/test.dart';
 import 'package:universal_storage_mesh_transport/universal_storage_mesh_transport.dart';
 import 'package:universal_storage_realtime/universal_storage_realtime.dart';
 
-Uint8List _frame(final RealtimeEnvelope envelope) => envelope.encode();
+Uint8List _frame(RealtimeEnvelope envelope) => envelope.encode();
 
 Future<void> _pump() => pumpEventQueue();
 
@@ -25,7 +25,7 @@ void main() {
     final host = RealtimeHost(
       claimedPlane: hub,
       selfId: 'desktop',
-      onEvent: (final event, {required final bool authoritative}) => routed.add(
+      onEvent: (event, {required bool authoritative}) => routed.add(
         (
           sender: event.senderPeerId,
           type: event.type,
@@ -33,7 +33,7 @@ void main() {
         ),
       ),
       onReleaseAll: releases.add,
-      onSenderChanged: (final sender, final _) => senderChanges.add(sender),
+      onSenderChanged: (sender, _) => senderChanges.add(sender),
     );
     host.start();
 
@@ -63,11 +63,11 @@ void main() {
 
     expect(host.activeSender, 'phone-a', reason: 'first routable event claims');
     expect(
-      routed.map((final r) => r.type).toList(),
+      routed.map((r) => r.type).toList(),
       ['pinchStart', 'pointerMove', 'pinchEnd'],
       reason: 'reliable AND droppable app events both surface',
     );
-    expect(routed.every((final r) => r.authoritative), isTrue);
+    expect(routed.every((r) => r.authoritative), isTrue);
     expect(senderChanges, ['phone-a']);
 
     // Phone B joins while A is fresh: B's events surface as
@@ -126,7 +126,7 @@ void main() {
     // bidirectional) and were never surfaced as app events.
     expect(
       a.sent.every(
-        (final bytes) =>
+        (bytes) =>
             RealtimeEnvelope.tryDecode(bytes)!.type == 'heartbeat',
       ),
       isTrue,
@@ -146,8 +146,8 @@ void main() {
       claimedPlane: hub,
       selfId: 'desktop',
       arbiter: const _CandidateAlwaysArbiter(),
-      onEvent: (final event, {required final bool authoritative}) {},
-      onSenderChanged: (final sender, final _) => claims.add(sender),
+      onEvent: (event, {required bool authoritative}) {},
+      onSenderChanged: (sender, _) => claims.add(sender),
     );
     host.start();
 
@@ -181,8 +181,8 @@ void main() {
     final host = RealtimeHost(
       claimedPlane: hub,
       selfId: 'desktop',
-      adoptSession: (final session) => session.remotePeerId == 'phone-a',
-      onEvent: (final event, {required final bool authoritative}) {},
+      adoptSession: (session) => session.remotePeerId == 'phone-a',
+      onEvent: (event, {required bool authoritative}) {},
     );
     host.start();
 
@@ -217,7 +217,7 @@ void main() {
       heartbeatInterval: const Duration(seconds: 1),
       staleAfter: const Duration(seconds: 3),
       clock: () => now,
-      onEvent: (final event, {required final bool authoritative}) {},
+      onEvent: (event, {required bool authoritative}) {},
       onReleaseAll: releases.add,
     );
     host.start();
@@ -252,9 +252,9 @@ final class _CandidateAlwaysArbiter implements RealtimeArbiter {
 
   @override
   String? arbitrate({
-    required final String? active,
-    required final String candidate,
-    required final DateTime? activeLastEventAt,
-    required final DateTime now,
+    required String? active,
+    required String candidate,
+    required DateTime? activeLastEventAt,
+    required DateTime now,
   }) => candidate;
 }

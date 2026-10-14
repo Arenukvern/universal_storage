@@ -7,7 +7,7 @@ import 'conflict_resolution_strategy.dart';
 final class StorageNamespace {
   const StorageNamespace(this.value) : assert(value != '');
 
-  factory StorageNamespace.fromJson(final Object? json) =>
+  factory StorageNamespace.fromJson(Object? json) =>
       StorageNamespace((json ?? '').toString());
 
   final String value;
@@ -23,7 +23,7 @@ final class StorageNamespace {
   String toString() => value;
 
   @override
-  bool operator ==(final Object other) =>
+  bool operator ==(Object other) =>
       identical(this, other) ||
       (other is StorageNamespace && other.value == value);
 
@@ -36,7 +36,7 @@ final class StorageNamespace {
 final class StorageObjectId {
   const StorageObjectId(this.value) : assert(value != '');
 
-  factory StorageObjectId.fromJson(final Object? json) =>
+  factory StorageObjectId.fromJson(Object? json) =>
       StorageObjectId((json ?? '').toString());
 
   final String value;
@@ -47,7 +47,7 @@ final class StorageObjectId {
   String toString() => value;
 
   @override
-  bool operator ==(final Object other) =>
+  bool operator ==(Object other) =>
       identical(this, other) ||
       (other is StorageObjectId && other.value == value);
 
@@ -77,7 +77,7 @@ final class SyncQueuePolicy {
     this.maxEntryAgeMs = 86400000,
   });
 
-  factory SyncQueuePolicy.fromJson(final Map<String, dynamic> json) =>
+  factory SyncQueuePolicy.fromJson(Map<String, dynamic> json) =>
       SyncQueuePolicy(
         maxRetries: _parsePositiveInt(json['max_retries'], fallback: 3),
         initialBackoffMs: _parsePositiveInt(
@@ -99,7 +99,7 @@ final class SyncQueuePolicy {
   final int maxBackoffMs;
   final int maxEntryAgeMs;
 
-  Duration backoffForAttempt(final int attempt) {
+  Duration backoffForAttempt(int attempt) {
     final normalizedAttempt = attempt < 1 ? 1 : attempt;
     var delayMs = initialBackoffMs;
     for (var i = 1; i < normalizedAttempt; i++) {
@@ -113,8 +113,8 @@ final class SyncQueuePolicy {
   }
 
   bool exceedsMaxAge({
-    required final DateTime createdAtUtc,
-    required final DateTime nowUtc,
+    required DateTime createdAtUtc,
+    required DateTime nowUtc,
   }) => nowUtc.difference(createdAtUtc).inMilliseconds > maxEntryAgeMs;
 
   Map<String, dynamic> toJson() => {
@@ -125,8 +125,8 @@ final class SyncQueuePolicy {
   };
 
   static int _parsePositiveInt(
-    final Object? raw, {
-    required final int fallback,
+    Object? raw, {
+    required int fallback,
   }) {
     if (raw is int) {
       return raw > 0 ? raw : fallback;
@@ -158,7 +158,7 @@ final class StorageCapabilities {
     this.syncAvailability = SyncAvailability.none,
   });
 
-  factory StorageCapabilities.fromJson(final Map<String, dynamic> json) =>
+  factory StorageCapabilities.fromJson(Map<String, dynamic> json) =>
       StorageCapabilities(
         supportsDiff: json['supports_diff'] == true,
         supportsHistory: json['supports_history'] == true,
@@ -168,7 +168,7 @@ final class StorageCapabilities {
         supportsBackgroundSync: json['supports_background_sync'] == true,
         supportsMigrationEndpoint: json['supports_migration_endpoint'] == true,
         syncAvailability: SyncAvailability.values.firstWhere(
-          (final value) => value.name == json['sync_availability'],
+          (value) => value.name == json['sync_availability'],
           orElse: () => SyncAvailability.none,
         ),
       );
@@ -197,7 +197,7 @@ final class StorageCapabilities {
       syncAvailability == SyncAvailability.always ||
       syncAvailability == SyncAvailability.withRemoteConfig;
 
-  bool satisfies(final StorageCapabilities required) =>
+  bool satisfies(StorageCapabilities required) =>
       (!required.supportsDiff || supportsDiff) &&
       (!required.supportsHistory || supportsHistory) &&
       (!required.supportsRevisionMetadata || supportsRevisionMetadata) &&
@@ -208,7 +208,7 @@ final class StorageCapabilities {
       (required.syncAvailability == SyncAvailability.none ||
           _satisfiesSyncAvailability(required.syncAvailability));
 
-  bool _satisfiesSyncAvailability(final SyncAvailability required) =>
+  bool _satisfiesSyncAvailability(SyncAvailability required) =>
       switch (required) {
         SyncAvailability.none => true,
         // 'always' requirement is satisfied only by 'always'.
@@ -258,7 +258,7 @@ final class StorageNamespaceProfile {
     this.queuePolicy = const SyncQueuePolicy(),
   });
 
-  factory StorageNamespaceProfile.fromJson(final Map<String, dynamic> json) {
+  factory StorageNamespaceProfile.fromJson(Map<String, dynamic> json) {
     final namespace = StorageNamespace.fromJson(json['namespace']);
     final policyName = (json['policy'] ?? '').toString();
     final interactionName = (json['sync_interaction_level'] ?? 'minimal')
@@ -267,15 +267,15 @@ final class StorageNamespaceProfile {
         .toString();
 
     final policy = StoragePolicy.values.firstWhere(
-      (final e) => e.name == policyName,
+      (e) => e.name == policyName,
       orElse: () => StoragePolicy.localOnly,
     );
     final interaction = SyncInteractionLevel.values.firstWhere(
-      (final e) => e.name == interactionName,
+      (e) => e.name == interactionName,
       orElse: () => SyncInteractionLevel.minimal,
     );
     final conflict = ConflictResolutionStrategy.values.firstWhere(
-      (final e) => e.name == conflictName,
+      (e) => e.name == conflictName,
       orElse: () => ConflictResolutionStrategy.clientAlwaysRight,
     );
 
@@ -320,7 +320,7 @@ final class StorageNamespaceProfile {
   bool get requiresRemote => policy != StoragePolicy.localOnly;
 
   SyncInteractionLevel resolveInteractionLevel(
-    final StorageCapabilities availableCapabilities,
+    StorageCapabilities availableCapabilities,
   ) {
     if (syncInteractionLevel == SyncInteractionLevel.minimal) {
       return SyncInteractionLevel.minimal;
@@ -358,14 +358,14 @@ final class StorageProfile {
   }) : assert(name != '');
 
   factory StorageProfile.fromJson(
-    final Map<String, dynamic> json,
+    Map<String, dynamic> json,
   ) => StorageProfile(
     name: (json['name'] ?? '').toString(),
     version: json['version'] is int ? json['version'] as int : 1,
     namespaces: (json['namespaces'] as List<dynamic>? ?? const [])
         .whereType<Map<dynamic, dynamic>>()
         .map(
-          (final e) =>
+          (e) =>
               StorageNamespaceProfile.fromJson(Map<String, dynamic>.from(e)),
         )
         .toList(),
@@ -379,9 +379,9 @@ final class StorageProfile {
   final List<StorageNamespaceProfile> namespaces;
   final Map<String, dynamic> metadata;
 
-  StorageNamespaceProfile namespaceProfile(final StorageNamespace namespace) =>
+  StorageNamespaceProfile namespaceProfile(StorageNamespace namespace) =>
       namespaces.firstWhere(
-        (final e) => e.namespace == namespace,
+        (e) => e.namespace == namespace,
         orElse: () => throw ArgumentError.value(
           namespace,
           'namespace',
@@ -392,7 +392,7 @@ final class StorageProfile {
   Map<String, dynamic> toJson() => {
     'name': name,
     'version': version,
-    'namespaces': namespaces.map((final e) => e.toJson()).toList(),
+    'namespaces': namespaces.map((e) => e.toJson()).toList(),
     'metadata': metadata,
   };
 }

@@ -33,17 +33,17 @@ final class MeshSyncProtocol {
   static const vvType = 'vv';
   static const deltaType = 'delta';
 
-  static Uint8List encode(final Map<String, Object?> message) =>
+  static Uint8List encode(Map<String, Object?> message) =>
       Uint8List.fromList(utf8.encode(jsonEncode(message)));
 
-  static Map<String, Object?> decode(final Uint8List bytes) =>
+  static Map<String, Object?> decode(Uint8List bytes) =>
       Map<String, Object?>.from(
         jsonDecode(utf8.decode(bytes)) as Map<dynamic, dynamic>,
       );
 
   static Map<String, Object?> hello({
-    required final String peerId,
-    required final String displayName,
+    required String peerId,
+    required String displayName,
   }) => {
     'v': 2,
     'type': helloType,
@@ -54,9 +54,9 @@ final class MeshSyncProtocol {
   /// The sender's interest: which members they want delivered, how the
   /// peer should order their delta, and how many ops the peer may send.
   static Map<String, Object?> sub({
-    required final InterestSelection selection,
-    final Map<String, int> priority = const {},
-    final int? budget,
+    required InterestSelection selection,
+    Map<String, int> priority = const {},
+    int? budget,
   }) => {
     'v': 1,
     'type': subType,
@@ -66,7 +66,7 @@ final class MeshSyncProtocol {
   };
 
   static ({InterestSelection selection, Map<String, int> priority, int? budget})
-  parseSub(final Object? raw) {
+  parseSub(Object? raw) {
     final body = raw! as Map<dynamic, dynamic>;
     return (
       selection: InterestSelection.fromJson(
@@ -75,7 +75,7 @@ final class MeshSyncProtocol {
         ),
       ),
       priority: (body['priority'] as Map<dynamic, dynamic>? ?? const {}).map(
-        (final k, final v) => MapEntry(k as String, v as int),
+        (k, v) => MapEntry(k as String, v as int),
       ),
       budget: body['budget'] as int?,
     );
@@ -83,7 +83,7 @@ final class MeshSyncProtocol {
 
   /// Per-document version vectors: `{docId: {actor: hlc}}`.
   static Map<String, Object?> vv(
-    final Map<String, VersionVector> docVectors,
+    Map<String, VersionVector> docVectors,
   ) => {
     'type': vvType,
     'docs': {
@@ -91,11 +91,11 @@ final class MeshSyncProtocol {
     },
   };
 
-  static Map<String, VersionVector> parseVv(final Object? raw) {
+  static Map<String, VersionVector> parseVv(Object? raw) {
     final docs =
         (raw! as Map<dynamic, dynamic>)['docs'] as Map<dynamic, dynamic>;
     return docs.map(
-      (final docId, final value) => MapEntry(
+      (docId, value) => MapEntry(
         docId as String,
         VersionVector.fromJson(Map<String, dynamic>.from(value)),
       ),
@@ -103,8 +103,8 @@ final class MeshSyncProtocol {
   }
 
   static Map<String, Object?> delta({
-    required final List<OpRecord> ops,
-    required final List<Snapshot> states,
+    required List<OpRecord> ops,
+    required List<Snapshot> states,
   }) => {
     'type': deltaType,
     'ops': [for (final op in ops) op.toJson()],
@@ -112,17 +112,17 @@ final class MeshSyncProtocol {
   };
 
   static ({List<OpRecord> ops, List<Snapshot> states}) parseDelta(
-    final Object? raw,
+    Object? raw,
   ) {
     final body = raw! as Map<dynamic, dynamic>;
     return (
       ops: ((body['ops'] ?? const []) as List<dynamic>)
           .whereType<Map<dynamic, dynamic>>()
-          .map((final e) => OpRecord.fromJson(Map<String, dynamic>.from(e)))
+          .map((e) => OpRecord.fromJson(Map<String, dynamic>.from(e)))
           .toList(),
       states: ((body['states'] ?? const []) as List<dynamic>)
           .whereType<Map<dynamic, dynamic>>()
-          .map((final e) => Snapshot.fromJson(Map<String, dynamic>.from(e)))
+          .map((e) => Snapshot.fromJson(Map<String, dynamic>.from(e)))
           .toList(),
     );
   }
@@ -133,7 +133,7 @@ final class MeshSyncProtocol {
 /// sends its `hello` before anything else, and every sync frame carries
 /// the `type`/`v` pair — realtime app frames (e.g. gesture events) carry
 /// neither, so one decrypted first frame routes the session.
-bool looksLikeWorldSyncFrame(final Uint8List frame) =>
+bool looksLikeWorldSyncFrame(Uint8List frame) =>
     meshFrameTypeIs(frame, const {
       MeshSyncProtocol.helloType,
       MeshSyncProtocol.subType,
@@ -141,7 +141,7 @@ bool looksLikeWorldSyncFrame(final Uint8List frame) =>
       MeshSyncProtocol.deltaType,
     });
 
-bool meshFrameTypeIs(final Uint8List frame, final Set<String> types) {
+bool meshFrameTypeIs(Uint8List frame, Set<String> types) {
   try {
     final decoded = jsonDecode(utf8.decode(frame));
     if (decoded is! Map) return false;

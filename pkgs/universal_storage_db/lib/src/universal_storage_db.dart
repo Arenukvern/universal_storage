@@ -65,43 +65,43 @@ const kDefaultMapListSubName = 'xsun_ml';
 typedef StorageRouterFileBuilder = String Function(String key);
 
 /// {@macro storage_router_file_builder}
-String defaultBoolSeparateFileNameBuilder(final String key) =>
+String defaultBoolSeparateFileNameBuilder(String key) =>
     '${kDefaultBoolFileName}_$key';
 
 /// {@macro storage_router_file_builder}
-String defaultBoolSingleFileNameBuilder(final String key) =>
+String defaultBoolSingleFileNameBuilder(String key) =>
     '${kDefaultBoolFileName}_single';
 
 /// {@macro storage_router_file_builder}
-String defaultIntSeparateFileNameBuilder(final String key) =>
+String defaultIntSeparateFileNameBuilder(String key) =>
     '${kDefaultIntFileName}_$key';
 
 /// {@macro storage_router_file_builder}
-String defaultIntSingleFileNameBuilder(final String key) =>
+String defaultIntSingleFileNameBuilder(String key) =>
     '${kDefaultIntFileName}_single';
 
 /// {@macro storage_router_file_builder}
-String defaultStringSeparateFileNameBuilder(final String key) =>
+String defaultStringSeparateFileNameBuilder(String key) =>
     '${kDefaultStringFileName}_$key';
 
 /// {@macro storage_router_file_builder}
-String defaultStringSingleFileNameBuilder(final String key) =>
+String defaultStringSingleFileNameBuilder(String key) =>
     '${kDefaultStringFileName}_single';
 
 /// {@macro storage_router_file_builder}
-String defaultMapSeparateFileNameBuilder(final String key) =>
+String defaultMapSeparateFileNameBuilder(String key) =>
     '${kDefaultMapFileName}_$key';
 
 /// {@macro storage_router_file_builder}
-String defaultMapSingleFileNameBuilder(final String key) =>
+String defaultMapSingleFileNameBuilder(String key) =>
     '${kDefaultMapFileName}_single';
 
 /// {@macro storage_router_file_builder}
-String defaultMapListSeparateFileNameBuilder(final String key) =>
+String defaultMapListSeparateFileNameBuilder(String key) =>
     '$kDefaultMapListSubName/$key';
 
 /// {@macro storage_router_file_builder}
-String defaultMapListSingleFileNameBuilder(final String key) =>
+String defaultMapListSingleFileNameBuilder(String key) =>
     '${kDefaultMapListSubName}_single';
 
 /// {@template universal_storage_db_config}

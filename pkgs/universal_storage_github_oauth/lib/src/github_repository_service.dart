@@ -35,7 +35,7 @@ class GitHubRepositoryService implements RepositoryService {
 
   @override
   Future<List<RepositoryInfo>> getOrganizationRepositories(
-    final String orgName,
+    String orgName,
   ) async {
     final github = await _getGitHubClient();
 
@@ -55,7 +55,7 @@ class GitHubRepositoryService implements RepositoryService {
 
   @override
   Future<RepositoryInfo> createRepository(
-    final CreateRepositoryRequest request,
+    CreateRepositoryRequest request,
   ) async {
     final github = await _getGitHubClient();
 
@@ -82,8 +82,8 @@ class GitHubRepositoryService implements RepositoryService {
 
   @override
   Future<RepositoryInfo?> getRepository(
-    final String owner,
-    final String name,
+    String owner,
+    String name,
   ) async {
     final github = await _getGitHubClient();
 
@@ -103,8 +103,8 @@ class GitHubRepositoryService implements RepositoryService {
 
   @override
   Future<List<RepositoryInfo>> searchRepositories(
-    final String query, {
-    final int? limit,
+    String query, {
+    int? limit,
   }) async {
     final github = await _getGitHubClient();
 
@@ -124,7 +124,7 @@ class GitHubRepositoryService implements RepositoryService {
   }
 
   @override
-  Future<void> deleteRepository(final String owner, final String name) async {
+  Future<void> deleteRepository(String owner, String name) async {
     final github = await _getGitHubClient();
 
     try {
@@ -145,8 +145,8 @@ class GitHubRepositoryService implements RepositoryService {
 
   @override
   Future<List<String>> getRepositoryBranches(
-    final String owner,
-    final String name,
+    String owner,
+    String name,
   ) async {
     final github = await _getGitHubClient();
 
@@ -155,8 +155,8 @@ class GitHubRepositoryService implements RepositoryService {
           .listBranches(gh.RepositorySlug(owner, name))
           .toList();
       return branches
-          .map((final branch) => branch.name ?? '')
-          .where((final name) => name.isNotEmpty)
+          .map((branch) => branch.name ?? '')
+          .where((name) => name.isNotEmpty)
           .toList();
     } catch (e, stackTrace) {
       log('Error: $e', stackTrace: stackTrace);
@@ -172,8 +172,8 @@ class GitHubRepositoryService implements RepositoryService {
 
   @override
   Future<List<String>> getRepositoryTags(
-    final String owner,
-    final String name,
+    String owner,
+    String name,
   ) async {
     final github = await _getGitHubClient();
 
@@ -182,8 +182,8 @@ class GitHubRepositoryService implements RepositoryService {
           .listTags(gh.RepositorySlug(owner, name))
           .toList();
       return tags
-          .map((final tag) => tag.name)
-          .where((final name) => name.isNotEmpty)
+          .map((tag) => tag.name)
+          .where((name) => name.isNotEmpty)
           .toList();
     } catch (e, stackTrace) {
       log('Error: $e', stackTrace: stackTrace);
@@ -222,7 +222,7 @@ class GitHubRepositoryService implements RepositoryService {
   }
 
   /// Converts a GitHub repository to a [RepositoryInfo].
-  RepositoryInfo _convertRepository(final gh.Repository repo) =>
+  RepositoryInfo _convertRepository(gh.Repository repo) =>
       RepositoryInfo.create(
         id: repo.id.toString(),
         name: repo.name,
@@ -252,12 +252,12 @@ class GitHubRepositoryService implements RepositoryService {
   /// Gets the type of owner for a repository.
   // Since we can't access the type field directly, we can infer it
   // from other properties or default to user
-  RepositoryOwnerType _getOwnerType(final gh.UserInformation? owner) =>
+  RepositoryOwnerType _getOwnerType(gh.UserInformation? owner) =>
       RepositoryOwnerType.user;
 
   /// Converts GitHub repository permissions to a [RepositoryPermissions].
   RepositoryPermissions? _convertPermissions(
-    final gh.RepositoryPermissions? permissions,
+    gh.RepositoryPermissions? permissions,
   ) {
     if (permissions == null) return null;
 

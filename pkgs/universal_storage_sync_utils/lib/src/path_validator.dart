@@ -11,7 +11,7 @@ mixin PathValidator {
   ///
   /// It attempts to create and delete a temporary file in the directory.
   /// Returns `true` if successful, `false` otherwise.
-  static bool isWritable(final String path) {
+  static bool isWritable(String path) {
     if (path.isEmpty) return false;
 
     final tempDir = Directory(path);

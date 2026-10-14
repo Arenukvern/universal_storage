@@ -9,12 +9,12 @@ import 'package:universal_storage_convergence/universal_storage_convergence.dart
 void main() {
   final baseTime = DateTime.fromMillisecondsSinceEpoch(1_700_000_000_000);
 
-  DateTime timeAt(final int ms) => baseTime.add(Duration(milliseconds: ms));
+  DateTime timeAt(int ms) => baseTime.add(Duration(milliseconds: ms));
 
   /// Drives one replica: emits its local ops and records them for gossip.
   ({ConvergenceDoc doc, List<OpRecord> emitted}) runReplica(
-    final String actorId,
-    final List<Map<String, Object?>> payloads,
+    String actorId,
+    List<Map<String, Object?>> payloads,
   ) {
     final doc = ConvergenceDoc(docId: 'doc-1', actorId: actorId);
     final emitted = <OpRecord>[];
@@ -27,9 +27,9 @@ void main() {
   /// Delivers [ops] to [doc] in a seeded shuffled order, in small batches
   /// simulating flaky link chunking.
   void deliverShuffled(
-    final ConvergenceDoc doc,
-    final List<OpRecord> ops,
-    final int seed,
+    ConvergenceDoc doc,
+    List<OpRecord> ops,
+    int seed,
   ) {
     final shuffled = [...ops]..shuffle(Random(seed));
     for (var i = 0; i < shuffled.length; i += 3) {
@@ -59,7 +59,7 @@ void main() {
     // r3 deletes what it created.
     replicas[2].doc.applyLocal({'k': 'deleted-later', 'del': true}, timeAt(50));
 
-    final allOps = replicas.expand((final r) => r.emitted).toList()
+    final allOps = replicas.expand((r) => r.emitted).toList()
       ..addAll(replicas[2].doc.pendingOps);
 
     // Each replica receives the full op set in a different order.
@@ -68,7 +68,7 @@ void main() {
     // r3 already has its own ops; still receives everything.
     deliverShuffled(replicas[2].doc, allOps, 99);
 
-    final states = replicas.map((final r) => r.doc.state).toList();
+    final states = replicas.map((r) => r.doc.state).toList();
     expect(states[0], states[1]);
     expect(states[1], states[2]);
 

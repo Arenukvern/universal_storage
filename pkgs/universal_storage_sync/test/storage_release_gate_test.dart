@@ -43,7 +43,7 @@ void main() {
 
       expect(report.passed, isFalse);
       expect(
-        report.findings.map((final finding) => finding.id),
+        report.findings.map((finding) => finding.id),
         contains('performance.write_latency_p95'),
       );
     });
@@ -54,7 +54,7 @@ void main() {
 
       expect(report.passed, isTrue);
       expect(
-        report.findings.where((final finding) => finding.isBlocking),
+        report.findings.where((finding) => finding.isBlocking),
         isEmpty,
       );
     });
@@ -77,7 +77,7 @@ void main() {
 
       expect(report.passed, isFalse);
       expect(
-        report.findings.map((final finding) => finding.id),
+        report.findings.map((finding) => finding.id),
         contains('deprecation.overdue.legacy_storage_path'),
       );
     });
@@ -85,7 +85,7 @@ void main() {
 }
 
 StorageReleaseGateInput _baseInput({
-  final StoragePerformanceEvidence performanceEvidence =
+  StoragePerformanceEvidence performanceEvidence =
       const StoragePerformanceEvidence(
         writeLatencies: <Duration>[
           Duration(milliseconds: 10),
@@ -111,7 +111,7 @@ StorageReleaseGateInput _baseInput({
           Duration(milliseconds: 44),
         ],
       ),
-  final List<StorageDeprecationItem>? deprecationSchedule,
+  List<StorageDeprecationItem>? deprecationSchedule,
 }) => StorageReleaseGateInput(
   performanceBudgets: const StoragePerformanceBudgets(
     writeLatencyP50Max: Duration(milliseconds: 50),

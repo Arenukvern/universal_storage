@@ -31,7 +31,7 @@ final class ZoneMemberEntry {
     if (meta.isNotEmpty) 'meta': meta,
   };
 
-  static ZoneMemberEntry fromJson(final Map<String, Object?> json) =>
+  static ZoneMemberEntry fromJson(Map<String, Object?> json) =>
       ZoneMemberEntry(
         docId: json['docId']! as String,
         title: json['title'] as String?,
@@ -42,7 +42,7 @@ final class ZoneMemberEntry {
       );
 
   @override
-  bool operator ==(final Object other) =>
+  bool operator ==(Object other) =>
       other is ZoneMemberEntry &&
       other.docId == docId &&
       other.title == title &&
@@ -71,7 +71,7 @@ final class ZoneCatalog {
 
   /// The member docIds in this census — a warm-up plan's raw material.
   Set<String> memberDocIds() =>
-      entries.map((final entry) => entry.docId).toSet();
+      entries.map((entry) => entry.docId).toSet();
 
   Map<String, Object?> toJson() => {
     'zoneId': zoneId,
@@ -79,12 +79,12 @@ final class ZoneCatalog {
     'entries': [for (final entry in entries) entry.toJson()],
   };
 
-  static ZoneCatalog fromJson(final Map<String, Object?> json) => ZoneCatalog(
+  static ZoneCatalog fromJson(Map<String, Object?> json) => ZoneCatalog(
     zoneId: json['zoneId']! as String,
     title: json['title'] as String?,
     entries: (json['entries'] as List<dynamic>? ?? const [])
         .whereType<Map<dynamic, dynamic>>()
-        .map((final e) => ZoneMemberEntry.fromJson(Map<String, Object?>.from(e)))
+        .map((e) => ZoneMemberEntry.fromJson(Map<String, Object?>.from(e)))
         .toList(),
   );
 
@@ -105,14 +105,14 @@ final class ZoneCatalogCodec {
   static const registerKey = 'catalog';
 
   /// The op payload storing [catalog].
-  static Map<String, Object?> encode(final ZoneCatalog catalog) => {
+  static Map<String, Object?> encode(ZoneCatalog catalog) => {
     'k': registerKey,
     'v': catalog.toJson(),
   };
 
   /// Reads the catalog out of a doc's folded state, null when the doc
   /// carries no (valid) census.
-  static ZoneCatalog? decode(final ConvergenceDoc doc) {
+  static ZoneCatalog? decode(ConvergenceDoc doc) {
     final raw = LwwMapStrategy.readDynamicValue(doc.state, registerKey);
     if (raw is! Map) return null;
     try {

@@ -53,7 +53,7 @@ class _FakeCloudKitProvider extends StorageProvider {
   bool initialized = false;
 
   @override
-  Future<void> initWithConfig(final StorageConfig config) async {
+  Future<void> initWithConfig(StorageConfig config) async {
     if (config is! CloudKitConfig) {
       throw ArgumentError('Expected CloudKitConfig');
     }
@@ -65,33 +65,33 @@ class _FakeCloudKitProvider extends StorageProvider {
 
   @override
   Future<FileOperationResult> createFile(
-    final String path,
-    final String content, {
-    final String? commitMessage,
+    String path,
+    String content, {
+    String? commitMessage,
   }) async => FileOperationResult.created(path: path);
 
   @override
-  Future<String?> getFile(final String path) async => null;
+  Future<String?> getFile(String path) async => null;
 
   @override
   Future<FileOperationResult> updateFile(
-    final String path,
-    final String content, {
-    final String? commitMessage,
+    String path,
+    String content, {
+    String? commitMessage,
   }) async => FileOperationResult.updated(path: path);
 
   @override
   Future<FileOperationResult> deleteFile(
-    final String path, {
-    final String? commitMessage,
+    String path, {
+    String? commitMessage,
   }) async => FileOperationResult.deleted(path: path);
 
   @override
-  Future<List<FileEntry>> listDirectory(final String directoryPath) async =>
+  Future<List<FileEntry>> listDirectory(String directoryPath) async =>
       const <FileEntry>[];
 
   @override
-  Future<void> restore(final String path, {final String? versionId}) async {}
+  Future<void> restore(String path, {String? versionId}) async {}
 
   @override
   Future<void> dispose() async {

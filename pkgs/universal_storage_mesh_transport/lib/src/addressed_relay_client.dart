@@ -53,12 +53,12 @@ final class AddressedRelayClient implements MeshTransport {
 
   /// Attaches a channel already supplied by the host (useful on web or
   /// when the application owns connection lifecycle).
-  void attach(final WebSocketChannel channel) {
+  void attach(WebSocketChannel channel) {
     if (_channel != null && identical(_channel, channel)) return;
     _attach(channel);
   }
 
-  void _attach(final WebSocketChannel channel) {
+  void _attach(WebSocketChannel channel) {
     _channel = channel;
     _setConnected(true);
     _sendEnvelope(
@@ -113,7 +113,7 @@ final class AddressedRelayClient implements MeshTransport {
   }
 
   @override
-  Future<MeshSession> connect(final MeshPeerRecord peer) async {
+  Future<MeshSession> connect(MeshPeerRecord peer) async {
     await _requireChannel();
     final session = _AddressedSession(peer.peerId);
     session.client = this;
@@ -146,16 +146,16 @@ final class AddressedRelayClient implements MeshTransport {
     await channel?.sink.close();
   }
 
-  void _setConnected(final bool value) {
+  void _setConnected(bool value) {
     if (_connected == value) return;
     _connected = value;
     _connectionStates.add(value);
   }
 
   void _sendEnvelope({
-    required final String toPeerId,
-    required final List<int> payload,
-    final String kind = AddressedRelayProtocol.dataKind,
+    required String toPeerId,
+    required List<int> payload,
+    String kind = AddressedRelayProtocol.dataKind,
   }) => _channel?.sink.add(
     AddressedRelayProtocol.encode(
       fromPeerId: selfId,
@@ -165,7 +165,7 @@ final class AddressedRelayClient implements MeshTransport {
     ),
   );
 
-  Future<void> _route(final String peerId, final Uint8List bytes) async {
+  Future<void> _route(String peerId, Uint8List bytes) async {
     await _requireChannel();
     _sendEnvelope(toPeerId: peerId, payload: bytes);
   }
@@ -177,8 +177,8 @@ final class AddressedRelayClient implements MeshTransport {
   /// tell unlogged traffic apart from sync traffic, with no durable
   /// treatment anywhere.
   Future<void> sendEphemeral({
-    required final String toPeerId,
-    required final List<int> payload,
+    required String toPeerId,
+    required List<int> payload,
   }) async {
     await _requireChannel();
     _sendEnvelope(
@@ -199,12 +199,12 @@ final class _AddressedSession implements MeshSession {
 
   // Assigned after construction because sessions are owned by the client.
   // ignore: avoid_setters_without_getters
-  set client(final AddressedRelayClient client) => _client = client;
+  set client(AddressedRelayClient client) => _client = client;
 
   @override
   Stream<Uint8List> get inbound => _inbound.stream;
 
-  void receive(final Uint8List bytes) {
+  void receive(Uint8List bytes) {
     if (!_closed) _inbound.add(bytes);
   }
 
@@ -214,7 +214,7 @@ final class _AddressedSession implements MeshSession {
   }
 
   @override
-  Future<void> send(final Uint8List payload) =>
+  Future<void> send(Uint8List payload) =>
       _client?._route(remotePeerId, payload) ?? Future<void>.value();
 
   @override

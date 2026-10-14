@@ -19,9 +19,9 @@ class DefaultDeviceFlowDelegate implements OAuthFlowDelegate {
 
   @override
   Future<String> getAuthorizationCode(
-    final Uri authorizationUrl,
-    final Uri redirectUrl, {
-    final String? state,
+    Uri authorizationUrl,
+    Uri redirectUrl, {
+    String? state,
   }) async {
     throw UnsupportedError(
       'DefaultDeviceFlowDelegate only supports the device flow. '
@@ -31,18 +31,18 @@ class DefaultDeviceFlowDelegate implements OAuthFlowDelegate {
 
   @override
   Future<void> handleDeviceFlow({
-    required final String deviceCode,
-    required final String userCode,
-    required final Uri verificationUrl,
-    required final int expiresIn,
-    required final int interval,
-    final Uri? verificationUrlComplete,
+    required String deviceCode,
+    required String userCode,
+    required Uri verificationUrl,
+    required int expiresIn,
+    required int interval,
+    Uri? verificationUrlComplete,
   }) async {
     final navigator = Navigator.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
       barrierDismissible: false,
-      builder: (final dialogContext) => PopScope(
+      builder: (dialogContext) => PopScope(
         canPop: false,
         child: AlertDialog(
           title: const Text('Connect GitHub'),
@@ -95,8 +95,8 @@ class DefaultDeviceFlowDelegate implements OAuthFlowDelegate {
 
   @override
   Future<void> onAuthorizationSuccess({
-    required final String maskedToken,
-    required final List<String> scopes,
+    required String maskedToken,
+    required List<String> scopes,
   }) async {
     if (!context.mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
@@ -106,8 +106,8 @@ class DefaultDeviceFlowDelegate implements OAuthFlowDelegate {
 
   @override
   Future<void> onAuthorizationError({
-    required final String error,
-    final String? description,
+    required String error,
+    String? description,
   }) async {
     if (!context.mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(

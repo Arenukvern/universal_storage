@@ -81,27 +81,27 @@ class _ExampleCloudKitBridge implements CloudKitBridge {
   final Map<String, CloudKitRecord> _recordsByPath = <String, CloudKitRecord>{};
 
   @override
-  Future<void> initialize(final CloudKitBridgeConfig config) async {}
+  Future<void> initialize(CloudKitBridgeConfig config) async {}
 
   @override
-  Future<CloudKitRecord?> fetchRecordByPath(final String path) async =>
+  Future<CloudKitRecord?> fetchRecordByPath(String path) async =>
       _recordsByPath[path];
 
   @override
-  Future<void> saveRecord(final CloudKitRecord record) async {
+  Future<void> saveRecord(CloudKitRecord record) async {
     _recordsByPath[record.path] = record;
   }
 
   @override
-  Future<void> deleteRecord(final String recordName) async {
+  Future<void> deleteRecord(String recordName) async {
     _recordsByPath.removeWhere(
-      (final _, final record) => record.recordName == recordName,
+      (_, record) => record.recordName == recordName,
     );
   }
 
   @override
   Future<List<CloudKitRecord>> queryByPathPrefix(
-    final String pathPrefix,
+    String pathPrefix,
   ) async {
     if (pathPrefix.isEmpty) {
       return _recordsByPath.values.toList(growable: false);
@@ -110,7 +110,7 @@ class _ExampleCloudKitBridge implements CloudKitBridge {
     final normalizedPrefix = '$pathPrefix/';
     return _recordsByPath.values
         .where(
-          (final record) =>
+          (record) =>
               record.path == pathPrefix ||
               record.path.startsWith(normalizedPrefix),
         )
@@ -118,7 +118,7 @@ class _ExampleCloudKitBridge implements CloudKitBridge {
   }
 
   @override
-  Future<CloudKitDelta> fetchChanges({final String? serverChangeToken}) async =>
+  Future<CloudKitDelta> fetchChanges({String? serverChangeToken}) async =>
       CloudKitDelta(
         updatedRecords: _recordsByPath.values.toList(growable: false),
         nextServerChangeToken: serverChangeToken,

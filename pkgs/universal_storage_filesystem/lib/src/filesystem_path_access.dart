@@ -7,10 +7,10 @@ import 'package:universal_storage_interface/universal_storage_interface.dart';
 /// Flutter/macOS security-scoped bookmarks.
 abstract interface class FileSystemPathAccess {
   /// Resolves [config] to a directory that can be accessed by the provider.
-  Future<Directory?> resolveDirectory(final FilePathConfig config);
+  Future<Directory?> resolveDirectory(FilePathConfig config);
 
   /// Releases any resources acquired during [resolveDirectory].
-  Future<void> releaseDirectory(final FilePathConfig config);
+  Future<void> releaseDirectory(FilePathConfig config);
 }
 
 /// Default pure Dart implementation of [FileSystemPathAccess].
@@ -20,7 +20,7 @@ final class DefaultFileSystemPathAccess implements FileSystemPathAccess {
   const DefaultFileSystemPathAccess();
 
   @override
-  Future<Directory?> resolveDirectory(final FilePathConfig config) async {
+  Future<Directory?> resolveDirectory(FilePathConfig config) async {
     final resolvedPath = config.path.path.trim();
     if (resolvedPath.isEmpty) {
       return null;
@@ -29,7 +29,7 @@ final class DefaultFileSystemPathAccess implements FileSystemPathAccess {
   }
 
   @override
-  Future<void> releaseDirectory(final FilePathConfig config) async {}
+  Future<void> releaseDirectory(FilePathConfig config) async {}
 }
 
 typedef ResolveDirectoryForConfig =
@@ -41,19 +41,19 @@ typedef ReleaseDirectoryForConfig =
 final class CallbackFileSystemPathAccess implements FileSystemPathAccess {
   CallbackFileSystemPathAccess({
     required this._resolveDirectory,
-    final ReleaseDirectoryForConfig? releaseDirectory,
+    ReleaseDirectoryForConfig? releaseDirectory,
   }) : _releaseDirectory = releaseDirectory ?? _noopReleaseDirectory;
 
   final ResolveDirectoryForConfig _resolveDirectory;
   final ReleaseDirectoryForConfig _releaseDirectory;
 
-  static Future<void> _noopReleaseDirectory(final FilePathConfig _) async {}
+  static Future<void> _noopReleaseDirectory(FilePathConfig _) async {}
 
   @override
-  Future<Directory?> resolveDirectory(final FilePathConfig config) =>
+  Future<Directory?> resolveDirectory(FilePathConfig config) =>
       _resolveDirectory(config);
 
   @override
-  Future<void> releaseDirectory(final FilePathConfig config) =>
+  Future<void> releaseDirectory(FilePathConfig config) =>
       _releaseDirectory(config);
 }

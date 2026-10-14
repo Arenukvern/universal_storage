@@ -7,7 +7,7 @@ import 'package:universal_storage_convergence_session/universal_storage_converge
 /// compacts; a disabled trigger (null) never fires.
 void main() {
   final now = DateTime.fromMillisecondsSinceEpoch(1700000000000);
-  DateTime ago(final Duration d) => now.subtract(d);
+  DateTime ago(Duration d) => now.subtract(d);
 
   group('size trigger', () {
     test('fires past the default 512 ops', () {

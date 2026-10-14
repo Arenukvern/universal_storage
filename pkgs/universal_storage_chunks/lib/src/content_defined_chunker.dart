@@ -45,7 +45,7 @@ final class ContentDefinedChunker {
   }
 
   /// Cuts [bytes] into content-defined slices (start/end offsets).
-  List<ChunkSlice> chunk(final List<int> bytes) {
+  List<ChunkSlice> chunk(List<int> bytes) {
     final slices = <ChunkSlice>[];
     final length = bytes.length;
     if (length == 0) return slices;
@@ -73,7 +73,7 @@ final class ContentDefinedChunker {
 
   static const _mask64 = 0xFFFFFFFFFFFFFFFF;
 
-  static int _log2(final int value) {
+  static int _log2(int value) {
     var bits = 0;
     var v = value;
     while (v > 1) {
@@ -94,7 +94,7 @@ final class ChunkSlice {
   int get length => end - start;
 
   @override
-  bool operator ==(final Object other) =>
+  bool operator ==(Object other) =>
       other is ChunkSlice && other.start == start && other.end == end;
 
   @override

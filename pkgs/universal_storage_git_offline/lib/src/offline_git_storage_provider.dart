@@ -69,7 +69,7 @@ class OfflineGitStorageProvider extends StorageProvider
       declaredVersionControlCapabilities;
 
   @override
-  Future<void> initWithConfig(final StorageConfig config) async {
+  Future<void> initWithConfig(StorageConfig config) async {
     if (config is! OfflineGitConfig) {
       throw ArgumentError(
         'Expected OfflineGitConfig, got ${config.runtimeType}',
@@ -87,7 +87,7 @@ class OfflineGitStorageProvider extends StorageProvider
 
   /// Normalizes user-supplied paths so leading/trailing separators and
   /// duplicate slashes resolve to the same repository object.
-  String _normalizeRelativePath(final String rawPath) => rawPath
+  String _normalizeRelativePath(String rawPath) => rawPath
       .trim()
       .replaceAll(r'\', '/')
       .replaceAll(RegExp('/+'), '/')
@@ -99,8 +99,8 @@ class OfflineGitStorageProvider extends StorageProvider
   /// batching is active; callers should treat it as "pending" until
   /// [flushPendingCommits] completes.
   Future<String> _stageAndScheduleCommit(
-    final String filePath, {
-    final bool deleted = false,
+    String filePath, {
+    bool deleted = false,
   }) async {
     final batching = commitBatching;
     if (batching == null) {
@@ -124,7 +124,7 @@ class OfflineGitStorageProvider extends StorageProvider
     }
 
     _batchTimer ??= Timer(batching.maxDelay, () {
-      unawaited(flushPendingCommits().catchError((final Object _) {}));
+      unawaited(flushPendingCommits().catchError((Object _) {}));
     });
 
     return 'pending:${pending.paths.length}';
@@ -155,9 +155,9 @@ class OfflineGitStorageProvider extends StorageProvider
 
   @override
   Future<FileOperationResult> createFile(
-    final String filePath,
-    final String content, {
-    final String? commitMessage,
+    String filePath,
+    String content, {
+    String? commitMessage,
   }) async {
     _ensureInitialized();
 
@@ -193,7 +193,7 @@ class OfflineGitStorageProvider extends StorageProvider
   }
 
   @override
-  Future<String?> getFile(final String filePath) async {
+  Future<String?> getFile(String filePath) async {
     _ensureInitialized();
 
     final fullPath = path.join(_localPath, _normalizeRelativePath(filePath));
@@ -213,9 +213,9 @@ class OfflineGitStorageProvider extends StorageProvider
 
   @override
   Future<FileOperationResult> updateFile(
-    final String filePath,
-    final String content, {
-    final String? commitMessage,
+    String filePath,
+    String content, {
+    String? commitMessage,
   }) async {
     _ensureInitialized();
 
@@ -243,8 +243,8 @@ class OfflineGitStorageProvider extends StorageProvider
 
   @override
   Future<FileOperationResult> deleteFile(
-    final String filePath, {
-    final String? commitMessage,
+    String filePath, {
+    String? commitMessage,
   }) async {
     _ensureInitialized();
 
@@ -271,7 +271,7 @@ class OfflineGitStorageProvider extends StorageProvider
   }
 
   @override
-  Future<List<FileEntry>> listDirectory(final String directoryPath) async {
+  Future<List<FileEntry>> listDirectory(String directoryPath) async {
     _ensureInitialized();
 
     final fullPath = path.join(
@@ -312,7 +312,7 @@ class OfflineGitStorageProvider extends StorageProvider
   }
 
   @override
-  Future<void> restore(final String filePath, {final String? versionId}) async {
+  Future<void> restore(String filePath, {String? versionId}) async {
     _ensureInitialized();
 
     try {
@@ -344,8 +344,8 @@ class OfflineGitStorageProvider extends StorageProvider
 
   @override
   Future<void> sync({
-    final String? pullMergeStrategy,
-    final String? pushConflictStrategy,
+    String? pullMergeStrategy,
+    String? pushConflictStrategy,
   }) async {
     _ensureInitialized();
 
@@ -455,7 +455,7 @@ class OfflineGitStorageProvider extends StorageProvider
         () => _gitDir!
             .runCommand(['fetch', _remoteName])
             .timeout(const Duration(seconds: 5)),
-        retryIf: (final e) => !e.toString().contains('Authentication'),
+        retryIf: (e) => !e.toString().contains('Authentication'),
         maxAttempts: 3,
       );
     } catch (e, stackTrace) {
@@ -465,7 +465,7 @@ class OfflineGitStorageProvider extends StorageProvider
   }
 
   /// Pulls changes from remote with specified strategy.
-  Future<void> _pullWithStrategy(final String strategy) async {
+  Future<void> _pullWithStrategy(String strategy) async {
     try {
       switch (strategy) {
         case 'merge':
@@ -541,7 +541,7 @@ class OfflineGitStorageProvider extends StorageProvider
           .toString()
           .trim()
           .split('\n')
-          .where((final line) => line.isNotEmpty)
+          .where((line) => line.isNotEmpty)
           .toList();
 
       for (final file in conflictedFiles) {
@@ -572,7 +572,7 @@ class OfflineGitStorageProvider extends StorageProvider
           .toString()
           .trim()
           .split('\n')
-          .where((final line) => line.isNotEmpty)
+          .where((line) => line.isNotEmpty)
           .toList();
 
       for (final file in conflictedFiles) {
@@ -606,7 +606,7 @@ class OfflineGitStorageProvider extends StorageProvider
   }
 
   /// Pushes local changes to remote with specified strategy.
-  Future<void> _pushWithStrategy(final String strategy) async {
+  Future<void> _pushWithStrategy(String strategy) async {
     try {
       switch (strategy) {
         case 'rebase-local':
@@ -746,7 +746,7 @@ class OfflineGitStorageProvider extends StorageProvider
   }
 
   /// Commits changes with the given message.
-  Future<String> _commitChanges(final String message) async {
+  Future<String> _commitChanges(String message) async {
     try {
       await _runGitCommandSafely(['commit', '-m', message]);
 
@@ -767,20 +767,20 @@ class OfflineGitStorageProvider extends StorageProvider
     }
   }
 
-  Future<void> _runGitCommand(final List<String> args) async {
+  Future<void> _runGitCommand(List<String> args) async {
     await _runGitCommandSafely(args);
   }
 
   /// Serializes all git write operations through one lock so git's
   /// index.lock is never contended between batched commits, outbox queue
   /// persistence, and sync pull/push.
-  Future<ProcessResult> _runGitCommandSafely(final List<String> args) =>
+  Future<ProcessResult> _runGitCommandSafely(List<String> args) =>
       _gitOperationLock.synchronized(() => _gitDir!.runCommand(args));
 
   Map<String, dynamic> _durabilityMetadata({
-    required final String filePath,
-    required final String commitHash,
-    required final String operationType,
+    required String filePath,
+    required String commitHash,
+    required String operationType,
   }) => <String, dynamic>{
     'durability_protocol': 'git_commit_v1',
     'durability_namespace': _namespaceForPath(filePath),
@@ -788,7 +788,7 @@ class OfflineGitStorageProvider extends StorageProvider
     'durability_commit': commitHash,
   };
 
-  String _namespaceForPath(final String filePath) {
+  String _namespaceForPath(String filePath) {
     final normalized = filePath
         .trim()
         .replaceAll(r'\', '/')
@@ -803,8 +803,8 @@ class OfflineGitStorageProvider extends StorageProvider
 
   @override
   Future<void> cloneRepository(
-    final VcRepository repository,
-    final String localPath,
+    VcRepository repository,
+    String localPath,
   ) => throw const CapabilityMismatchException(
     'OfflineGitStorageProvider manages an already-local repository and '
     'does not support clone-to-local workflows.',
@@ -812,7 +812,7 @@ class OfflineGitStorageProvider extends StorageProvider
 
   @override
   Future<VcRepository> createRepository(
-    final VcCreateRepositoryRequest details,
+    VcCreateRepositoryRequest details,
   ) async {
     await _runGitCommand(['init', '-b', details.name]);
     return VcRepository(
@@ -860,8 +860,8 @@ class OfflineGitStorageProvider extends StorageProvider
       final branchNames = result.stdout
           .toString()
           .split('\n')
-          .map((final branch) => branch.trim())
-          .where((final branch) => branch.isNotEmpty)
+          .map((branch) => branch.trim())
+          .where((branch) => branch.isNotEmpty)
           .toList();
 
       if (branchNames.isEmpty) {
@@ -928,7 +928,7 @@ class OfflineGitStorageProvider extends StorageProvider
     }
 
     final hasCurrentRepository = repositories.any(
-      (final repository) =>
+      (repository) =>
           path.normalize(path.absolute(repository.id)) == absoluteLocalPath,
     );
     if (!hasCurrentRepository) {
@@ -936,13 +936,13 @@ class OfflineGitStorageProvider extends StorageProvider
     }
 
     repositories.sort(
-      (final first, final second) => first.name.compareTo(second.name),
+      (first, second) => first.name.compareTo(second.name),
     );
     return repositories;
   }
 
   @override
-  Future<void> setRepository(final VcRepositoryName repositoryId) async {
+  Future<void> setRepository(VcRepositoryName repositoryId) async {
     _ensureInitialized();
 
     if (repositoryId.isEmpty) {
@@ -1025,7 +1025,7 @@ class OfflineGitStorageProvider extends StorageProvider
     }
   }
 
-  Future<void> _checkoutBranchIfExists(final String branchName) async {
+  Future<void> _checkoutBranchIfExists(String branchName) async {
     final branchResult = await _runGitCommandSafely([
       'branch',
       '--list',
@@ -1052,8 +1052,8 @@ class OfflineGitStorageProvider extends StorageProvider
   }
 
   _RemoteRepositoryIdentity _parseRemoteIdentity(
-    final String remoteUrl, {
-    required final String fallbackRepositoryName,
+    String remoteUrl, {
+    required String fallbackRepositoryName,
   }) {
     if (remoteUrl.isEmpty) {
       return _RemoteRepositoryIdentity(
@@ -1069,7 +1069,7 @@ class OfflineGitStorageProvider extends StorageProvider
     final uri = Uri.tryParse(remoteUrl);
     if (uri != null && uri.hasAuthority) {
       host = uri.host;
-      final segments = uri.pathSegments.where((final s) => s.isNotEmpty);
+      final segments = uri.pathSegments.where((s) => s.isNotEmpty);
       final pathSegments = segments.toList();
       if (pathSegments.length >= 2) {
         owner = pathSegments[pathSegments.length - 2];
@@ -1085,7 +1085,7 @@ class OfflineGitStorageProvider extends StorageProvider
         final pathPart = match.group(2) ?? '';
         final pathSegments = pathPart
             .split('/')
-            .where((final segment) => segment.isNotEmpty)
+            .where((segment) => segment.isNotEmpty)
             .toList();
         if (pathSegments.length >= 2) {
           owner = pathSegments[pathSegments.length - 2];

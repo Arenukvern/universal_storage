@@ -6,10 +6,10 @@ import 'package:universal_storage_git_offline/universal_storage_git_offline.dart
 import 'package:universal_storage_interface/universal_storage_interface.dart';
 
 void main() {
-  Future<Directory> tempDir(final String prefix) =>
+  Future<Directory> tempDir(String prefix) =>
       Directory.systemTemp.createTemp(prefix);
 
-  Future<String> gitLog(final Directory dir) async {
+  Future<String> gitLog(Directory dir) async {
     final result = await Process.run('git', [
       '-C',
       dir.path,
@@ -20,8 +20,8 @@ void main() {
   }
 
   Future<OfflineGitStorageProvider> providerFor(
-    final Directory dir, {
-    final GitCommitBatching? batching,
+    Directory dir, {
+    GitCommitBatching? batching,
   }) async {
     final provider = OfflineGitStorageProvider(commitBatching: batching);
     await provider.initWithConfig(
@@ -68,7 +68,7 @@ void main() {
         final log = await gitLog(dir);
         final batchLines = log
             .split('\n')
-            .where((final line) => line.startsWith('Batch update:'))
+            .where((line) => line.startsWith('Batch update:'))
             .toList();
         expect(batchLines, hasLength(1));
         expect(batchLines.single, contains('10 file(s)'));
@@ -94,7 +94,7 @@ void main() {
         final log = await gitLog(dir);
         final batchCount = log
             .split('\n')
-            .where((final line) => line.startsWith('Batch update:'))
+            .where((line) => line.startsWith('Batch update:'))
             .length;
         expect(batchCount, greaterThanOrEqualTo(2));
       } finally {
@@ -181,7 +181,7 @@ void main() {
         expect(await reopened.getFile('d/file-1.txt'), 'd1');
         final log = await gitLog(dir);
         expect(
-          log.split('\n').where((final l) => l.startsWith('Batch update:')),
+          log.split('\n').where((l) => l.startsWith('Batch update:')),
           hasLength(1),
         );
       } finally {

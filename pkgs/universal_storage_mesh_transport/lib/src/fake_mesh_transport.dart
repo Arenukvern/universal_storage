@@ -18,8 +18,8 @@ final class FakeMeshPair {
   FakeMeshPair._(this.a, this.b);
 
   factory FakeMeshPair.paired({
-    final String a = 'device-a',
-    final String b = 'device-b',
+    String a = 'device-a',
+    String b = 'device-b',
   }) {
     final transportA = FakeMeshTransport._(a);
     final transportB = FakeMeshTransport._(b);
@@ -49,7 +49,7 @@ final class FakeMeshTransport implements MeshTransport {
   FakeMeshTransport? _remote;
 
   @override
-  Future<MeshSession> connect(final MeshPeerRecord peer) async {
+  Future<MeshSession> connect(MeshPeerRecord peer) async {
     if (failNextConnect) {
       failNextConnect = false;
       throw MeshConnectionException(peer.peerId, 'simulated partition');
@@ -63,7 +63,7 @@ final class FakeMeshTransport implements MeshTransport {
     return _openSessionPair(remote);
   }
 
-  FakeMeshSession _openSessionPair(final FakeMeshTransport remote) {
+  FakeMeshSession _openSessionPair(FakeMeshTransport remote) {
     // Single-subscription (not broadcast): events sent before the peer's
     // handler subscribes must be buffered, never dropped.
     final initiatorInbound = StreamController<Uint8List>();
@@ -109,7 +109,7 @@ final class FakeMeshSession implements MeshSession {
   Stream<Uint8List> get inbound => _inbound;
 
   @override
-  Future<void> send(final Uint8List payload) async {
+  Future<void> send(Uint8List payload) async {
     if (_closed) throw StateError('Session closed');
     _onSend(payload);
   }
@@ -146,7 +146,7 @@ final class FakeMeshHub implements MeshTransport {
 
   /// Opens (or re-opens) a session from [peerId]. A re-open closes the
   /// previous session for that peer, matching reconnect semantics.
-  FakeHubSession openSession(final String peerId) {
+  FakeHubSession openSession(String peerId) {
     final previous = _opened.remove(peerId);
     previous?.closeLocally();
     final inbound = StreamController<Uint8List>();
@@ -157,7 +157,7 @@ final class FakeMeshHub implements MeshTransport {
   }
 
   @override
-  Future<MeshSession> connect(final MeshPeerRecord peer) async {
+  Future<MeshSession> connect(MeshPeerRecord peer) async {
     throw UnimplementedError('the hub is host-side only');
   }
 }
@@ -183,7 +183,7 @@ final class FakeHubSession implements MeshSession {
   Stream<Uint8List> get inbound => _inbound.stream;
 
   @override
-  Future<void> send(final Uint8List payload) async {
+  Future<void> send(Uint8List payload) async {
     if (_closed) throw StateError('Session closed');
     _sent.add(payload);
   }
@@ -203,5 +203,5 @@ final class FakeHubSession implements MeshSession {
   }
 
   /// Injects a frame as if the peer sent it.
-  void receive(final Uint8List bytes) => _inbound.add(bytes);
+  void receive(Uint8List bytes) => _inbound.add(bytes);
 }

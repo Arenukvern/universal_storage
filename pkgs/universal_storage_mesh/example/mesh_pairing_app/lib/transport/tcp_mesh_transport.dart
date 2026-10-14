@@ -29,7 +29,7 @@ final class TcpMeshTransport implements MeshTransport {
   }
 
   @override
-  Future<MeshSession> connect(final MeshPeerRecord peer) async {
+  Future<MeshSession> connect(MeshPeerRecord peer) async {
     final hint = peer.endpointHints['tcp'];
     if (hint == null) {
       throw MeshConnectionException(peer.peerId, 'no tcp endpoint hint');
@@ -53,13 +53,13 @@ final class TcpMeshTransport implements MeshTransport {
 final class _SocketMeshSession implements MeshSession {
   _SocketMeshSession(this.remotePeerId, this._socket) {
     _socket.listen(
-      (final chunk) {
+      (chunk) {
         for (final frame in _decoder.feed(chunk)) {
           _frames.add(frame);
         }
       },
       onDone: () => _frames.close(),
-      onError: (final Object e) => _frames.addError(e),
+      onError: (Object e) => _frames.addError(e),
     );
   }
 
@@ -75,7 +75,7 @@ final class _SocketMeshSession implements MeshSession {
   Stream<Uint8List> get inbound => _frames.stream;
 
   @override
-  Future<void> send(final Uint8List payload) async {
+  Future<void> send(Uint8List payload) async {
     _socket.add(frameMessage(payload));
     await _socket.flush();
   }

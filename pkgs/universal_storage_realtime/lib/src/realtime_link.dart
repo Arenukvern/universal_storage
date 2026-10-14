@@ -44,7 +44,7 @@ final class RealtimeEvent {
 /// injected-clock tests deterministic.
 final class RealtimeLink {
   RealtimeLink({
-    required final MeshSession session,
+    required MeshSession session,
     this.heartbeatInterval = const Duration(seconds: 2),
     this.staleAfter = const Duration(seconds: 8),
     this.clock = DateTime.now,
@@ -57,10 +57,10 @@ final class RealtimeLink {
     _subscription = session.inbound.listen(
       _onFrame,
       onDone: () => _die('session closed'),
-      onError: (final Object _) => _die('session error'),
+      onError: (Object _) => _die('session error'),
     );
     if (tickDriven) return;
-    _heartbeat = Timer.periodic(heartbeatInterval, (final _) {
+    _heartbeat = Timer.periodic(heartbeatInterval, (_) {
       _send(
         RealtimeEnvelope(
           type: RealtimeTypes.heartbeat,
@@ -119,8 +119,8 @@ final class RealtimeLink {
 
   /// Sends a droppable frame: newest-wins per [type] (see the class doc).
   Future<void> sendDroppable(
-    final String type,
-    final Map<String, Object?> payload,
+    String type,
+    Map<String, Object?> payload,
   ) {
     assert(!RealtimeTypes.isReserved(type), 'reserved types are link-owned');
     final envelope = RealtimeEnvelope(
@@ -135,8 +135,8 @@ final class RealtimeLink {
   }
 
   Future<void> _enqueueDroppable(
-    final String type,
-    final RealtimeEnvelope envelope,
+    String type,
+    RealtimeEnvelope envelope,
   ) async {
     if (_closed) return;
     if (_droppableSending[type] == true) {
@@ -161,8 +161,8 @@ final class RealtimeLink {
 
   /// Sends a reliable frame: exactly-once semantics on receipt.
   Future<void> sendReliable(
-    final String type,
-    final Map<String, Object?> payload,
+    String type,
+    Map<String, Object?> payload,
   ) {
     assert(!RealtimeTypes.isReserved(type), 'reserved types are link-owned');
     return _send(
@@ -216,12 +216,12 @@ final class RealtimeLink {
     }
   }
 
-  Future<void> _send(final RealtimeEnvelope envelope) async {
+  Future<void> _send(RealtimeEnvelope envelope) async {
     if (_closed) return;
     await _session.send(envelope.encode());
   }
 
-  void _onFrame(final Uint8List bytes) {
+  void _onFrame(Uint8List bytes) {
     if (_closed) return;
     _lastInboundAt = clock();
     if (!tickDriven) _armStaleWatch();
@@ -259,7 +259,7 @@ final class RealtimeLink {
     _staleWatch = Timer(staleAfter, () => _die('peer stale'));
   }
 
-  void _die(final String reason) {
+  void _die(String reason) {
     if (_closed) return;
     _closed = true;
     _deathReason = reason;

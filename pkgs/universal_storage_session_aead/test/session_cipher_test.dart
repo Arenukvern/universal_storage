@@ -11,8 +11,8 @@ import 'package:universal_storage_session_aead/universal_storage_session_aead.da
 
 /// Deterministic 32-byte test keys (values are irrelevant; the cipher
 /// treats them as opaque).
-SecretKeyData _key(final int seed) => SecretKeyData(
-  Uint8List.fromList(List.generate(32, (final i) => (i + seed) & 0xff)),
+SecretKeyData _key(int seed) => SecretKeyData(
+  Uint8List.fromList(List.generate(32, (i) => (i + seed) & 0xff)),
 );
 
 SessionCipher _initiator() =>
@@ -52,7 +52,7 @@ void main() {
     final responder = _responder();
     final payload = Uint8List.fromList(utf8.encode('a very secret frame'));
 
-    Uint8List flipped(final Uint8List record, final int index) =>
+    Uint8List flipped(Uint8List record, int index) =>
         Uint8List.fromList(record)
           ..[index] = record[index] ^ 0x01;
 

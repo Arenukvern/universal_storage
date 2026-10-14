@@ -17,17 +17,17 @@ abstract interface class MemberCodec {
 
   /// Whether [doc] has ever carried this member kind, tombstones included
   /// (drives `isNew` semantics on the storage contract).
-  bool wasWritten(final ConvergenceDoc doc);
+  bool wasWritten(ConvergenceDoc doc);
 
   /// Whether [doc] currently holds a live value (listability).
-  bool hasLiveValue(final ConvergenceDoc doc);
+  bool hasLiveValue(ConvergenceDoc doc);
 
   /// The member's current payload, null when absent or tombstoned.
-  Object? readValue(final ConvergenceDoc doc);
+  Object? readValue(ConvergenceDoc doc);
 
   /// Kernel ops encoding a write of [value], in application order. The
   /// LAST op's id becomes the storage revision.
-  List<Map<String, Object?>> writeOps(final Object? value);
+  List<Map<String, Object?>> writeOps(Object? value);
 
   /// Kernel ops encoding a delete (tombstone).
   List<Map<String, Object?>> deleteOps();
@@ -51,19 +51,19 @@ final class SingleFieldMemberCodec implements MemberCodec {
   final String kind;
 
   @override
-  bool wasWritten(final ConvergenceDoc doc) =>
+  bool wasWritten(ConvergenceDoc doc) =>
       LwwMapStrategy.readHlc(doc.state, registerKey) != null;
 
   @override
-  bool hasLiveValue(final ConvergenceDoc doc) =>
+  bool hasLiveValue(ConvergenceDoc doc) =>
       LwwMapStrategy.readValue(doc.state, registerKey) != null;
 
   @override
-  Object? readValue(final ConvergenceDoc doc) =>
+  Object? readValue(ConvergenceDoc doc) =>
       LwwMapStrategy.readValue(doc.state, registerKey);
 
   @override
-  List<Map<String, Object?>> writeOps(final Object? value) => [
+  List<Map<String, Object?>> writeOps(Object? value) => [
     {'k': registerKey, 'v': value},
   ];
 

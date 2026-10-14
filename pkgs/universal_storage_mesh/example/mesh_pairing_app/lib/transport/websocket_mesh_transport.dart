@@ -20,7 +20,7 @@ final class WebSocketMeshSession implements MeshSession {
       _channel.stream.cast<List<int>>().map(Uint8List.fromList);
 
   @override
-  Future<void> send(final Uint8List payload) async =>
+  Future<void> send(Uint8List payload) async =>
       _channel.sink.add(payload);
 
   @override
@@ -43,14 +43,14 @@ final class WebSocketMeshTransport implements MeshTransport {
   /// Starts listening for peers that connect to this app-hosted relay.
   Future<void> start() async {}
 
-  void attachClient(final WebSocketChannel channel) {
+  void attachClient(WebSocketChannel channel) {
     _incoming.add(
       WebSocketMeshSession(remotePeerId: 'relay', channel: channel),
     );
   }
 
   @override
-  Future<MeshSession> connect(final MeshPeerRecord peer) async {
+  Future<MeshSession> connect(MeshPeerRecord peer) async {
     final endpoint = peer.endpointHints['ws'];
     if (endpoint == null) {
       throw MeshConnectionException(peer.peerId, 'no ws endpoint hint');

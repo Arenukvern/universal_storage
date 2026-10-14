@@ -9,7 +9,7 @@ final class VersionControlCapabilities {
   const VersionControlCapabilities({this.supportsCloneToLocal = false});
 
   factory VersionControlCapabilities.fromJson(
-    final Map<String, dynamic> json,
+    Map<String, dynamic> json,
   ) => VersionControlCapabilities(
     supportsCloneToLocal: json['supports_clone_to_local'] == true,
   );
@@ -37,7 +37,7 @@ class VcRepository {
     this.webUrl = '',
   });
 
-  factory VcRepository.fromJson(final Map<String, dynamic> json) =>
+  factory VcRepository.fromJson(Map<String, dynamic> json) =>
       VcRepository(
         id: (json['id'] ?? '').toString(),
         name: json['name'] as String? ?? '',
@@ -83,7 +83,7 @@ class VcBranch {
     this.isProtected = false,
   });
 
-  factory VcBranch.fromJson(final Map<String, dynamic> json) => VcBranch(
+  factory VcBranch.fromJson(Map<String, dynamic> json) => VcBranch(
     name: VcBranchName(json['name'] as String? ?? ''),
     commitSha: json['commit_sha'] as String? ?? '',
     isDefault: json['is_default'] as bool? ?? false,
@@ -116,7 +116,7 @@ class VcCreateRepositoryRequest {
     this.organization = '',
   });
 
-  factory VcCreateRepositoryRequest.fromJson(final Map<String, dynamic> json) =>
+  factory VcCreateRepositoryRequest.fromJson(Map<String, dynamic> json) =>
       VcCreateRepositoryRequest(
         name: json['name'] as String? ?? '',
         description: json['description'] as String? ?? '',
@@ -164,8 +164,8 @@ class VcRepositorySlug {
   bool get isNotEmpty => value.isNotEmpty;
   String toJson() => value;
   static VcRepositorySlug fromJson({
-    required final VcRepositoryName repositoryName,
-    required final VcRepositoryOwner repositoryOwner,
+    required VcRepositoryName repositoryName,
+    required VcRepositoryOwner repositoryOwner,
   }) => VcRepositorySlug._('${repositoryOwner.value}/${repositoryName.value}');
   static const empty = VcRepositorySlug._('');
 }

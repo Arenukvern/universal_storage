@@ -9,37 +9,37 @@ import 'hlc.dart';
 @immutable
 final class VersionVector {
 
-  VersionVector([final Map<String, Hlc>? entries])
+  VersionVector([Map<String, Hlc>? entries])
     : _entries = Map<String, Hlc>.unmodifiable(entries ?? const {});
-  factory VersionVector.fromJson(final Map<String, dynamic> json) =>
+  factory VersionVector.fromJson(Map<String, dynamic> json) =>
       VersionVector(
-        json.map((final actor, final raw) => MapEntry(actor, hlcFromJson(raw))),
+        json.map((actor, raw) => MapEntry(actor, hlcFromJson(raw))),
       );
 
   static final VersionVector zero = VersionVector();
 
   final Map<String, Hlc> _entries;
 
-  Hlc? operator [](final String actorId) => _entries[actorId];
+  Hlc? operator [](String actorId) => _entries[actorId];
 
   /// All actors with at least one observed event.
   Iterable<String> get actors => _entries.keys;
 
   /// Returns a new vector that also has observed [hlc].
-  VersionVector observed(final Hlc hlc) {
+  VersionVector observed(Hlc hlc) {
     final current = _entries[hlc.actorId];
     if (current != null && current >= hlc) return this;
     return VersionVector({..._entries, hlc.actorId: hlc});
   }
 
   /// True when an event with [hlc] has already been observed.
-  bool contains(final Hlc hlc) {
+  bool contains(Hlc hlc) {
     final current = _entries[hlc.actorId];
     return current != null && current >= hlc;
   }
 
   Map<String, dynamic> toJson() =>
-      _entries.map((final actor, final hlc) => MapEntry(actor, hlc.toJson()));
+      _entries.map((actor, hlc) => MapEntry(actor, hlc.toJson()));
 
   @override
   String toString() => 'VersionVector${_entries.keys.toList()}';

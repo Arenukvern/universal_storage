@@ -10,11 +10,11 @@ import 'package:universal_storage_interface/universal_storage_interface.dart';
 mixin RetryableOperation {
   /// Executes an operation with retry logic
   static Future<T> execute<T>(
-    final Future<T> Function() operation, {
-    final int maxAttempts = 3,
-    final Duration initialDelay = const Duration(milliseconds: 500),
-    final double backoffMultiplier = 2.0,
-    final bool Function(Exception)? retryIf,
+    Future<T> Function() operation, {
+    int maxAttempts = 3,
+    Duration initialDelay = const Duration(milliseconds: 500),
+    double backoffMultiplier = 2.0,
+    bool Function(Exception)? retryIf,
   }) async {
     Exception? lastException;
 
@@ -52,7 +52,7 @@ mixin RetryableOperation {
   }
 
   /// Default retry condition for common network exceptions
-  static bool _shouldRetryByDefault(final Exception exception) {
+  static bool _shouldRetryByDefault(Exception exception) {
     final errorString = exception.toString().toLowerCase();
 
     // Retry on network-related errors
@@ -85,13 +85,13 @@ mixin RetryableOperation {
 
   /// Wraps GitHub API operations with retry logic
   static Future<T> github<T>(
-    final Future<T> Function() operation, {
-    final int maxAttempts = 3,
+    Future<T> Function() operation, {
+    int maxAttempts = 3,
   }) => execute(
     operation,
     maxAttempts: maxAttempts,
     // Don't retry rate limits immediately
-    retryIf: (final exception) => switch (exception) {
+    retryIf: (exception) => switch (exception) {
       // Special handling for GitHub rate limits
       GitHubRateLimitException() => false,
       _ => _shouldRetryByDefault(exception),
@@ -100,13 +100,13 @@ mixin RetryableOperation {
 
   /// Wraps Git operations with retry logic
   static Future<T> git<T>(
-    final Future<T> Function() operation, {
-    final int maxAttempts = 2,
+    Future<T> Function() operation, {
+    int maxAttempts = 2,
   }) => execute(
     operation,
     maxAttempts: maxAttempts,
     // Don't retry Git conflicts or authentication failures
-    retryIf: (final exception) => switch (exception) {
+    retryIf: (exception) => switch (exception) {
       GitConflictException() || AuthenticationFailedException() => false,
       _ => _shouldRetryByDefault(exception),
     },

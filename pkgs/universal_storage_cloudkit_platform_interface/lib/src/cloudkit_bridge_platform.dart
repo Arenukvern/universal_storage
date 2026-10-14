@@ -2,17 +2,17 @@ import 'models.dart';
 
 /// Contract implemented by platform-specific CloudKit bridges.
 abstract interface class CloudKitBridge {
-  Future<void> initialize(final CloudKitBridgeConfig config);
+  Future<void> initialize(CloudKitBridgeConfig config);
 
-  Future<CloudKitRecord?> fetchRecordByPath(final String path);
+  Future<CloudKitRecord?> fetchRecordByPath(String path);
 
-  Future<void> saveRecord(final CloudKitRecord record);
+  Future<void> saveRecord(CloudKitRecord record);
 
-  Future<void> deleteRecord(final String recordName);
+  Future<void> deleteRecord(String recordName);
 
-  Future<List<CloudKitRecord>> queryByPathPrefix(final String pathPrefix);
+  Future<List<CloudKitRecord>> queryByPathPrefix(String pathPrefix);
 
-  Future<CloudKitDelta> fetchChanges({final String? serverChangeToken});
+  Future<CloudKitDelta> fetchChanges({String? serverChangeToken});
 
   Future<void> dispose();
 }
@@ -28,7 +28,7 @@ class UnsupportedCloudKitBridge implements CloudKitBridge {
   const UnsupportedCloudKitBridge();
 
   @override
-  Future<void> initialize(final CloudKitBridgeConfig config) async {
+  Future<void> initialize(CloudKitBridgeConfig config) async {
     throw const CloudKitBridgeException(
       code: CloudKitBridgeErrorCode.unsupported,
       message: 'CloudKit bridge is not registered for this platform.',
@@ -36,7 +36,7 @@ class UnsupportedCloudKitBridge implements CloudKitBridge {
   }
 
   @override
-  Future<CloudKitRecord?> fetchRecordByPath(final String path) async {
+  Future<CloudKitRecord?> fetchRecordByPath(String path) async {
     throw const CloudKitBridgeException(
       code: CloudKitBridgeErrorCode.unsupported,
       message: 'CloudKit bridge is not registered for this platform.',
@@ -44,7 +44,7 @@ class UnsupportedCloudKitBridge implements CloudKitBridge {
   }
 
   @override
-  Future<void> saveRecord(final CloudKitRecord record) async {
+  Future<void> saveRecord(CloudKitRecord record) async {
     throw const CloudKitBridgeException(
       code: CloudKitBridgeErrorCode.unsupported,
       message: 'CloudKit bridge is not registered for this platform.',
@@ -52,7 +52,7 @@ class UnsupportedCloudKitBridge implements CloudKitBridge {
   }
 
   @override
-  Future<void> deleteRecord(final String recordName) async {
+  Future<void> deleteRecord(String recordName) async {
     throw const CloudKitBridgeException(
       code: CloudKitBridgeErrorCode.unsupported,
       message: 'CloudKit bridge is not registered for this platform.',
@@ -61,7 +61,7 @@ class UnsupportedCloudKitBridge implements CloudKitBridge {
 
   @override
   Future<List<CloudKitRecord>> queryByPathPrefix(
-    final String pathPrefix,
+    String pathPrefix,
   ) async {
     throw const CloudKitBridgeException(
       code: CloudKitBridgeErrorCode.unsupported,
@@ -70,7 +70,7 @@ class UnsupportedCloudKitBridge implements CloudKitBridge {
   }
 
   @override
-  Future<CloudKitDelta> fetchChanges({final String? serverChangeToken}) async {
+  Future<CloudKitDelta> fetchChanges({String? serverChangeToken}) async {
     throw const CloudKitBridgeException(
       code: CloudKitBridgeErrorCode.unsupported,
       message: 'CloudKit bridge is not registered for this platform.',

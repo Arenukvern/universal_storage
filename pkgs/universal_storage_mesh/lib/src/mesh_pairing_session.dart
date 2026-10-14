@@ -56,7 +56,7 @@ final class MeshPairingSession {
   ///
   /// The returned record carries the peer's advertised connection hint
   /// under the `ws` key of [MeshPeerRecord.endpointHints] when present.
-  Future<MeshPeerRecord> acceptQrPayload(final Uint8List qrPayload) async {
+  Future<MeshPeerRecord> acceptQrPayload(Uint8List qrPayload) async {
     if (_accepted) {
       throw StateError('Pairing session already accepted a peer');
     }
@@ -88,6 +88,6 @@ final class MeshPairingSession {
 /// `mesh-pair/v1`. This keeps example compatibility explicit while the
 /// signature remains authoritative.
 extension type const PairingIdentity._(Uint8List _value) {
-  static Uint8List extractIdentityKey(final Uint8List qrPayload) =>
+  static Uint8List extractIdentityKey(Uint8List qrPayload) =>
       Uint8List.fromList(PairingService.extractIdentityKey(qrPayload));
 }

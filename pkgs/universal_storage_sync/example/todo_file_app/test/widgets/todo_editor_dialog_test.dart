@@ -7,7 +7,7 @@ import '../test_helpers.dart';
 
 void main() {
   group('TodoEditorDialog', () {
-    testWidgets('shows correct title for new todo', (final tester) async {
+    testWidgets('shows correct title for new todo', (tester) async {
       await tester.pumpWidget(
         createTestWidget(child: const TodoEditorDialog()),
       );
@@ -15,7 +15,7 @@ void main() {
       expect(find.text('New Todo'), findsOneWidget);
     });
 
-    testWidgets('shows correct title for editing todo', (final tester) async {
+    testWidgets('shows correct title for editing todo', (tester) async {
       final todo = Todo.create(id: const TodoId('test-id'), title: 'Test Todo');
 
       await tester.pumpWidget(
@@ -26,7 +26,7 @@ void main() {
     });
 
     testWidgets('populates fields when editing existing todo', (
-      final tester,
+      tester,
     ) async {
       final todo = Todo.create(
         id: const TodoId('test-id'),
@@ -46,7 +46,7 @@ void main() {
       expect(find.text('tag1, tag2'), findsOneWidget);
     });
 
-    testWidgets('validates required title field', (final tester) async {
+    testWidgets('validates required title field', (tester) async {
       await tester.pumpWidget(
         createTestWidget(child: const TodoEditorDialog()),
       );
@@ -60,7 +60,7 @@ void main() {
       expect(find.text('Title is required'), findsOneWidget);
     });
 
-    testWidgets('allows submission with valid title', (final tester) async {
+    testWidgets('allows submission with valid title', (tester) async {
       await tester.pumpWidget(
         createTestWidget(child: const TodoEditorDialog()),
       );
@@ -81,7 +81,7 @@ void main() {
       expect(find.text('Title is required'), findsNothing);
     });
 
-    testWidgets('shows Update button when editing', (final tester) async {
+    testWidgets('shows Update button when editing', (tester) async {
       final todo = Todo.create(id: const TodoId('test-id'), title: 'Test Todo');
 
       await tester.pumpWidget(
@@ -95,7 +95,7 @@ void main() {
     });
 
     testWidgets('shows Create button when creating new todo', (
-      final tester,
+      tester,
     ) async {
       await tester.pumpWidget(
         createTestWidget(child: const TodoEditorDialog()),

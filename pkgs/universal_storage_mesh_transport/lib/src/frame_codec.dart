@@ -9,7 +9,7 @@ import 'dart:typed_data';
 const int _lengthPrefixBytes = 4;
 const int _maxFrameBytes = 8 * 1024 * 1024;
 
-Uint8List frameMessage(final Uint8List payload) {
+Uint8List frameMessage(Uint8List payload) {
   final out = Uint8List(_lengthPrefixBytes + payload.length);
   final header = ByteData.view(
     out.buffer,
@@ -26,7 +26,7 @@ final class FrameDecoder {
   Uint8List _buffer = Uint8List(0);
 
   /// Extracts every complete frame from [bytes]; partial tails are retained.
-  List<Uint8List> feed(final List<int> bytes) {
+  List<Uint8List> feed(List<int> bytes) {
     final combined = Uint8List(_buffer.length + bytes.length)
       ..setRange(0, _buffer.length, _buffer)
       ..setRange(_buffer.length, _buffer.length + bytes.length, bytes);

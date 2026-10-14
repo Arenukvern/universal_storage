@@ -25,7 +25,7 @@ class LocalDbStorageProvider extends StorageProvider implements LocalEngine {
   }
 
   @override
-  Future<void> initWithConfig(final StorageConfig config) async {
+  Future<void> initWithConfig(StorageConfig config) async {
     if (config is! FileSystemConfig && config is! LocalDbStorageConfig) {
       throw ArgumentError(
         'Expected FileSystemConfig or LocalDbStorageConfig, got '
@@ -43,9 +43,9 @@ class LocalDbStorageProvider extends StorageProvider implements LocalEngine {
 
   @override
   Future<FileOperationResult> createFile(
-    final String path,
-    final String content, {
-    final String? commitMessage,
+    String path,
+    String content, {
+    String? commitMessage,
   }) => _enqueueMutation<FileOperationResult>(() async {
     _ensureInitialized();
     final normalizedPath = _normalizePath(path);
@@ -62,7 +62,7 @@ class LocalDbStorageProvider extends StorageProvider implements LocalEngine {
   });
 
   @override
-  Future<String?> getFile(final String path) async {
+  Future<String?> getFile(String path) async {
     _ensureInitialized();
     final normalizedPath = _normalizePath(path);
     final bucket = await _readBucket();
@@ -76,9 +76,9 @@ class LocalDbStorageProvider extends StorageProvider implements LocalEngine {
 
   @override
   Future<FileOperationResult> updateFile(
-    final String path,
-    final String content, {
-    final String? commitMessage,
+    String path,
+    String content, {
+    String? commitMessage,
   }) => _enqueueMutation<FileOperationResult>(() async {
     _ensureInitialized();
     final normalizedPath = _normalizePath(path);
@@ -94,8 +94,8 @@ class LocalDbStorageProvider extends StorageProvider implements LocalEngine {
 
   @override
   Future<FileOperationResult> deleteFile(
-    final String path, {
-    final String? commitMessage,
+    String path, {
+    String? commitMessage,
   }) => _enqueueMutation<FileOperationResult>(() async {
     _ensureInitialized();
     final normalizedPath = _normalizePath(path);
@@ -110,7 +110,7 @@ class LocalDbStorageProvider extends StorageProvider implements LocalEngine {
   });
 
   @override
-  Future<List<FileEntry>> listDirectory(final String directoryPath) async {
+  Future<List<FileEntry>> listDirectory(String directoryPath) async {
     _ensureInitialized();
     final normalizedDirectory = _normalizeDirectoryPath(directoryPath);
     final bucket = await _readBucket();
@@ -159,12 +159,12 @@ class LocalDbStorageProvider extends StorageProvider implements LocalEngine {
     }
 
     final entries = <FileEntry>[...directories.values, ...files.values]
-      ..sort((final a, final b) => a.name.compareTo(b.name));
+      ..sort((a, b) => a.name.compareTo(b.name));
     return entries;
   }
 
   @override
-  Future<void> restore(final String path, {final String? versionId}) {
+  Future<void> restore(String path, {String? versionId}) {
     throw const UnsupportedOperationException(
       'LocalDbStorageProvider does not support restore/versioning.',
     );
@@ -175,8 +175,8 @@ class LocalDbStorageProvider extends StorageProvider implements LocalEngine {
 
   @override
   Future<void> sync({
-    final String? pullMergeStrategy,
-    final String? pushConflictStrategy,
+    String? pullMergeStrategy,
+    String? pushConflictStrategy,
   }) {
     throw const UnsupportedOperationException(
       'This provider does not support sync.',
@@ -189,7 +189,7 @@ class LocalDbStorageProvider extends StorageProvider implements LocalEngine {
     _initialized = false;
   }
 
-  Future<T> _enqueueMutation<T>(final Future<T> Function() action) {
+  Future<T> _enqueueMutation<T>(Future<T> Function() action) {
     final completer = Completer<T>();
     _mutationQueue = _mutationQueue.then((_) async {
       try {
@@ -209,7 +209,7 @@ class LocalDbStorageProvider extends StorageProvider implements LocalEngine {
     return Map<String, dynamic>.from(bucket);
   }
 
-  Future<void> _writeBucket(final Map<String, dynamic> bucket) async {
+  Future<void> _writeBucket(Map<String, dynamic> bucket) async {
     await localDb.setMap(key: _bucketStorageKey, value: bucket);
   }
 
@@ -221,7 +221,7 @@ class LocalDbStorageProvider extends StorageProvider implements LocalEngine {
     }
   }
 
-  String _resolveKeyspacePrefix(final StorageConfig? config) {
+  String _resolveKeyspacePrefix(StorageConfig? config) {
     if (config is LocalDbStorageConfig) {
       final normalizedPrefix = _normalizeConfigPath(config.keyspacePrefix);
       return normalizedPrefix.whenEmptyUse('universal_storage');
@@ -234,22 +234,22 @@ class LocalDbStorageProvider extends StorageProvider implements LocalEngine {
     return 'universal_storage';
   }
 
-  Map<String, dynamic> _recordFromContent(final String content) =>
+  Map<String, dynamic> _recordFromContent(String content) =>
       <String, dynamic>{
         'content': content,
         'updated_at_utc': DateTime.now().toUtc().toIso8601String(),
       };
 
-  Map<String, dynamic> _decodeRecord(final Object? rawRecord) =>
+  Map<String, dynamic> _decodeRecord(Object? rawRecord) =>
       jsonDecodeMap(rawRecord).whenEmptyUse(const <String, dynamic>{});
 
-  DateTime _decodeModifiedAt(final Map<String, dynamic> record) {
+  DateTime _decodeModifiedAt(Map<String, dynamic> record) {
     final rawTimestamp = jsonDecodeString(record['updated_at_utc']);
     final timestamp = DateTime.tryParse(rawTimestamp)?.toUtc();
     return timestamp ?? DateTime.fromMillisecondsSinceEpoch(0, isUtc: true);
   }
 
-  String _normalizePath(final String path) {
+  String _normalizePath(String path) {
     final normalized = path
         .trim()
         .replaceAll(r'\', '/')
@@ -262,7 +262,7 @@ class LocalDbStorageProvider extends StorageProvider implements LocalEngine {
     return normalized;
   }
 
-  String _normalizeDirectoryPath(final String directoryPath) {
+  String _normalizeDirectoryPath(String directoryPath) {
     final trimmed = directoryPath.trim();
     if (trimmed.isEmpty || trimmed == '.') {
       return '';
@@ -270,7 +270,7 @@ class LocalDbStorageProvider extends StorageProvider implements LocalEngine {
     return _normalizePath(trimmed);
   }
 
-  String _normalizeConfigPath(final String path) => path
+  String _normalizeConfigPath(String path) => path
       .trim()
       .replaceAll(r'\', '/')
       .replaceAll(RegExp('/+'), '/')

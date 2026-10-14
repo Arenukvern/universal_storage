@@ -76,7 +76,7 @@ final class SessionAeadTransport implements MeshTransport {
   var _disposed = false;
 
   @override
-  Future<MeshSession> connect(final MeshPeerRecord peer) async {
+  Future<MeshSession> connect(MeshPeerRecord peer) async {
     final pinned = peer.identityKey.isNotEmpty
         ? peer.identityKey
         : pinnedIdentityKeys[peer.peerId];
@@ -103,12 +103,12 @@ final class SessionAeadTransport implements MeshTransport {
     // wrapper; each raw session is accepted independently (parallel
     // handshakes) and only successful ones reach the returned stream.
     _innerSubscription ??= inner.incoming.listen(
-      (final raw) => unawaited(_accept(raw)),
+      (raw) => unawaited(_accept(raw)),
     );
     return _incoming.stream;
   }
 
-  Future<void> _accept(final MeshSession raw) async {
+  Future<void> _accept(MeshSession raw) async {
     try {
       final session = await SessionAeadSession.accept(
         raw: raw,

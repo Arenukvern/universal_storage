@@ -308,7 +308,7 @@ void main() {
       );
       expect(
         blueprint.namespaceChanges.any(
-          (final change) =>
+          (change) =>
               change.isRemoved && change.namespace == StorageNamespace.projects,
         ),
         isTrue,
@@ -334,14 +334,14 @@ void main() {
       expect(plan.metadata['app'], 'last_answer');
       expect(
         blueprint.targetProfile.namespaces.any(
-          (final namespace) =>
+          (namespace) =>
               namespace.namespace == const StorageNamespace('tags'),
         ),
         isTrue,
       );
       expect(
         blueprint.targetProfile.namespaces.any(
-          (final namespace) =>
+          (namespace) =>
               namespace.namespace == const StorageNamespace('drafts'),
         ),
         isTrue,
@@ -395,7 +395,7 @@ void main() {
         expect(blueprint.metadata['preserve_decision_history'], isTrue);
         expect(
           blueprint.targetProfile.namespaces.every(
-            (final namespace) =>
+            (namespace) =>
                 namespace.syncInteractionLevel == SyncInteractionLevel.complex,
           ),
           isTrue,

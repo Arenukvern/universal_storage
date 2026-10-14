@@ -45,13 +45,13 @@ final class PresenceConfig {
   /// Cadence for the current activity state, within the preset bounds:
   /// [active] shortens the interval toward [minPingInterval]; idleness
   /// relaxes it toward [maxPingInterval] (ADR 0031 §5).
-  Duration pingInterval({required final bool active}) {
+  Duration pingInterval({required bool active}) {
     assert(_boundsAreValid, 'minPingInterval must not exceed maxPingInterval');
     return active ? minPingInterval : maxPingInterval;
   }
 
   /// The invariant (ADR 0031 §5): `ttl = ttlFactor × pingInterval`.
-  Duration ttlFor(final Duration pingInterval) {
+  Duration ttlFor(Duration pingInterval) {
     assert(_boundsAreValid, 'minPingInterval must not exceed maxPingInterval');
     return Duration(milliseconds: pingInterval.inMilliseconds * ttlFactor);
   }

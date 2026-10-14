@@ -11,7 +11,7 @@ extension type const OAuthClientId(String value) {
   ///
   /// Uses type-safe JSON decoding to handle dynamic input safely.
   // ignore: avoid_annotating_with_dynamic
-  factory OAuthClientId.fromJson(final dynamic value) =>
+  factory OAuthClientId.fromJson(dynamic value) =>
       OAuthClientId(jsonDecodeString(value));
 
   /// Converts this [OAuthClientId] to JSON.
@@ -28,7 +28,7 @@ extension type const OAuthClientId(String value) {
   /// Returns [other] if this client ID is empty, otherwise returns this.
   ///
   /// Useful for providing fallback values when the current client ID is empty.
-  OAuthClientId whenEmptyUse(final OAuthClientId other) =>
+  OAuthClientId whenEmptyUse(OAuthClientId other) =>
       isEmpty ? other : this;
 
   /// An empty client ID instance.
@@ -44,7 +44,7 @@ extension type const OAuthClientSecret(String value) {
   ///
   /// Uses type-safe JSON decoding to handle dynamic input safely.
   // ignore: avoid_annotating_with_dynamic
-  factory OAuthClientSecret.fromJson(final dynamic value) =>
+  factory OAuthClientSecret.fromJson(dynamic value) =>
       OAuthClientSecret(jsonDecodeString(value));
 
   /// Converts this [OAuthClientSecret] to JSON.
@@ -62,7 +62,7 @@ extension type const OAuthClientSecret(String value) {
   ///
   /// Useful for providing fallback values when the current
   /// client secret is empty.
-  OAuthClientSecret whenEmptyUse(final OAuthClientSecret other) =>
+  OAuthClientSecret whenEmptyUse(OAuthClientSecret other) =>
       isEmpty ? other : this;
 
   /// An empty client secret instance.
@@ -78,7 +78,7 @@ extension type const OAuthRedirectUri(String value) {
   ///
   /// Uses type-safe JSON decoding to handle dynamic input safely.
   // ignore: avoid_annotating_with_dynamic
-  factory OAuthRedirectUri.fromJson(final dynamic value) =>
+  factory OAuthRedirectUri.fromJson(dynamic value) =>
       OAuthRedirectUri(jsonDecodeString(value));
 
   /// Converts this [OAuthRedirectUri] to JSON.
@@ -96,7 +96,7 @@ extension type const OAuthRedirectUri(String value) {
   ///
   /// Useful for providing fallback values when the current
   /// redirect URI is empty.
-  OAuthRedirectUri whenEmptyUse(final OAuthRedirectUri other) =>
+  OAuthRedirectUri whenEmptyUse(OAuthRedirectUri other) =>
       isEmpty ? other : this;
 
   /// An empty redirect URI instance.
@@ -112,7 +112,7 @@ extension type const OAuthCustomUriScheme(String value) {
   ///
   /// Uses type-safe JSON decoding to handle dynamic input safely.
   // ignore: avoid_annotating_with_dynamic
-  factory OAuthCustomUriScheme.fromJson(final dynamic value) =>
+  factory OAuthCustomUriScheme.fromJson(dynamic value) =>
       OAuthCustomUriScheme(jsonDecodeString(value));
 
   /// Converts this [OAuthCustomUriScheme] to JSON.
@@ -131,7 +131,7 @@ extension type const OAuthCustomUriScheme(String value) {
   ///
   /// Useful for providing fallback values when the current
   /// custom URI scheme is empty.
-  OAuthCustomUriScheme whenEmptyUse(final OAuthCustomUriScheme other) =>
+  OAuthCustomUriScheme whenEmptyUse(OAuthCustomUriScheme other) =>
       isEmpty ? other : this;
 
   /// An empty custom URI scheme instance.
@@ -147,7 +147,7 @@ extension type const OAuthScopes(List<String> value) {
   ///
   /// Expects a list of strings and uses type-safe JSON decoding.
   // ignore: avoid_annotating_with_dynamic
-  factory OAuthScopes.fromJson(final dynamic jsonData) {
+  factory OAuthScopes.fromJson(dynamic jsonData) {
     final list = jsonDecodeList(jsonData);
     return OAuthScopes(jsonDecodeListAs<String>(list));
   }
@@ -155,7 +155,7 @@ extension type const OAuthScopes(List<String> value) {
   /// Creates [OAuthScopes] from a list of scope strings.
   ///
   /// Convenient factory for creating scopes from an existing list.
-  factory OAuthScopes.from(final List<String> scopes) => OAuthScopes(scopes);
+  factory OAuthScopes.from(List<String> scopes) => OAuthScopes(scopes);
 
   /// Converts this [OAuthScopes] to JSON.
   ///
@@ -174,21 +174,21 @@ extension type const OAuthScopes(List<String> value) {
   /// Checks if a specific scope is included in this list.
   ///
   /// Returns true if [scope] is present in the scopes list.
-  bool contains(final String scope) => value.contains(scope);
+  bool contains(String scope) => value.contains(scope);
 
   /// Adds a scope if not already present.
   ///
   /// Returns a new [OAuthScopes] instance with the scope added,
   /// or this instance if the scope was already present.
-  OAuthScopes addScope(final String scope) =>
+  OAuthScopes addScope(String scope) =>
       contains(scope) ? this : OAuthScopes([...value, scope]);
 
   /// Removes a scope if present.
   ///
   /// Returns a new [OAuthScopes] instance with the scope removed,
   /// or this instance if the scope was not present.
-  OAuthScopes removeScope(final String scope) =>
-      OAuthScopes(value.where((final s) => s != scope).toList());
+  OAuthScopes removeScope(String scope) =>
+      OAuthScopes(value.where((s) => s != scope).toList());
 
   /// Joins scopes into a space-separated string.
   ///
@@ -232,7 +232,7 @@ extension type const OAuthConfig(Map<String, dynamic> value) {
   /// Expects a map containing OAuth configuration fields and uses
   /// type-safe JSON decoding for all fields.
   // ignore: avoid_annotating_with_dynamic
-  factory OAuthConfig.fromJson(final dynamic jsonData) {
+  factory OAuthConfig.fromJson(dynamic jsonData) {
     final map = jsonDecodeMap(jsonData);
     return OAuthConfig(map);
   }
@@ -242,11 +242,11 @@ extension type const OAuthConfig(Map<String, dynamic> value) {
   /// All parameters are required except [scopes], which defaults to
   /// [OAuthScopes.githubDefault] if not provided.
   factory OAuthConfig.github({
-    required final OAuthClientId clientId,
-    required final OAuthClientSecret clientSecret,
-    required final OAuthRedirectUri redirectUri,
-    required final OAuthCustomUriScheme customUriScheme,
-    final OAuthScopes? scopes,
+    required OAuthClientId clientId,
+    required OAuthClientSecret clientSecret,
+    required OAuthRedirectUri redirectUri,
+    required OAuthCustomUriScheme customUriScheme,
+    OAuthScopes? scopes,
   }) => OAuthConfig({
     'platform': GitPlatform.github.name,
     'client_id': clientId.value,
@@ -258,11 +258,11 @@ extension type const OAuthConfig(Map<String, dynamic> value) {
 
   /// {@macro gitlab_oauth_config}
   factory OAuthConfig.gitlab({
-    required final OAuthClientId clientId,
-    required final OAuthClientSecret clientSecret,
-    required final OAuthRedirectUri redirectUri,
-    required final OAuthCustomUriScheme customUriScheme,
-    final OAuthScopes? scopes,
+    required OAuthClientId clientId,
+    required OAuthClientSecret clientSecret,
+    required OAuthRedirectUri redirectUri,
+    required OAuthCustomUriScheme customUriScheme,
+    OAuthScopes? scopes,
   }) => OAuthConfig({
     'platform': GitPlatform.gitlab.name,
     'client_id': clientId.value,
@@ -274,11 +274,11 @@ extension type const OAuthConfig(Map<String, dynamic> value) {
 
   /// {@macro bitbucket_oauth_config}
   factory OAuthConfig.bitbucket({
-    required final OAuthClientId clientId,
-    required final OAuthClientSecret clientSecret,
-    required final OAuthRedirectUri redirectUri,
-    required final OAuthCustomUriScheme customUriScheme,
-    final OAuthScopes? scopes,
+    required OAuthClientId clientId,
+    required OAuthClientSecret clientSecret,
+    required OAuthRedirectUri redirectUri,
+    required OAuthCustomUriScheme customUriScheme,
+    OAuthScopes? scopes,
   }) => OAuthConfig({
     'platform': GitPlatform.bitbucket.name,
     'client_id': clientId.value,
@@ -292,7 +292,7 @@ extension type const OAuthConfig(Map<String, dynamic> value) {
   GitPlatform get platform {
     final platformName = jsonDecodeString(value['platform']);
     return GitPlatform.values.firstWhere(
-      (final p) => p.name == platformName,
+      (p) => p.name == platformName,
       orElse: () => GitPlatform.github,
     );
   }
@@ -343,11 +343,11 @@ extension type const GitHubOAuthConfig._(OAuthConfig config) {
   /// All parameters are required except [scopes], which defaults to
   /// [OAuthScopes.githubDefault] if not provided.
   factory GitHubOAuthConfig({
-    required final String clientId,
-    required final String clientSecret,
-    required final String redirectUri,
-    required final String customUriScheme,
-    final List<String>? scopes,
+    required String clientId,
+    required String clientSecret,
+    required String redirectUri,
+    required String customUriScheme,
+    List<String>? scopes,
   }) => GitHubOAuthConfig._(
     OAuthConfig.github(
       clientId: OAuthClientId(clientId),

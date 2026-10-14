@@ -4,19 +4,19 @@ import 'cloudkit_web_client.dart';
 import 'cloudkit_web_client_factory.dart';
 
 /// Registers the web bridge instance as active CloudKit bridge.
-void registerCloudKitWebBridge({final CloudKitWebClient? client}) {
+void registerCloudKitWebBridge({CloudKitWebClient? client}) {
   CloudKitBridgePlatform.instance = CloudKitWebBridge(client: client);
 }
 
 /// CloudKit bridge implementation for web runtimes.
 class CloudKitWebBridge implements CloudKitBridge {
-  CloudKitWebBridge({final CloudKitWebClient? client})
+  CloudKitWebBridge({CloudKitWebClient? client})
     : _client = client ?? createDefaultCloudKitWebClient();
 
   final CloudKitWebClient _client;
 
   @override
-  Future<void> initialize(final CloudKitBridgeConfig config) async {
+  Future<void> initialize(CloudKitBridgeConfig config) async {
     if (config.webApiToken == null || config.webApiToken!.trim().isEmpty) {
       throw const CloudKitBridgeException(
         code: CloudKitBridgeErrorCode.authentication,
@@ -30,23 +30,23 @@ class CloudKitWebBridge implements CloudKitBridge {
   }
 
   @override
-  Future<CloudKitRecord?> fetchRecordByPath(final String path) =>
+  Future<CloudKitRecord?> fetchRecordByPath(String path) =>
       _client.fetchRecordByPath(path);
 
   @override
-  Future<void> saveRecord(final CloudKitRecord record) =>
+  Future<void> saveRecord(CloudKitRecord record) =>
       _client.saveRecord(record);
 
   @override
-  Future<void> deleteRecord(final String recordName) =>
+  Future<void> deleteRecord(String recordName) =>
       _client.deleteRecord(recordName);
 
   @override
-  Future<List<CloudKitRecord>> queryByPathPrefix(final String pathPrefix) =>
+  Future<List<CloudKitRecord>> queryByPathPrefix(String pathPrefix) =>
       _client.queryByPathPrefix(pathPrefix);
 
   @override
-  Future<CloudKitDelta> fetchChanges({final String? serverChangeToken}) =>
+  Future<CloudKitDelta> fetchChanges({String? serverChangeToken}) =>
       _client.fetchChanges(serverChangeToken: serverChangeToken);
 
   @override

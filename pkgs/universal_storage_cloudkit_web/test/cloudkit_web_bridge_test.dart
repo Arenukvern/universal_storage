@@ -61,31 +61,31 @@ class _FakeClient implements CloudKitWebClient {
   final Map<String, CloudKitRecord> _records = <String, CloudKitRecord>{};
 
   @override
-  Future<void> initialize(final CloudKitBridgeConfig config) async {}
+  Future<void> initialize(CloudKitBridgeConfig config) async {}
 
   @override
-  Future<CloudKitRecord?> fetchRecordByPath(final String path) async =>
+  Future<CloudKitRecord?> fetchRecordByPath(String path) async =>
       _records[path];
 
   @override
-  Future<void> saveRecord(final CloudKitRecord record) async {
+  Future<void> saveRecord(CloudKitRecord record) async {
     _records[record.path] = record;
   }
 
   @override
-  Future<void> deleteRecord(final String recordName) async {
+  Future<void> deleteRecord(String recordName) async {
     _records.removeWhere(
-      (final _, final value) => value.recordName == recordName,
+      (_, value) => value.recordName == recordName,
     );
   }
 
   @override
   Future<List<CloudKitRecord>> queryByPathPrefix(
-    final String pathPrefix,
+    String pathPrefix,
   ) async => _records.values.toList(growable: false);
 
   @override
-  Future<CloudKitDelta> fetchChanges({final String? serverChangeToken}) async =>
+  Future<CloudKitDelta> fetchChanges({String? serverChangeToken}) async =>
       const CloudKitDelta(nextServerChangeToken: 'next-token');
 
   @override

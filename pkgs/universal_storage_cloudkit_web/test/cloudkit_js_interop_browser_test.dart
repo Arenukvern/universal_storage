@@ -55,7 +55,7 @@ void main() {
       expect(fetched!.content, equals(record.content));
 
       final listed = await bridge.queryByPathPrefix('docs');
-      expect(listed.map((final item) => item.path), contains(record.path));
+      expect(listed.map((item) => item.path), contains(record.path));
 
       await bridge.deleteRecord(record.recordName);
       expect(await bridge.fetchRecordByPath(record.path), isNull);
@@ -125,9 +125,9 @@ class _NativeCloudKitStub {
   String? lastSyncToken;
 }
 
-void _installNativeCloudKitStub(final _NativeCloudKitStub stub) {
+void _installNativeCloudKitStub(_NativeCloudKitStub stub) {
   final database = JSObject();
-  database['performQuery'] = ((final JSAny? requestRaw) {
+  database['performQuery'] = ((JSAny? requestRaw) {
     final request = _asMap(requestRaw);
     final query = _asMap(request['query']);
     final filters = query['filterBy'];
@@ -141,7 +141,7 @@ void _installNativeCloudKitStub(final _NativeCloudKitStub stub) {
           _asMap(filter['fieldValue'])['value']?.toString() ?? '';
       if (fieldName == 'path') {
         final matched = records
-            .where((final record) {
+            .where((record) {
               final path = _fieldString(record['fields'], 'path');
               if (comparator == 'EQUALS' || comparator == 'EQUAL') {
                 return path == fieldValue;
@@ -156,7 +156,7 @@ void _installNativeCloudKitStub(final _NativeCloudKitStub stub) {
     return <String, Object?>{'records': records}.jsify();
   }).toJS;
 
-  database['saveRecords'] = ((final JSAny? requestRaw) {
+  database['saveRecords'] = ((JSAny? requestRaw) {
     final request = _asMap(requestRaw);
     final records = request['records'];
     if (records is List) {
@@ -187,12 +187,12 @@ void _installNativeCloudKitStub(final _NativeCloudKitStub stub) {
     }.jsify();
   }).toJS;
 
-  database['deleteRecords'] = ((final JSAny? requestRaw) {
+  database['deleteRecords'] = ((JSAny? requestRaw) {
     final request = _asMap(requestRaw);
     final names = <String>[];
     final rawNames = request['recordNames'];
     if (rawNames is List) {
-      names.addAll(rawNames.map((final item) => item.toString()));
+      names.addAll(rawNames.map((item) => item.toString()));
     }
     final rawRecords = request['records'];
     if (rawRecords is List) {
@@ -213,7 +213,7 @@ void _installNativeCloudKitStub(final _NativeCloudKitStub stub) {
     return null;
   }).toJS;
 
-  database['fetchChangedRecords'] = ((final JSAny? requestRaw) {
+  database['fetchChangedRecords'] = ((JSAny? requestRaw) {
     final request = _asMap(requestRaw);
     stub.lastSyncToken = request['syncToken']?.toString();
     final changed = stub.changedRecords.isEmpty
@@ -233,7 +233,7 @@ void _installNativeCloudKitStub(final _NativeCloudKitStub stub) {
   }.jsify()).toJS;
 
   final cloudKit = JSObject();
-  cloudKit['configure'] = ((final JSAny? payloadRaw) {
+  cloudKit['configure'] = ((JSAny? payloadRaw) {
     stub.lastConfigurePayload = _asMap(payloadRaw);
     return null;
   }).toJS;
@@ -242,7 +242,7 @@ void _installNativeCloudKitStub(final _NativeCloudKitStub stub) {
   globalContext['CloudKit'] = cloudKit;
 }
 
-Map<String, Object?> _asMap(final Object? value) {
+Map<String, Object?> _asMap(Object? value) {
   if (value == null) {
     return <String, Object?>{};
   }
@@ -260,7 +260,7 @@ Map<String, Object?> _asMap(final Object? value) {
   return <String, Object?>{};
 }
 
-String _fieldString(final Object? fieldsRaw, final String key) {
+String _fieldString(Object? fieldsRaw, String key) {
   final fields = _asMap(fieldsRaw);
   final raw = fields[key];
   if (raw is Map) {
@@ -270,19 +270,19 @@ String _fieldString(final Object? fieldsRaw, final String key) {
   return raw?.toString() ?? '';
 }
 
-int _fieldInt(final Object? fieldsRaw, final String key) {
+int _fieldInt(Object? fieldsRaw, String key) {
   final text = _fieldString(fieldsRaw, key);
   return int.tryParse(text) ?? 0;
 }
 
 Map<String, Object?> _nativeRecord({
-  required final String recordName,
-  required final String path,
-  required final String content,
-  required final String checksum,
-  required final int size,
-  required final int updatedAtMillis,
-  final String? changeTag,
+  required String recordName,
+  required String path,
+  required String content,
+  required String checksum,
+  required int size,
+  required int updatedAtMillis,
+  String? changeTag,
 }) => <String, Object?>{
   'recordName': recordName,
   'recordChangeTag': ?changeTag,

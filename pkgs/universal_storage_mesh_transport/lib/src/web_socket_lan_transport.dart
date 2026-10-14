@@ -115,7 +115,7 @@ final class WebSocketLanTransport implements LanMeshTransport {
   }
 
   @override
-  Future<MeshSession> connect(final MeshPeerRecord peer) async {
+  Future<MeshSession> connect(MeshPeerRecord peer) async {
     final host = peer.endpointHints['host'];
     final portText = peer.endpointHints['port'];
     final port = int.tryParse(portText ?? '');
@@ -146,7 +146,7 @@ final class WebSocketLanTransport implements LanMeshTransport {
     }
   }
 
-  Future<void> _handleRequest(final HttpRequest request) async {
+  Future<void> _handleRequest(HttpRequest request) async {
     if (request.uri.path != path ||
         !WebSocketTransformer.isUpgradeRequest(request)) {
       final response = request.response..statusCode = HttpStatus.notFound;
@@ -230,8 +230,8 @@ final class _LanSocketSession implements MeshSession {
   Stream<Uint8List> get inbound => _inbound.stream;
 
   Future<void> clientHandshake(
-    final String peerId, {
-    required final String expectedPeerId,
+    String peerId, {
+    required String expectedPeerId,
   }) async {
     _localPeerId = peerId;
     _sessionNonce = _newNonce();
@@ -267,7 +267,7 @@ final class _LanSocketSession implements MeshSession {
     _handshaken = true;
   }
 
-  Future<String> serverHandshake(final String selfId) async {
+  Future<String> serverHandshake(String selfId) async {
     final message = await _handshake.future.timeout(const Duration(seconds: 5));
     if (message is! Map ||
         message['kind'] != helloKind ||
@@ -299,7 +299,7 @@ final class _LanSocketSession implements MeshSession {
     return remotePeerId;
   }
 
-  void _receive(final Object? data) {
+  void _receive(Object? data) {
     if (!_handshake.isCompleted) {
       try {
         final decoded = data is String
@@ -319,7 +319,7 @@ final class _LanSocketSession implements MeshSession {
     unawaited(_receiveAuthenticated(data));
   }
 
-  Future<void> _receiveAuthenticated(final Object? data) async {
+  Future<void> _receiveAuthenticated(Object? data) async {
     try {
       final frame = _decodeAuthFrame(data);
       if (frame == null ||
@@ -347,7 +347,7 @@ final class _LanSocketSession implements MeshSession {
   }
 
   @override
-  Future<void> send(final Uint8List payload) async {
+  Future<void> send(Uint8List payload) async {
     if (_closed || !_handshaken) throw StateError('session is not ready');
     if (frameSealer == null) {
       _socket.add(payload);
@@ -364,10 +364,10 @@ final class _LanSocketSession implements MeshSession {
   }
 
   Future<Uint8List?> _encodeAuthFrame({
-    required final String fromPeerId,
-    required final String nonce,
-    required final int sequence,
-    required final String purpose,
+    required String fromPeerId,
+    required String nonce,
+    required int sequence,
+    required String purpose,
     Uint8List? payload,
   }) async {
     final sealer = frameSealer;
@@ -403,9 +403,9 @@ final class _LanSocketSession implements MeshSession {
   }
 
   Future<String> _verifyAuth(
-    final Object? encoded, {
-    required final String expectedPeerId,
-    required final String purpose,
+    Object? encoded, {
+    required String expectedPeerId,
+    required String purpose,
     String? nonce,
   }) async {
     final frame = _decodeAuthFrame(encoded);
@@ -430,7 +430,7 @@ final class _LanSocketSession implements MeshSession {
     return frameNonce;
   }
 
-  MeshEphemeralFrame? _decodeAuthFrame(final Object? encoded) {
+  MeshEphemeralFrame? _decodeAuthFrame(Object? encoded) {
     try {
       final bytes = encoded is String ? base64Decode(encoded) : _bytes(encoded);
       return MeshEphemeralFrame.decode(bytes);
@@ -456,7 +456,7 @@ String _newNonce() {
   );
 }
 
-Uint8List _bytes(final Object? data) => data is Uint8List
+Uint8List _bytes(Object? data) => data is Uint8List
     ? data
     : data is List<int>
     ? Uint8List.fromList(data)

@@ -11,7 +11,7 @@ mixin StorageFactory {
   /// Creates a StorageService with the appropriate provider based on
   /// [config] type.
   /// The returned service is already initialized and ready to use.
-  static Future<StorageService> create(final StorageConfig config) async {
+  static Future<StorageService> create(StorageConfig config) async {
     final provider = StorageProviderRegistry.resolve(config);
     await provider.initWithConfig(config);
     return StorageService(provider);
@@ -19,19 +19,19 @@ mixin StorageFactory {
 
   /// Creates a FileSystem storage service
   static Future<StorageService> createFileSystem(
-    final FileSystemConfig config,
+    FileSystemConfig config,
   ) => create(config);
 
   /// Creates a GitHub API storage service
-  static Future<StorageService> createGitHubApi(final GitHubApiConfig config) =>
+  static Future<StorageService> createGitHubApi(GitHubApiConfig config) =>
       create(config);
 
   /// Creates an Offline Git storage service
   static Future<StorageService> createOfflineGit(
-    final OfflineGitConfig config,
+    OfflineGitConfig config,
   ) => create(config);
 
   /// Creates a CloudKit storage service
-  static Future<StorageService> createCloudKit(final CloudKitConfig config) =>
+  static Future<StorageService> createCloudKit(CloudKitConfig config) =>
       create(config);
 }

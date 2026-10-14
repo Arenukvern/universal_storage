@@ -8,8 +8,8 @@ void main() {
   test('hub hosts several peers with isolated sessions', () async {
     final hub = FakeMeshHub();
     final routed = <(String, String)>[];
-    hub.incoming.listen((final session) {
-      session.inbound.listen((final bytes) {
+    hub.incoming.listen((session) {
+      session.inbound.listen((bytes) {
         routed.add((session.remotePeerId, utf8.decode(bytes)));
       });
     });

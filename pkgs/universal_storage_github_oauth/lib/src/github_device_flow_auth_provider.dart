@@ -158,8 +158,8 @@ class GithubDeviceFlowAuthProvider implements OAuthProvider {
   }
 
   Future<StoredCredentials> _pollForToken({
-    required final String deviceCode,
-    required final int interval,
+    required String deviceCode,
+    required int interval,
   }) async {
     var currentInterval = interval;
     // Generous cap: device codes expire in ~15 minutes.
@@ -223,7 +223,7 @@ class GithubDeviceFlowAuthProvider implements OAuthProvider {
   }
 
   @override
-  Future<OAuthResult> refreshToken(final String refreshToken) =>
+  Future<OAuthResult> refreshToken(String refreshToken) =>
       throw const AuthenticationException(
         'GitHub tokens do not support refresh by default',
       );

@@ -96,7 +96,7 @@ void main() {
 
       // List files in root directory
       final entries = await provider.listDirectory('.');
-      final names = entries.map((final e) => e.name).toList();
+      final names = entries.map((e) => e.name).toList();
 
       expect(names, contains('file1.txt'));
       expect(names, contains('file2.txt'));
@@ -150,7 +150,7 @@ void main() {
         await provider.createFile('settings/race.json', '{"value":0}');
         final updates = List<Future<FileOperationResult>>.generate(
           20,
-          (final index) =>
+          (index) =>
               provider.updateFile('settings/race.json', '{"value":$index}'),
         );
         await Future.wait(updates);
@@ -200,8 +200,8 @@ void main() {
       var releaseCalls = 0;
       final provider = FileSystemStorageProvider(
         pathAccess: CallbackFileSystemPathAccess(
-          resolveDirectory: (final config) async => Directory(config.path.path),
-          releaseDirectory: (final config) async {
+          resolveDirectory: (config) async => Directory(config.path.path),
+          releaseDirectory: (config) async {
             releaseCalls++;
           },
         ),
@@ -356,14 +356,14 @@ final class _RecordingPathAccess implements FileSystemPathAccess {
   String? lastReleasedPath;
 
   @override
-  Future<Directory?> resolveDirectory(final FilePathConfig config) async {
+  Future<Directory?> resolveDirectory(FilePathConfig config) async {
     resolveCalls++;
     lastResolvedPath = config.path.path;
     return directory;
   }
 
   @override
-  Future<void> releaseDirectory(final FilePathConfig config) async {
+  Future<void> releaseDirectory(FilePathConfig config) async {
     releaseCalls++;
     lastReleasedPath = config.path.path;
   }

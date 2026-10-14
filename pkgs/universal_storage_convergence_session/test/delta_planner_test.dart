@@ -9,7 +9,7 @@ import 'package:universal_storage_convergence_session/universal_storage_converge
 void main() {
   const planner = DeltaPlanner();
 
-  OpRecord op(final String docId, final int counter, final String actor) =>
+  OpRecord op(String docId, int counter, String actor) =>
       OpRecord(
         docId: docId,
         hlc: Hlc(1700000000000 + counter, counter, actor),
@@ -18,12 +18,12 @@ void main() {
 
   /// A hand-rolled replica for pure decision tests.
   FakeReplica replica(
-    final String docId, {
-    final VersionVector? vv,
-    final List<OpRecord>? pendingOps,
-    final List<OpRecord> Function(VersionVector)? opsSince,
-    final bool Function(VersionVector)? needsSnapshotFor,
-    final Snapshot? snapshot,
+    String docId, {
+    VersionVector? vv,
+    List<OpRecord>? pendingOps,
+    List<OpRecord> Function(VersionVector)? opsSince,
+    bool Function(VersionVector)? needsSnapshotFor,
+    Snapshot? snapshot,
   }) => FakeReplica(
     docId: docId,
     vv: vv ?? VersionVector.zero,
@@ -180,9 +180,9 @@ class FakeReplica implements DeltaReplica {
     required this.docId,
     required this.vv,
     required this.pendingOps,
-    final List<OpRecord> Function(VersionVector)? opsSince,
-    final bool Function(VersionVector)? needsSnapshotFor,
-    final Snapshot? snapshot,
+    List<OpRecord> Function(VersionVector)? opsSince,
+    bool Function(VersionVector)? needsSnapshotFor,
+    Snapshot? snapshot,
   }) : _opsSince = opsSince ?? ((_) => pendingOps),
        _needsSnapshotFor = needsSnapshotFor ?? ((_) => false),
        _snapshot =
@@ -205,10 +205,10 @@ class FakeReplica implements DeltaReplica {
   final Snapshot _snapshot;
 
   @override
-  List<OpRecord> opsSince(final VersionVector remoteVv) => _opsSince(remoteVv);
+  List<OpRecord> opsSince(VersionVector remoteVv) => _opsSince(remoteVv);
 
   @override
-  bool needsSnapshotFor(final VersionVector remoteVv) =>
+  bool needsSnapshotFor(VersionVector remoteVv) =>
       _needsSnapshotFor(remoteVv);
 
   @override
@@ -229,10 +229,10 @@ class _DocSource implements DeltaReplica {
   @override
   List<OpRecord> get pendingOps => _doc.pendingOps;
   @override
-  List<OpRecord> opsSince(final VersionVector remoteVv) =>
+  List<OpRecord> opsSince(VersionVector remoteVv) =>
       _doc.opsSince(remoteVv);
   @override
-  bool needsSnapshotFor(final VersionVector remoteVv) =>
+  bool needsSnapshotFor(VersionVector remoteVv) =>
       _doc.needsSnapshotFor(remoteVv);
   @override
   Snapshot snapshotFor() => _doc.snapshotFor();

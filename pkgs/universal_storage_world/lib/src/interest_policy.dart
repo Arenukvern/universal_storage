@@ -46,13 +46,13 @@ final class InterestSelection {
   final Set<String> prefixes;
 
   /// Whether [docId] falls inside this selection.
-  bool matchesDocId(final String docId) =>
+  bool matchesDocId(String docId) =>
       all ||
       docIds.contains(docId) ||
-      prefixes.any((final prefix) => docId.startsWith(prefix));
+      prefixes.any((prefix) => docId.startsWith(prefix));
 
   /// Union used by [UnionInterest].
-  InterestSelection union(final InterestSelection other) => InterestSelection(
+  InterestSelection union(InterestSelection other) => InterestSelection(
     all: all || other.all,
     docIds: {...docIds, ...other.docIds},
     prefixes: {...prefixes, ...other.prefixes},
@@ -64,7 +64,7 @@ final class InterestSelection {
     'prefixes': List<String>.of(prefixes)..sort(),
   };
 
-  static InterestSelection fromJson(final Map<String, Object?> json) {
+  static InterestSelection fromJson(Map<String, Object?> json) {
     final docs = (json['docs'] as List<dynamic>? ?? const [])
         .whereType<String>()
         .toSet();
@@ -143,6 +143,6 @@ final class UnionInterest implements InterestPolicy {
   @override
   InterestSelection resolve() => policies.fold(
     const InterestSelection.none(),
-    (final acc, final policy) => acc.union(policy.resolve()),
+    (acc, policy) => acc.union(policy.resolve()),
   );
 }

@@ -96,11 +96,11 @@ final class MeshPresenceTracker {
   /// [ConvergenceDoc.applyLocalEphemeral], and returns the frame to send to
   /// peers (over any [MeshSession]; frames are opaque to transports).
   MeshEphemeralFrame announce({
-    required final String docId,
-    required final MeshEphemeralEvent event,
-    final DateTime? now,
-    final Duration? ttl,
-    final Map<String, Object?> details = const {},
+    required String docId,
+    required MeshEphemeralEvent event,
+    DateTime? now,
+    Duration? ttl,
+    Map<String, Object?> details = const {},
   }) {
     final effectiveTtl = ttl ?? defaultTtl;
     final at = now ?? DateTime.now();
@@ -131,7 +131,7 @@ final class MeshPresenceTracker {
   /// not carry a kernel ephemeral op, or carries one that does not match
   /// the frame (wrong doc, durable op, or forged actor). Redelivered
   /// frames are idempotent: the kernel dedupes by op id.
-  bool handleFrame(final MeshEphemeralFrame frame, {final DateTime? now}) {
+  bool handleFrame(MeshEphemeralFrame frame, {DateTime? now}) {
     if (frame.fromPeerId == actorId) return false;
     final raw = frame.payload['op'];
     if (raw is! Map) return false;
@@ -151,7 +151,7 @@ final class MeshPresenceTracker {
   /// filter entries whose TTL elapsed since the last sweep. Entries whose
   /// last event was `leave` are absent — the query answers "who is
   /// connected to this doc" right now.
-  List<MeshPresenceEntry> presence(final String docId, {final DateTime? now}) {
+  List<MeshPresenceEntry> presence(String docId, {DateTime? now}) {
     final doc = _docs[docId];
     if (doc == null) return const [];
     if (now != null) doc.sweepEphemeral(now);
@@ -162,14 +162,14 @@ final class MeshPresenceTracker {
       if (now != null && now.isAfter(parsed.expiresAt)) continue;
       entries.add(parsed);
     }
-    entries.sort((final a, final b) => a.peerId.compareTo(b.peerId));
+    entries.sort((a, b) => a.peerId.compareTo(b.peerId));
     return entries;
   }
 
   /// Drops expired ephemeral ops across every tracked document; returns
   /// how many were dropped. Expiry is commutative and idempotent (kernel
   /// contract, ADR 0029 §1).
-  int sweep(final DateTime now) {
+  int sweep(DateTime now) {
     var dropped = 0;
     for (final doc in _docs.values) {
       dropped += doc.sweepEphemeral(now);
@@ -182,16 +182,16 @@ final class MeshPresenceTracker {
   /// One dedicated kernel document per tracked doc id, ephemeral-only by
   /// usage: local events go through [applyLocalEphemeral], peer events
   /// through `applyRemote(ops, now:)` — neither ever touches durable state.
-  ConvergenceDoc _docFor(final String docId) => _docs.putIfAbsent(
+  ConvergenceDoc _docFor(String docId) => _docs.putIfAbsent(
     docId,
     () => ConvergenceDoc(docId: docId, actorId: actorId),
   );
 
   Map<String, Object?> _payload({
-    required final String peerId,
-    required final MeshEphemeralEvent event,
-    required final Duration ttl,
-    required final Map<String, Object?> details,
+    required String peerId,
+    required MeshEphemeralEvent event,
+    required Duration ttl,
+    required Map<String, Object?> details,
   }) {
     // Consumer payloads live ONLY under the nested `details` map (ADR
     // 0031 §6 — wire shape taken before any consumer depended on the
@@ -212,9 +212,9 @@ final class MeshPresenceTracker {
   }
 
   MeshPresenceEntry? _parseEntry(
-    final String docId,
-    final String peerId,
-    final Object? raw,
+    String docId,
+    String peerId,
+    Object? raw,
   ) {
     if (raw is! Map) return null;
     if (raw['del'] == true) return null; // Left: never listed as present.

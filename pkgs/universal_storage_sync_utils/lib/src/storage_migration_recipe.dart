@@ -144,13 +144,13 @@ final class StorageMigrationBlueprint {
   bool get canExecute => !hasIssues;
 
   /// Converts blueprint to a kernel migration plan.
-  MigrationPlan toMigrationPlan({final DateTime? createdAt}) => MigrationPlan(
+  MigrationPlan toMigrationPlan({DateTime? createdAt}) => MigrationPlan(
     id: id,
     sourceProfileHash: sourceProfileHash,
     targetProfileHash: targetProfileHash,
     createdAt: createdAt ?? DateTime.now().toUtc(),
     namespaceMappings: namespaceMappings.map(
-      (final source, final target) => MapEntry(source.value, target.value),
+      (source, target) => MapEntry(source.value, target.value),
     ),
     metadata: <String, dynamic>{
       'transition_kind': kind.name,
@@ -199,11 +199,11 @@ final class StorageMigrationRecipe {
 
   /// Builds a migration blueprint from source and target profiles.
   static StorageMigrationBlueprint build({
-    required final String id,
-    required final StorageProfile sourceProfile,
-    required final StorageProfile targetProfile,
-    final Map<StorageNamespace, StorageNamespace>? namespaceMappings,
-    final Map<String, dynamic> metadata = const <String, dynamic>{},
+    required String id,
+    required StorageProfile sourceProfile,
+    required StorageProfile targetProfile,
+    Map<StorageNamespace, StorageNamespace>? namespaceMappings,
+    Map<String, dynamic> metadata = const <String, dynamic>{},
   }) {
     final effectiveMappings =
         namespaceMappings ??
@@ -291,8 +291,8 @@ final class StorageMigrationRecipe {
 
     for (final targetNs in targetMap.values) {
       final mappedFrom = effectiveMappings.entries
-          .where((final entry) => entry.value == targetNs.namespace)
-          .map((final entry) => entry.key)
+          .where((entry) => entry.value == targetNs.namespace)
+          .map((entry) => entry.key)
           .firstOrNull;
       if (mappedFrom == null) {
         changes.add(
@@ -346,12 +346,12 @@ final class StorageMigrationRecipe {
 
   /// Builds one of the canonical first-party migration recipes.
   static StorageMigrationBlueprint buildFirstPartyRecipe({
-    required final StorageFirstPartyMigrationRecipe recipe,
-    required final String id,
-    final StorageProfile? sourceProfile,
-    final StorageProfile? targetProfile,
-    final Map<StorageNamespace, StorageNamespace>? namespaceMappings,
-    final Map<String, dynamic> metadata = const <String, dynamic>{},
+    required StorageFirstPartyMigrationRecipe recipe,
+    required String id,
+    StorageProfile? sourceProfile,
+    StorageProfile? targetProfile,
+    Map<StorageNamespace, StorageNamespace>? namespaceMappings,
+    Map<String, dynamic> metadata = const <String, dynamic>{},
   }) {
     switch (recipe) {
       case StorageFirstPartyMigrationRecipe.lastAnswerEnableGit:
@@ -409,9 +409,9 @@ final class StorageMigrationRecipe {
 
   /// last_answer: enable git-like local structure over existing files.
   static StorageMigrationBlueprint lastAnswerEnableGitRecipe({
-    required final String id,
-    final SyncInteractionLevel interactionLevel = SyncInteractionLevel.minimal,
-    final Map<String, dynamic> metadata = const <String, dynamic>{},
+    required String id,
+    SyncInteractionLevel interactionLevel = SyncInteractionLevel.minimal,
+    Map<String, dynamic> metadata = const <String, dynamic>{},
   }) {
     final source = _lastAnswerProfile(
       gitEnabled: false,
@@ -438,9 +438,9 @@ final class StorageMigrationRecipe {
 
   /// last_answer: disable git and keep file mode.
   static StorageMigrationBlueprint lastAnswerDisableGitRecipe({
-    required final String id,
-    final SyncInteractionLevel interactionLevel = SyncInteractionLevel.minimal,
-    final Map<String, dynamic> metadata = const <String, dynamic>{},
+    required String id,
+    SyncInteractionLevel interactionLevel = SyncInteractionLevel.minimal,
+    Map<String, dynamic> metadata = const <String, dynamic>{},
   }) {
     final source = _lastAnswerProfile(
       gitEnabled: true,
@@ -467,14 +467,14 @@ final class StorageMigrationRecipe {
 
   /// Interaction-level transition recipe that preserves decision history.
   static StorageMigrationBlueprint interactionLevelTransitionRecipe({
-    required final String id,
-    required final StorageProfile sourceProfile,
-    required final SyncInteractionLevel targetLevel,
-    final Map<String, dynamic> metadata = const <String, dynamic>{},
+    required String id,
+    required StorageProfile sourceProfile,
+    required SyncInteractionLevel targetLevel,
+    Map<String, dynamic> metadata = const <String, dynamic>{},
   }) {
     final targetNamespaces = sourceProfile.namespaces
         .map(
-          (final namespace) => StorageNamespaceProfile(
+          (namespace) => StorageNamespaceProfile(
             namespace: namespace.namespace,
             policy: namespace.policy,
             localEngineId: namespace.localEngineId,
@@ -513,16 +513,16 @@ final class StorageMigrationRecipe {
   }
 
   /// Computes a deterministic profile hash string.
-  static String profileHash(final StorageProfile profile) => sha256
+  static String profileHash(StorageProfile profile) => sha256
       .convert(utf8.encode(jsonEncode(_normalizeProfileJson(profile.toJson()))))
       .toString();
 
   static Map<StorageNamespace, StorageNamespace> _buildDefaultMappings(
-    final StorageProfile sourceProfile,
-    final StorageProfile targetProfile,
+    StorageProfile sourceProfile,
+    StorageProfile targetProfile,
   ) {
     final targetNamespaces = targetProfile.namespaces
-        .map((final ns) => ns.namespace.value)
+        .map((ns) => ns.namespace.value)
         .toSet();
 
     final mappings = <StorageNamespace, StorageNamespace>{};
@@ -536,20 +536,20 @@ final class StorageMigrationRecipe {
   }
 
   static StorageMigrationTransitionKind _classifyTransition(
-    final StorageProfile sourceProfile,
-    final StorageProfile targetProfile,
+    StorageProfile sourceProfile,
+    StorageProfile targetProfile,
   ) {
     final sourceHasRemote = sourceProfile.namespaces.any(
-      (final ns) => ns.requiresRemote,
+      (ns) => ns.requiresRemote,
     );
     final sourceHasLocal = sourceProfile.namespaces.any(
-      (final ns) => !ns.requiresRemote,
+      (ns) => !ns.requiresRemote,
     );
     final targetHasRemote = targetProfile.namespaces.any(
-      (final ns) => ns.requiresRemote,
+      (ns) => ns.requiresRemote,
     );
     final targetHasLocal = targetProfile.namespaces.any(
-      (final ns) => !ns.requiresRemote,
+      (ns) => !ns.requiresRemote,
     );
 
     if (!sourceHasRemote) {
@@ -578,10 +578,10 @@ final class StorageMigrationRecipe {
   }
 
   static String _resolveMigrationInteractionLevel({
-    required final StorageProfile sourceProfile,
-    required final StorageProfile targetProfile,
-    required final Map<StorageNamespace, StorageNamespace> effectiveMappings,
-    final Object? explicitLevel,
+    required StorageProfile sourceProfile,
+    required StorageProfile targetProfile,
+    required Map<StorageNamespace, StorageNamespace> effectiveMappings,
+    Object? explicitLevel,
   }) {
     if (explicitLevel is String && explicitLevel.isNotEmpty) {
       final normalized = explicitLevel.trim().toLowerCase();
@@ -619,8 +619,8 @@ final class StorageMigrationRecipe {
   }
 
   static StorageProfile _lastAnswerProfile({
-    required final bool gitEnabled,
-    required final SyncInteractionLevel interactionLevel,
+    required bool gitEnabled,
+    required SyncInteractionLevel interactionLevel,
   }) => StorageProfile(
     name: gitEnabled ? 'last_answer_git_enabled' : 'last_answer_files_only',
     namespaces: <StorageNamespaceProfile>[
@@ -661,11 +661,11 @@ final class StorageMigrationRecipe {
   );
 }
 
-Object? _normalizeProfileJson(final Object? node) {
+Object? _normalizeProfileJson(Object? node) {
   if (node is Map) {
     final entries = node.entries.toList()
       ..sort(
-        (final left, final right) =>
+        (left, right) =>
             left.key.toString().compareTo(right.key.toString()),
       );
     return <String, dynamic>{

@@ -23,13 +23,13 @@ final class OutboxManager {
   /// Entry ids are deterministic per (namespace, operation, path, seed) so
   /// repeated writes of identical content collapse into one entry.
   Future<String> enqueue({
-    required final StorageNamespaceProfile namespaceProfile,
-    required final StorageService service,
-    required final SyncQueueOperationType operation,
-    required final String path,
-    required final String content,
-    required final String? message,
-    required final FileOperationResult result,
+    required StorageNamespaceProfile namespaceProfile,
+    required StorageService service,
+    required SyncQueueOperationType operation,
+    required String path,
+    required String content,
+    required String? message,
+    required FileOperationResult result,
   }) async {
     final now = DateTime.now().toUtc();
     final contentDigest = operation == SyncQueueOperationType.write
@@ -68,14 +68,14 @@ final class OutboxManager {
     await _queueStore.mutateState(
       namespace: namespaceProfile.namespace,
       service: service,
-      update: (final queueState) async {
+      update: (queueState) async {
         final nextOutbox = <SyncOutboxEntry>[
           for (final entry in queueState.outbox)
             if (entry.id != newEntry.id &&
                 !(entry.path == newEntry.path && entry.operation == operation))
               entry,
           newEntry,
-        ]..sort((final a, final b) => a.createdAtUtc.compareTo(b.createdAtUtc));
+        ]..sort((a, b) => a.createdAtUtc.compareTo(b.createdAtUtc));
         nextOutboxLength = nextOutbox.length;
         return queueState.copyWith(outbox: nextOutbox);
       },
@@ -98,8 +98,8 @@ final class OutboxManager {
 
   /// Returns outbox snapshot for [namespace].
   Future<List<SyncOutboxEntry>> snapshot(
-    final StorageNamespace namespace, {
-    required final StorageService service,
+    StorageNamespace namespace, {
+    required StorageService service,
   }) async {
     final state = await _queueStore.loadState(
       namespace: namespace,
@@ -110,8 +110,8 @@ final class OutboxManager {
 
   /// Returns dead-letter snapshot for [namespace].
   Future<List<SyncOutboxEntry>> deadLetterSnapshot(
-    final StorageNamespace namespace, {
-    required final StorageService service,
+    StorageNamespace namespace, {
+    required StorageService service,
   }) async {
     final state = await _queueStore.loadState(
       namespace: namespace,
@@ -122,7 +122,7 @@ final class OutboxManager {
 }
 
 /// FNV-1a 64-bit hash used for stable content digests and entry ids.
-String hashString(final String value) {
+String hashString(String value) {
   final mask64 = BigInt.parse('ffffffffffffffff', radix: 16);
   final prime = BigInt.parse('100000001b3', radix: 16);
   var hash = BigInt.parse('cbf29ce484222325', radix: 16);
@@ -136,10 +136,10 @@ String hashString(final String value) {
 
 /// Deterministic outbox entry id; identical inputs collapse to one entry.
 String deterministicEntryId({
-  required final StorageNamespace namespace,
-  required final SyncQueueOperationType operation,
-  required final String path,
-  required final String seed,
+  required StorageNamespace namespace,
+  required SyncQueueOperationType operation,
+  required String path,
+  required String seed,
 }) => hashString('${namespace.value}|${operation.name}|$path|$seed');
 
 /// Result of one namespace sync replay pass.
@@ -179,11 +179,11 @@ final class OutboxReplayer {
 
   /// Runs one replay pass over [queueState] for [namespaceProfile].
   Future<NamespaceSyncReport> run({
-    required final StorageNamespaceProfile namespaceProfile,
-    required final SyncInteractionLevel interactionLevel,
-    required final StorageService service,
-    required final SyncQueueState queueState,
-    required final Future<StorageOperationResult> Function() performSync,
+    required StorageNamespaceProfile namespaceProfile,
+    required SyncInteractionLevel interactionLevel,
+    required StorageService service,
+    required SyncQueueState queueState,
+    required Future<StorageOperationResult> Function() performSync,
   }) async {
     final now = DateTime.now().toUtc();
     final queuePolicy = namespaceProfile.queuePolicy;
@@ -224,11 +224,11 @@ final class OutboxReplayer {
       outbox.add(entry);
     }
 
-    outbox.sort((final a, final b) => a.createdAtUtc.compareTo(b.createdAtUtc));
+    outbox.sort((a, b) => a.createdAtUtc.compareTo(b.createdAtUtc));
 
     final dueEntries = outbox
         .where(
-          (final entry) =>
+          (entry) =>
               entry.nextAttemptAtUtc == null ||
               !entry.nextAttemptAtUtc!.isAfter(now),
         )
@@ -246,9 +246,9 @@ final class OutboxReplayer {
 
       final syncWasSkipped = metadata['sync_skipped'] != null;
       if (dueEntries.isNotEmpty && !syncWasSkipped) {
-        final replayedIds = dueEntries.map((final item) => item.id).toSet();
+        final replayedIds = dueEntries.map((item) => item.id).toSet();
         outbox = outbox
-            .where((final entry) => !replayedIds.contains(entry.id))
+            .where((entry) => !replayedIds.contains(entry.id))
             .toList(growable: false);
 
         for (final replayed in dueEntries) {
@@ -277,7 +277,7 @@ final class OutboxReplayer {
     } on Object catch (error) {
       final message = errorMessage(error);
       final isConflict = isConflictError(error);
-      final dueIds = dueEntries.map((final entry) => entry.id).toSet();
+      final dueIds = dueEntries.map((entry) => entry.id).toSet();
       final nextOutbox = <SyncOutboxEntry>[];
 
       for (final entry in outbox) {
@@ -370,11 +370,11 @@ final class OutboxReplayer {
 
   /// Stages a conflict bound to [outboxEntry], honoring hook or minimal mode.
   Future<ConflictStageResult> stageConflict({
-    required final StorageNamespaceProfile namespaceProfile,
-    required final SyncInteractionLevel interactionLevel,
-    required final SyncOutboxEntry outboxEntry,
-    required final String reason,
-    required final List<SyncConflictEntry> existingConflicts,
+    required StorageNamespaceProfile namespaceProfile,
+    required SyncInteractionLevel interactionLevel,
+    required SyncOutboxEntry outboxEntry,
+    required String reason,
+    required List<SyncConflictEntry> existingConflicts,
   }) async {
     final now = DateTime.now().toUtc();
     final conflictId = 'conflict_${outboxEntry.id}';
@@ -414,7 +414,7 @@ final class OutboxReplayer {
     );
 
     final conflictIndex = existingConflicts.indexWhere(
-      (final item) => item.id == conflict.id,
+      (item) => item.id == conflict.id,
     );
     final nextConflicts = List<SyncConflictEntry>.from(existingConflicts);
     if (conflictIndex >= 0) {
@@ -468,13 +468,13 @@ final class ConflictStageResult {
 
 /// Applies a resolved decision to the persisted conflict/outbox queues.
 Future<void> applyDecisionToQueues({
-  required final DecisionStore decisionStore,
-  required final SyncQueueStore queueStore,
-  required final ObservationHub observations,
-  required final StorageProfileResolver resolver,
-  required final StorageDecision decision,
-  required final DecisionState targetState,
-  required final String note,
+  required DecisionStore decisionStore,
+  required SyncQueueStore queueStore,
+  required ObservationHub observations,
+  required StorageProfileResolver resolver,
+  required StorageDecision decision,
+  required DecisionState targetState,
+  required String note,
 }) async {
   final conflictEntryId = decision.metadata['conflict_entry_id']?.toString();
   final outboxEntryId = decision.metadata['outbox_entry_id']?.toString();
@@ -490,7 +490,7 @@ Future<void> applyDecisionToQueues({
   await queueStore.mutateState(
     namespace: decision.namespace,
     service: service,
-    update: (final currentState) async {
+    update: (currentState) async {
       var conflicts = List<SyncConflictEntry>.from(currentState.conflicts);
       final outbox = List<SyncOutboxEntry>.from(currentState.outbox);
       final deadLetter = List<SyncOutboxEntry>.from(currentState.deadLetter);
@@ -498,7 +498,7 @@ Future<void> applyDecisionToQueues({
       if (conflictEntryId != null && conflictEntryId.isNotEmpty) {
         conflicts = conflicts
             .map(
-              (final entry) => entry.id == conflictEntryId
+              (entry) => entry.id == conflictEntryId
                   ? entry.copyWith(
                       decisionState: targetState,
                       updatedAtUtc: DateTime.now().toUtc(),
@@ -513,14 +513,14 @@ Future<void> applyDecisionToQueues({
 
         if (targetState != DecisionState.needsUserDecision) {
           conflicts = conflicts
-              .where((final entry) => entry.id != conflictEntryId)
+              .where((entry) => entry.id != conflictEntryId)
               .toList(growable: false);
         }
       }
 
       if (outboxEntryId != null && outboxEntryId.isNotEmpty) {
         final entryIndex = outbox.indexWhere(
-          (final entry) => entry.id == outboxEntryId,
+          (entry) => entry.id == outboxEntryId,
         );
         if (entryIndex >= 0) {
           final entry = outbox[entryIndex];
@@ -561,7 +561,7 @@ Future<void> applyDecisionToQueues({
 }
 
 /// Deduplicates non-empty strings preserving order.
-List<String> uniqueStrings(final List<String> values) {
+List<String> uniqueStrings(List<String> values) {
   final seen = <String>{};
   final result = <String>[];
   for (final value in values) {
@@ -574,14 +574,14 @@ List<String> uniqueStrings(final List<String> values) {
 }
 
 /// True when [error] represents a sync/merge conflict requiring a decision.
-bool isConflictError(final Object error) =>
+bool isConflictError(Object error) =>
     error is SyncConflictException ||
     error is GitConflictException ||
     error is MergeConflictException ||
     error is DecisionRequiredException;
 
 /// Extracts a human-readable message from storage errors.
-String errorMessage(final Object error) {
+String errorMessage(Object error) {
   if (error is StorageException) {
     return error.message;
   }

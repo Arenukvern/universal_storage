@@ -9,7 +9,7 @@ enum DecisionState { autoResolved, needsUserDecision, blocked }
 enum MigrationDecisionAction { overwrite, skip, abort }
 
 MigrationDecisionAction? migrationDecisionActionFromString(
-  final Object? value,
+  Object? value,
 ) {
   final name = value?.toString();
   if (name == null || name.isEmpty) {
@@ -34,8 +34,8 @@ final class StorageOperationResult {
   });
 
   factory StorageOperationResult.success({
-    final String message = '',
-    final Map<String, dynamic> metadata = const <String, dynamic>{},
+    String message = '',
+    Map<String, dynamic> metadata = const <String, dynamic>{},
   }) => StorageOperationResult(
     success: true,
     message: message,
@@ -43,9 +43,9 @@ final class StorageOperationResult {
   );
 
   factory StorageOperationResult.failure({
-    required final String message,
-    final DecisionState decisionState = DecisionState.blocked,
-    final Map<String, dynamic> metadata = const <String, dynamic>{},
+    required String message,
+    DecisionState decisionState = DecisionState.blocked,
+    Map<String, dynamic> metadata = const <String, dynamic>{},
   }) => StorageOperationResult(
     success: false,
     message: message,
@@ -53,10 +53,10 @@ final class StorageOperationResult {
     metadata: metadata,
   );
 
-  factory StorageOperationResult.fromJson(final Map<String, dynamic> json) {
+  factory StorageOperationResult.fromJson(Map<String, dynamic> json) {
     final stateName = (json['decision_state'] ?? 'autoResolved').toString();
     final state = DecisionState.values.firstWhere(
-      (final e) => e.name == stateName,
+      (e) => e.name == stateName,
       orElse: () => DecisionState.autoResolved,
     );
 
@@ -115,15 +115,15 @@ final class StorageObservationEvent {
     this.metadata = const <String, dynamic>{},
   });
 
-  factory StorageObservationEvent.fromJson(final Map<String, dynamic> json) {
+  factory StorageObservationEvent.fromJson(Map<String, dynamic> json) {
     final typeName = (json['type'] ?? 'updated').toString();
     final originName = (json['origin'] ?? 'system').toString();
     final type = StorageObservationType.values.firstWhere(
-      (final e) => e.name == typeName,
+      (e) => e.name == typeName,
       orElse: () => StorageObservationType.updated,
     );
     final origin = StorageOperationOrigin.values.firstWhere(
-      (final e) => e.name == originName,
+      (e) => e.name == originName,
       orElse: () => StorageOperationOrigin.system,
     );
     final timestamp =
@@ -179,7 +179,7 @@ final class StorageDecision {
     this.metadata = const <String, dynamic>{},
   });
 
-  factory StorageDecision.fromJson(final Map<String, dynamic> json) =>
+  factory StorageDecision.fromJson(Map<String, dynamic> json) =>
       StorageDecision(
         id: (json['id'] ?? '').toString(),
         namespace: StorageNamespace.fromJson(json['namespace']),

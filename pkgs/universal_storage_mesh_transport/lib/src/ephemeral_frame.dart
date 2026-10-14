@@ -15,7 +15,7 @@ enum MeshEphemeralEvent {
   /// A peer refreshed its liveness for the doc.
   ping;
 
-  static MeshEphemeralEvent fromName(final String value) =>
+  static MeshEphemeralEvent fromName(String value) =>
       switch (value) {
         'join' => MeshEphemeralEvent.join,
         'leave' => MeshEphemeralEvent.leave,
@@ -57,7 +57,7 @@ final class MeshEphemeralFrame {
     this.signature,
   });
 
-  factory MeshEphemeralFrame.fromJson(final Map<String, dynamic> json) =>
+  factory MeshEphemeralFrame.fromJson(Map<String, dynamic> json) =>
       MeshEphemeralFrame(
         docId: json['doc_id'] as String,
         fromPeerId: json['from_peer_id'] as String,
@@ -77,7 +77,7 @@ final class MeshEphemeralFrame {
       );
 
   /// Restores a frame from [encode] bytes.
-  factory MeshEphemeralFrame.decode(final List<int> bytes) {
+  factory MeshEphemeralFrame.decode(List<int> bytes) {
     final raw = jsonDecode(utf8.decode(bytes)) as Map<dynamic, dynamic>;
     if (raw['v'] != MeshEphemeralFrameCodec.version) {
       throw ArgumentError('Unsupported ephemeral frame: ${raw['v']}');
@@ -133,7 +133,7 @@ final class MeshEphemeralFrame {
 
   /// Returns a copy of this frame carrying [signature] (ADR 0031 §3:
   /// sign, then send).
-  MeshEphemeralFrame withSignature(final Uint8List signature) =>
+  MeshEphemeralFrame withSignature(Uint8List signature) =>
       MeshEphemeralFrame(
         docId: docId,
         fromPeerId: fromPeerId,
@@ -163,7 +163,7 @@ final class MeshEphemeralFrame {
   /// not a decodable frame of this codec version (garbage, non-JSON, or
   /// an unknown version). Transports use this to skip bytes that were
   /// never ephemeral frames — malformed traffic is ignored, never fatal.
-  static MeshEphemeralFrame? tryDecode(final List<int> bytes) {
+  static MeshEphemeralFrame? tryDecode(List<int> bytes) {
     try {
       return MeshEphemeralFrame.decode(bytes);
     }
@@ -177,14 +177,14 @@ final class MeshEphemeralFrame {
   }
 
   /// True once [ttl] has elapsed relative to [now]; requires [issuedAtMs].
-  bool isExpiredAt(final DateTime now) {
+  bool isExpiredAt(DateTime now) {
     final issued = issuedAtMs;
     if (issued == null) return false;
     return now.millisecondsSinceEpoch > issued + ttl.inMilliseconds;
   }
 
   @override
-  bool operator ==(final Object other) =>
+  bool operator ==(Object other) =>
       identical(this, other) ||
       (other is MeshEphemeralFrame &&
           other.docId == docId &&
@@ -202,7 +202,7 @@ final class MeshEphemeralFrame {
   String toString() =>
       'MeshEphemeralFrame($event from $fromPeerId on $docId)';
 
-  static bool _mapsEqual(final Map<String, Object?> a, final Map b) {
+  static bool _mapsEqual(Map<String, Object?> a, Map b) {
     if (a.length != b.length) return false;
     for (final entry in a.entries) {
       if (!b.containsKey(entry.key) || b[entry.key] != entry.value) {
@@ -212,7 +212,7 @@ final class MeshEphemeralFrame {
     return true;
   }
 
-  static bool _bytesEqual(final List<int>? a, final List<int>? b) {
+  static bool _bytesEqual(List<int>? a, List<int>? b) {
     if (identical(a, b)) return true;
     if (a == null || b == null || a.length != b.length) return false;
     for (var i = 0; i < a.length; i++) {

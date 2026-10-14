@@ -19,10 +19,10 @@ final class AddressedRelayProtocol {
   static const ephemeralKind = 'ephemeral';
 
   static Uint8List encode({
-    required final String fromPeerId,
-    required final String toPeerId,
-    required final List<int> payload,
-    final String kind = dataKind,
+    required String fromPeerId,
+    required String toPeerId,
+    required List<int> payload,
+    String kind = dataKind,
   }) => Uint8List.fromList(
     utf8.encode(
       jsonEncode({
@@ -36,7 +36,7 @@ final class AddressedRelayProtocol {
   );
 
   static ({String fromPeerId, String toPeerId, Uint8List payload, String kind})
-  decode(final List<int> bytes) {
+  decode(List<int> bytes) {
     final raw = jsonDecode(utf8.decode(bytes)) as Map<dynamic, dynamic>;
     if (raw['v'] != version) {
       throw ArgumentError('Unsupported relay protocol: ${raw['v']}');

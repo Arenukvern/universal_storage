@@ -61,7 +61,7 @@ final class MeshWorldSession implements Pulseable {
   /// Registers [participant] in the sync cycle (registration only —
   /// nothing is written until the next [pulse]/[sync]). The caller keeps
   /// ownership (lifecycle, dispose); this session never disposes it.
-  void attachParticipant(final MeshSyncParticipant participant) {
+  void attachParticipant(MeshSyncParticipant participant) {
     _participants.add(participant);
   }
 
@@ -77,19 +77,19 @@ final class MeshWorldSession implements Pulseable {
   /// Publishes what this replica wants DELIVERED (ADR 0048 §2), resolved
   /// immediately; re-set before every pulse for per-cycle re-evaluation.
   /// Null clears back to the wildcard.
-  void setInterest(final InterestPolicy? policy) {
+  void setInterest(InterestPolicy? policy) {
     final provider = storage.provider;
     if (provider is MeshStorageProvider) provider.setInterest(policy);
   }
 
   /// Receiver-expressed delivery preference (ADR 0048 §3).
-  void setDeliveryPriority(final Map<String, int> priority) {
+  void setDeliveryPriority(Map<String, int> priority) {
     final provider = storage.provider;
     if (provider is MeshStorageProvider) provider.setDeliveryPriority(priority);
   }
 
   /// Asks peers to cap their delta (backpressure-lite, ADR 0048 §3).
-  void setIncomingBudget(final int? maxOps) {
+  void setIncomingBudget(int? maxOps) {
     final provider = storage.provider;
     if (provider is MeshStorageProvider) provider.setIncomingBudget(maxOps);
   }
@@ -107,7 +107,7 @@ final class MeshWorldSession implements Pulseable {
   /// last. Wrapped in a timeout because an addressed relay silently drops
   /// frames addressed to offline peers; without it manual sync hangs.
   Future<void> sync({
-    final Duration timeout = const Duration(minutes: 1),
+    Duration timeout = const Duration(minutes: 1),
   }) async {
     await _syncCycle().timeout(timeout);
   }
@@ -141,7 +141,7 @@ final class MeshWorldSession implements Pulseable {
     final inFlight = _pulseInFlight;
     if (inFlight != null) return inFlight;
     final cycle = sync()
-        .catchError((final Object error) {
+        .catchError((Object error) {
           // Background cycle: never break the host's loop on a relay drop
           // or timeout.
         })
@@ -158,10 +158,10 @@ final class MeshWorldSession implements Pulseable {
   /// still running is skipped — the next tick picks the work up.
   /// Production hosts drive [pulse] from their own scheduler instead.
   void startPeriodicPulse({
-    final Duration interval = const Duration(seconds: 30),
+    Duration interval = const Duration(seconds: 30),
   }) {
     stopPeriodicPulse();
-    _pulseTimer = Timer.periodic(interval, (final _) {
+    _pulseTimer = Timer.periodic(interval, (_) {
       unawaited(pulse());
     });
   }
@@ -205,7 +205,7 @@ final class MeshWorldSession implements Pulseable {
   /// job (ADR 0031 §1). When the presence link is up, the join frame goes
   /// out immediately; otherwise the doc stays queued and joins on the
   /// next (re)connect.
-  Future<void> joinDoc(final String docId) async {
+  Future<void> joinDoc(String docId) async {
     _presenceDocs.add(docId);
     final link = _presenceLink;
     if (link != null &&
@@ -216,7 +216,7 @@ final class MeshWorldSession implements Pulseable {
 
   /// Leaves [docId]'s presence channel: a signed leave frame goes out so
   /// peers drop this peer immediately (ADR 0031 §1).
-  Future<void> leaveDoc(final String docId) async {
+  Future<void> leaveDoc(String docId) async {
     _presenceDocs.remove(docId);
     final session = _presenceSessions.remove(docId);
     if (session != null) await _closePresenceSession(session);
@@ -225,7 +225,7 @@ final class MeshWorldSession implements Pulseable {
   /// Liveness refresh on the doc's channel (ADR 0031 §5: ping on
   /// activity). Best-effort: a dead link swallows the ping — peers' ttl
   /// sweeps are the crash backstop.
-  Future<void> notifyPresenceActivity(final String docId) async {
+  Future<void> notifyPresenceActivity(String docId) async {
     final session = _presenceSessions[docId];
     if (session == null) return;
     try {
@@ -239,8 +239,8 @@ final class MeshWorldSession implements Pulseable {
   /// ephemeral ops (ADR 0029 §1, ADR 0031 §2). Sweeps on read (expiry is
   /// the crash backstop).
   List<MeshPresenceEntry> presence(
-    final String docId, {
-    final DateTime? now,
+    String docId, {
+    DateTime? now,
   }) =>
       _presenceTracker?.presence(docId, now: now ?? DateTime.now()) ??
       const [];
@@ -251,7 +251,7 @@ final class MeshWorldSession implements Pulseable {
       (_presenceObserver?.rejectedFrameCount ?? 0) +
       _presenceSessions.values.fold(
         0,
-        (final n, final session) => n + session.rejectedFrameCount,
+        (n, session) => n + session.rejectedFrameCount,
       );
 
   /// Every dropped presence frame with its rejection reason, oldest
@@ -263,7 +263,7 @@ final class MeshWorldSession implements Pulseable {
 
   /// Owns the presence channel over a relay client's connection: the
   /// session constructs the relay transport and disposes it at teardown.
-  void attachRelayPresenceLink(final AddressedRelayClient client) {
+  void attachRelayPresenceLink(AddressedRelayClient client) {
     _startPresenceLink(
       AddressedRelayEphemeralTransport(client: client),
       ownedBySession: true,
@@ -273,19 +273,19 @@ final class MeshWorldSession implements Pulseable {
   /// Attaches a caller-owned ephemeral link (any transport plugs in,
   /// ADR 0031 §2). The session never disposes caller-owned transports.
   void attachPresenceLink(
-    final EphemeralFrameTransport transport, {
-    final bool ownedBySession = false,
+    EphemeralFrameTransport transport, {
+    bool ownedBySession = false,
   }) => _startPresenceLink(transport, ownedBySession: ownedBySession);
 
   /// Test seam kept from the app service: same as [attachPresenceLink]
   /// with the caller keeping ownership.
   @visibleForTesting
-  void attachPresenceTransport(final EphemeralFrameTransport transport) =>
+  void attachPresenceTransport(EphemeralFrameTransport transport) =>
       attachPresenceLink(transport);
 
   void _startPresenceLink(
-    final EphemeralFrameTransport inner, {
-    required final bool ownedBySession,
+    EphemeralFrameTransport inner, {
+    required bool ownedBySession,
   }) {
     unawaited(_stopPresenceLink(sendLeaves: false));
     _presenceTracker ??= MeshPresenceTracker(actorId: selfId);
@@ -317,7 +317,7 @@ final class MeshWorldSession implements Pulseable {
     }
   }
 
-  void _onPresenceLinkChanged(final EphemeralLinkState state) {
+  void _onPresenceLinkChanged(EphemeralLinkState state) {
     switch (state) {
       case EphemeralLinkState.connected:
         // Re-join the docs the caller asked for; the link came back.
@@ -338,7 +338,7 @@ final class MeshWorldSession implements Pulseable {
     final inFlight = _presenceOpening;
     if (inFlight != null) return inFlight;
     final cycle = _openPresenceSessionsNow()
-        .catchError((final Object _) {
+        .catchError((Object _) {
           // Link replaced or transport gone mid-cycle.
         })
         .whenComplete(() => _presenceOpening = null);
@@ -380,7 +380,7 @@ final class MeshWorldSession implements Pulseable {
     }
   }
 
-  Future<void> _closePresenceSession(final MeshPresenceSession session) async {
+  Future<void> _closePresenceSession(MeshPresenceSession session) async {
     try {
       await session.close(); // leave frame; best-effort
     } on Object {
@@ -389,7 +389,7 @@ final class MeshWorldSession implements Pulseable {
     }
   }
 
-  Future<void> _stopPresenceLink({required final bool sendLeaves}) async {
+  Future<void> _stopPresenceLink({required bool sendLeaves}) async {
     // Tear the link down SYNCHRONOUSLY first: a replacement link may
     // already be attaching by the time the awaits below settle, so every
     // old-link resource is captured into locals up front and only those
@@ -423,8 +423,8 @@ final class MeshWorldSession implements Pulseable {
   /// Peers recorded WITHOUT key bytes stay sync-only: their frames are
   /// rejected as unauthenticated named data, never folded.
   void registerPeerIdentityKey({
-    required final String peerId,
-    required final List<int> identityKey,
+    required String peerId,
+    required List<int> identityKey,
   }) {
     if (identityKey.isEmpty) return;
     _presenceAuthenticator ??= MeshFrameAuthenticator();
@@ -460,7 +460,7 @@ final class MeshWorldSession implements Pulseable {
     final existing = _identityKeyPair;
     if (existing != null) return Future<SimpleKeyPair>.value(existing);
     return _identityFuture ??= identityKeyPairProvider().then(
-      (final keyPair) {
+      (keyPair) {
         _identityKeyPair = keyPair;
         return keyPair;
       },
@@ -504,7 +504,7 @@ final class _PresenceLink implements EphemeralFrameTransport {
     buffered.forEach(_frames.add);
   }
 
-  void _onInnerFrame(final MeshEphemeralFrame frame) {
+  void _onInnerFrame(MeshEphemeralFrame frame) {
     if (_frames.hasListener) {
       _frames.add(frame);
     } else {
@@ -522,7 +522,7 @@ final class _PresenceLink implements EphemeralFrameTransport {
   Stream<EphemeralLinkState> get connectionChanges => _changes.stream;
 
   @override
-  Future<void> send(final MeshEphemeralFrame frame) => _inner.send(frame);
+  Future<void> send(MeshEphemeralFrame frame) => _inner.send(frame);
 
   /// Stops consuming the inner transport and closes the broadcast
   /// streams. Never awaited from teardown paths that must stay

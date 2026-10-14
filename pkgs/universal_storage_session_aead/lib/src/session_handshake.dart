@@ -35,7 +35,7 @@ enum SessionHandshakeRole {
 /// Library-shared codec helpers (private, top level: the message classes
 /// and [SessionHandshakeCodec] all use them).
 
-Map<String, Object?> _decodeBody(final Uint8List body) {
+Map<String, Object?> _decodeBody(Uint8List body) {
   if (body.isEmpty) {
     throw const SessionHandshakeException('handshake message is empty');
   }
@@ -65,7 +65,7 @@ Map<String, Object?> _decodeBody(final Uint8List body) {
   return Map<String, Object?>.from(decoded);
 }
 
-String _peerId(final Map<String, Object?> json) {
+String _peerId(Map<String, Object?> json) {
   final id = json['id'];
   if (id is! String || id.isEmpty) {
     throw const SessionHandshakeException('handshake message is missing id');
@@ -73,7 +73,7 @@ String _peerId(final Map<String, Object?> json) {
   return id;
 }
 
-Uint8List _fixedKey(final Map<String, Object?> json, final String field) {
+Uint8List _fixedKey(Map<String, Object?> json, String field) {
   final raw = json[field];
   if (raw is! String || raw.isEmpty) {
     throw SessionHandshakeException('handshake message is missing $field');
@@ -85,7 +85,7 @@ Uint8List _fixedKey(final Map<String, Object?> json, final String field) {
   return Uint8List.fromList(decoded);
 }
 
-Uint8List? _tryBase64(final String value) {
+Uint8List? _tryBase64(String value) {
   try {
     return base64Decode(value);
   } on FormatException {
@@ -93,7 +93,7 @@ Uint8List? _tryBase64(final String value) {
   }
 }
 
-Uint8List _jsonBody(final Map<String, Object?> fields) =>
+Uint8List _jsonBody(Map<String, Object?> fields) =>
     Uint8List.fromList(utf8.encode(jsonEncode(fields)));
 
 /// The initiator's hello (message 1) — also the unsigned body of the
@@ -109,7 +109,7 @@ final class SessionHello {
   /// Parses [body] (a received message 1, or the unsigned prefix of a
   /// message 2). Throws [SessionHandshakeException] on anything malformed —
   /// shape guards run BEFORE any signature check.
-  factory SessionHello.parse(final Uint8List body) {
+  factory SessionHello.parse(Uint8List body) {
     final json = _decodeBody(body);
     return SessionHello(
       ephemeralKey: _fixedKey(json, 'e'),
@@ -154,8 +154,8 @@ final class SessionReply {
   /// Assembles a reply from already-signed bytes (responder side — the
   /// signed body is reused verbatim, never re-encoded).
   factory SessionReply.signed({
-    required final Uint8List unsignedBody,
-    required final Uint8List signature,
+    required Uint8List unsignedBody,
+    required Uint8List signature,
   }) => SessionReply._(
     SessionHello.parse(unsignedBody),
     unsignedBody,
@@ -166,7 +166,7 @@ final class SessionReply {
 
   /// Parses received reply bytes; throws [SessionHandshakeException] when
   /// they are too short to carry a signature or the body is malformed.
-  factory SessionReply.parse(final Uint8List bytes) {
+  factory SessionReply.parse(Uint8List bytes) {
     if (bytes.length <= _signatureLength) {
       throw const SessionHandshakeException(
         'reply is too short to carry a signature',
@@ -214,7 +214,7 @@ final class SessionConfirm {
 
   /// Parses received confirm bytes; throws [SessionHandshakeException]
   /// when the signature is missing or malformed.
-  factory SessionConfirm.parse(final Uint8List bytes) {
+  factory SessionConfirm.parse(Uint8List bytes) {
     final json = _decodeBody(bytes);
     final signature = json['sig'];
     if (signature is! String || signature.isEmpty) {
@@ -271,10 +271,10 @@ final class SessionHandshakeCodec {
   /// primitive mean "cannot sign" and propagate — signing failures are
   /// never silently converted to wire bytes.
   static Future<Uint8List> sign({
-    required final SessionHandshakeRole role,
-    required final Uint8List helloBody,
-    required final Uint8List replyBody,
-    required final SimpleKeyPair identityKeyPair,
+    required SessionHandshakeRole role,
+    required Uint8List helloBody,
+    required Uint8List replyBody,
+    required SimpleKeyPair identityKeyPair,
   }) async {
     final signature = await _ed25519.sign(
       signatureInput(
@@ -291,11 +291,11 @@ final class SessionHandshakeCodec {
   /// Errors from the primitive (malformed point material in an
   /// attacker-chosen key) mean "not authentic", never "abort".
   static Future<bool> verify({
-    required final SessionHandshakeRole role,
-    required final Uint8List helloBody,
-    required final Uint8List replyBody,
-    required final Uint8List signature,
-    required final List<int> identityKey,
+    required SessionHandshakeRole role,
+    required Uint8List helloBody,
+    required Uint8List replyBody,
+    required Uint8List signature,
+    required List<int> identityKey,
   }) async {
     try {
       return await _ed25519.verify(
@@ -324,9 +324,9 @@ final class SessionHandshakeCodec {
   /// unambiguous; the protocol-name prefix makes cross-protocol replay
   /// (e.g. reusing a `mesh-pair/v1` signature) impossible.
   static Uint8List signatureInput({
-    required final SessionHandshakeRole role,
-    required final Uint8List helloBody,
-    required final Uint8List replyBody,
+    required SessionHandshakeRole role,
+    required Uint8List helloBody,
+    required Uint8List replyBody,
   }) {
     final prefix = utf8.encode('${SessionAeadProtocol.name}/${role.label}\n');
     return Uint8List.fromList([
@@ -344,8 +344,8 @@ final class SessionHandshakeCodec {
 
   /// ECDH over the exchanged ephemerals.
   static Future<SecretKey> sharedSecret({
-    required final SimpleKeyPair ownEphemeralKeyPair,
-    required final Uint8List peerEphemeralKey,
+    required SimpleKeyPair ownEphemeralKeyPair,
+    required Uint8List peerEphemeralKey,
   }) => _x25519.sharedSecretKey(
     keyPair: ownEphemeralKeyPair,
     remotePublicKey: SimplePublicKey(
@@ -359,11 +359,11 @@ final class SessionHandshakeCodec {
   /// and the SHA-256 of the full transcript (channel binding: keys are
   /// welded to the exact authenticated bytes).
   static Future<SessionDirectionalKeys> deriveKeys({
-    required final SecretKey shared,
-    required final String initiatorId,
-    required final String responderId,
-    required final Uint8List helloBody,
-    required final Uint8List replyBody,
+    required SecretKey shared,
+    required String initiatorId,
+    required String responderId,
+    required Uint8List helloBody,
+    required Uint8List replyBody,
   }) async {
     final transcript = await _sha256.hash(
       Uint8List.fromList([...helloBody, ...replyBody]),
@@ -386,7 +386,7 @@ final class SessionHandshakeCodec {
 
   /// Cipher for the RESPONDER side (sends with the first okm half).
   static SessionCipher responderCipher(
-    final SessionDirectionalKeys keys,
+    SessionDirectionalKeys keys,
   ) => SessionCipher(
     sendKey: SecretKeyData(keys.responderToInitiator),
     receiveKey: SecretKeyData(keys.initiatorToResponder),
@@ -394,19 +394,19 @@ final class SessionHandshakeCodec {
 
   /// Cipher for the INITIATOR side (sends with the second okm half).
   static SessionCipher initiatorCipher(
-    final SessionDirectionalKeys keys,
+    SessionDirectionalKeys keys,
   ) => SessionCipher(
     sendKey: SecretKeyData(keys.initiatorToResponder),
     receiveKey: SecretKeyData(keys.responderToInitiator),
   );
 
-  static Uint8List _u32(final int value) {
+  static Uint8List _u32(int value) {
     final bytes = Uint8List(4);
     ByteData.view(bytes.buffer).setUint32(0, value, Endian.little);
     return bytes;
   }
 
-  static String _hex(final List<int> bytes) => bytes
-      .map((final b) => b.toRadixString(16).padLeft(2, '0'))
+  static String _hex(List<int> bytes) => bytes
+      .map((b) => b.toRadixString(16).padLeft(2, '0'))
       .join();
 }

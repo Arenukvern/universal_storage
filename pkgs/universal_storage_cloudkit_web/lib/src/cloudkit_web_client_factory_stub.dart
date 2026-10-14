@@ -15,26 +15,26 @@ class _UnsupportedCloudKitWebClient implements CloudKitWebClient {
   );
 
   @override
-  Future<void> initialize(final CloudKitBridgeConfig config) async =>
+  Future<void> initialize(CloudKitBridgeConfig config) async =>
       throw _error;
 
   @override
-  Future<CloudKitRecord?> fetchRecordByPath(final String path) async =>
+  Future<CloudKitRecord?> fetchRecordByPath(String path) async =>
       throw _error;
 
   @override
-  Future<void> saveRecord(final CloudKitRecord record) async => throw _error;
+  Future<void> saveRecord(CloudKitRecord record) async => throw _error;
 
   @override
-  Future<void> deleteRecord(final String recordName) async => throw _error;
+  Future<void> deleteRecord(String recordName) async => throw _error;
 
   @override
   Future<List<CloudKitRecord>> queryByPathPrefix(
-    final String pathPrefix,
+    String pathPrefix,
   ) async => throw _error;
 
   @override
-  Future<CloudKitDelta> fetchChanges({final String? serverChangeToken}) async =>
+  Future<CloudKitDelta> fetchChanges({String? serverChangeToken}) async =>
       throw _error;
 
   @override

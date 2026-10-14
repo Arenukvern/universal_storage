@@ -16,7 +16,7 @@ final class WorldMemberRef {
 
   Map<String, Object?> toJson() => {'docId': docId, 'vv': version.toJson()};
 
-  static WorldMemberRef fromJson(final Map<String, Object?> json) =>
+  static WorldMemberRef fromJson(Map<String, Object?> json) =>
       WorldMemberRef(
         docId: json['docId']! as String,
         version: VersionVector.fromJson(
@@ -25,7 +25,7 @@ final class WorldMemberRef {
       );
 
   @override
-  bool operator ==(final Object other) =>
+  bool operator ==(Object other) =>
       other is WorldMemberRef &&
       other.docId == docId &&
       other.version == version;

@@ -11,7 +11,7 @@ class FilesPage extends StatelessWidget {
   final MeshAppState state;
 
   @override
-  Widget build(final BuildContext context) => Scaffold(
+  Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
       title: Text('${state.selfId} files'),
       actions: [
@@ -65,7 +65,7 @@ class FilesPage extends StatelessWidget {
     ),
   );
 
-  Future<void> _createFile(final BuildContext context) async {
+  Future<void> _createFile(BuildContext context) async {
     final pathController = TextEditingController(text: 'notes/demo.json');
     final contentController = TextEditingController();
     await showDialog<void>(
@@ -108,8 +108,8 @@ class FilesPage extends StatelessWidget {
   }
 
   Future<void> _showFile(
-    final BuildContext context,
-    final FileEntry file,
+    BuildContext context,
+    FileEntry file,
   ) async {
     final content = await state.readFile(file);
     if (!context.mounted) return;

@@ -53,7 +53,7 @@ Future<void> main() async {
     final pair = FakeMeshPair.paired(a: a.$3, b: b.$3);
     final accepted = Completer<MeshSession>();
     final subscription = pair.b.incoming.listen(
-      (final raw) => unawaited(
+      (raw) => unawaited(
         SessionAeadSession.accept(
           raw: raw,
           identityKeyPair: b.$1,
@@ -113,10 +113,10 @@ Future<void> main() async {
 
 SessionCipher _cipherPair() {
   final send = Uint8List.fromList(
-    List.generate(32, (final i) => (i + 3) & 0xff),
+    List.generate(32, (i) => (i + 3) & 0xff),
   );
   final receive = Uint8List.fromList(
-    List.generate(32, (final i) => (i + 11) & 0xff),
+    List.generate(32, (i) => (i + 11) & 0xff),
   );
   return SessionCipher(
     sendKey: SecretKeyData(send),
@@ -124,16 +124,16 @@ SessionCipher _cipherPair() {
   );
 }
 
-Future<(SimpleKeyPair, Uint8List, String)> _identity(final String id) async {
+Future<(SimpleKeyPair, Uint8List, String)> _identity(String id) async {
   final keyPair = await Ed25519().newKeyPair();
   final publicKey = await keyPair.extractPublicKey();
   return (keyPair, Uint8List.fromList(publicKey.bytes), id);
 }
 
 void _line(
-  final String label,
-  final double value, {
-  required final String unit,
+  String label,
+  double value, {
+  required String unit,
 }) {
   // ignore: avoid_print
   print('${label.padRight(64)} ${value.toStringAsFixed(2)} $unit');

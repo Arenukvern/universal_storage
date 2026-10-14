@@ -28,7 +28,7 @@ class GitHubApiStorageProvider extends StorageProvider
   /// [githubClient] is optional and intended for testing: inject a client
   /// pointed at a fake/local endpoint to run the conformance suite without
   /// network access or real credentials.
-  GitHubApiStorageProvider({final GitHub? githubClient})
+  GitHubApiStorageProvider({GitHub? githubClient})
     : _injectedGithub = githubClient;
   final GitHub? _injectedGithub;
   late GitHubApiConfig _config;
@@ -61,7 +61,7 @@ class GitHubApiStorageProvider extends StorageProvider
       declaredVersionControlCapabilities;
 
   @override
-  Future<void> initWithConfig(final StorageConfig config) async {
+  Future<void> initWithConfig(StorageConfig config) async {
     if (config is! GitHubApiConfig) {
       throw ArgumentError(
         'Expected GitHubApiConfig, got ${config.runtimeType}',
@@ -121,7 +121,7 @@ class GitHubApiStorageProvider extends StorageProvider
       );
       return repos
           .map(
-            (final repo) => VcRepository(
+            (repo) => VcRepository(
               id: repo.id.toString(),
               name: repo.name,
               description: repo.description,
@@ -142,7 +142,7 @@ class GitHubApiStorageProvider extends StorageProvider
   /// Creates a new repository
   @override
   Future<VcRepository> createRepository(
-    final VcCreateRepositoryRequest details,
+    VcCreateRepositoryRequest details,
   ) async {
     _ensureInitialized();
 
@@ -219,7 +219,7 @@ class GitHubApiStorageProvider extends StorageProvider
       );
       return branches
           .map(
-            (final branch) => VcBranch(
+            (branch) => VcBranch(
               name: VcBranchName(branch.name ?? ''),
               commitSha: branch.commit?.sha ?? '',
               isDefault: (branch.name ?? '') == _branchName.value,
@@ -263,9 +263,9 @@ class GitHubApiStorageProvider extends StorageProvider
 
   @override
   Future<FileOperationResult> createFile(
-    final String filePath,
-    final String content, {
-    final String? commitMessage,
+    String filePath,
+    String content, {
+    String? commitMessage,
   }) async {
     _ensureInitialized();
 
@@ -301,7 +301,7 @@ class GitHubApiStorageProvider extends StorageProvider
   }
 
   @override
-  Future<String?> getFile(final String filePath) async {
+  Future<String?> getFile(String filePath) async {
     _ensureInitialized();
 
     try {
@@ -320,9 +320,9 @@ class GitHubApiStorageProvider extends StorageProvider
 
   @override
   Future<FileOperationResult> updateFile(
-    final String filePath,
-    final String content, {
-    final String? commitMessage,
+    String filePath,
+    String content, {
+    String? commitMessage,
   }) async {
     _ensureInitialized();
 
@@ -357,8 +357,8 @@ class GitHubApiStorageProvider extends StorageProvider
 
   @override
   Future<FileOperationResult> deleteFile(
-    final String filePath, {
-    final String? commitMessage,
+    String filePath, {
+    String? commitMessage,
   }) async {
     _ensureInitialized();
 
@@ -391,7 +391,7 @@ class GitHubApiStorageProvider extends StorageProvider
   }
 
   @override
-  Future<List<FileEntry>> listDirectory(final String directoryPath) async {
+  Future<List<FileEntry>> listDirectory(String directoryPath) async {
     _ensureInitialized();
 
     try {
@@ -418,7 +418,7 @@ class GitHubApiStorageProvider extends StorageProvider
       }
       return contents.tree!
           .map(
-            (final item) => FileEntry(
+            (item) => FileEntry(
               name: item.name ?? '',
               isDirectory: item.type == 'dir',
               modifiedAt: DateTime.fromMillisecondsSinceEpoch(0),
@@ -438,7 +438,7 @@ class GitHubApiStorageProvider extends StorageProvider
   }
 
   @override
-  Future<void> restore(final String filePath, {final String? versionId}) async {
+  Future<void> restore(String filePath, {String? versionId}) async {
     _ensureInitialized();
 
     if (versionId == null) {
@@ -478,7 +478,7 @@ class GitHubApiStorageProvider extends StorageProvider
   // ========== Helper Methods ==========
 
   /// Gets a file from GitHub API
-  Future<GitHubFile?> _getFileFromGitHub(final String filePath) async {
+  Future<GitHubFile?> _getFileFromGitHub(String filePath) async {
     try {
       final contents = await _github!.repositories.getContents(
         _repositorySlug,
@@ -495,7 +495,7 @@ class GitHubApiStorageProvider extends StorageProvider
   }
 
   /// Determines if an error is retryable
-  bool _isRetryableError(final Exception e) {
+  bool _isRetryableError(Exception e) {
     final errorString = e.toString().toLowerCase();
     return errorString.contains('timeout') ||
         errorString.contains('connection') ||
@@ -506,7 +506,7 @@ class GitHubApiStorageProvider extends StorageProvider
   }
 
   /// Handles GitHub API errors and converts them to appropriate exceptions
-  Exception _handleGitHubError(final Object error, final String context) {
+  Exception _handleGitHubError(Object error, String context) {
     final errorString = error.toString();
 
     if (errorString.contains('401') || errorString.contains('Unauthorized')) {
@@ -535,8 +535,8 @@ class GitHubApiStorageProvider extends StorageProvider
 
   @override
   Future<void> cloneRepository(
-    final VcRepository repository,
-    final String localPath,
+    VcRepository repository,
+    String localPath,
   ) {
     _ensureInitialized();
 
@@ -563,7 +563,7 @@ class GitHubApiStorageProvider extends StorageProvider
   }
 
   @override
-  Future<void> setRepository(final VcRepositoryName repositoryId) async {
+  Future<void> setRepository(VcRepositoryName repositoryId) async {
     _ensureInitialized();
 
     if (repositoryId.isEmpty) {
@@ -607,7 +607,7 @@ class GitHubApiStorageProvider extends StorageProvider
   }
 
   _RepositoryReference _parseRepositoryReference(
-    final String repositoryReference,
+    String repositoryReference,
   ) {
     final normalized = repositoryReference.trim();
     if (normalized.isEmpty) {
@@ -616,8 +616,8 @@ class GitHubApiStorageProvider extends StorageProvider
 
     final parts = normalized
         .split('/')
-        .map((final segment) => segment.trim())
-        .where((final segment) => segment.isNotEmpty)
+        .map((segment) => segment.trim())
+        .where((segment) => segment.isNotEmpty)
         .toList();
 
     if (parts.length == 1) {

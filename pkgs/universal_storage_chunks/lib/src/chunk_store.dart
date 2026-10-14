@@ -5,9 +5,9 @@ import 'package:cryptography/cryptography.dart';
 import 'package:meta/meta.dart';
 
 /// sha256 of [bytes], hex-encoded — the chunk address (ADR 0042 §1).
-String chunkAddress(final List<int> bytes) {
+String chunkAddress(List<int> bytes) {
   final digest = Sha256().toSync().hashSync(bytes);
-  return digest.bytes.map((final b) => b.toRadixString(16).padLeft(2, '0')).join();
+  return digest.bytes.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
 }
 
 /// An immutable, content-addressed chunk store (ADR 0042 §1).
@@ -17,14 +17,14 @@ String chunkAddress(final List<int> bytes) {
 /// manifest. `put` of an existing address is a no-op (idempotent).
 abstract interface class ChunkStore {
   /// Stores [bytes] under `chunkAddress(bytes)`. Idempotent.
-  Future<void> put(final List<int> bytes, {required final String address});
+  Future<void> put(List<int> bytes, {required String address});
 
-  Future<bool> has(final String address);
+  Future<bool> has(String address);
 
   /// The stored bytes, null when absent. A stored chunk whose bytes do
   /// NOT hash to [address] must never be returned (corruption is
   /// reported as absent).
-  Future<Uint8List?> get(final String address);
+  Future<Uint8List?> get(String address);
 }
 
 /// In-memory store — tests and hot caches.
@@ -35,16 +35,16 @@ final class MemoryChunkStore implements ChunkStore {
   int get length => _chunks.length;
 
   @override
-  Future<void> put(final List<int> bytes, {required final String address}) async {
+  Future<void> put(List<int> bytes, {required String address}) async {
     if (_chunks.containsKey(address)) return; // idempotent
     _chunks[address] = Uint8List.fromList(bytes);
   }
 
   @override
-  Future<bool> has(final String address) async => _chunks.containsKey(address);
+  Future<bool> has(String address) async => _chunks.containsKey(address);
 
   @override
-  Future<Uint8List?> get(final String address) async {
+  Future<Uint8List?> get(String address) async {
     final bytes = _chunks[address];
     if (bytes == null) return null;
     // Never serve bytes that don't hash to their address.
@@ -60,13 +60,13 @@ final class FileChunkStore implements ChunkStore {
 
   final String root;
 
-  File _fileFor(final String address) => File(
+  File _fileFor(String address) => File(
     '$root${Platform.pathSeparator}${address.substring(0, 2)}'
     '${Platform.pathSeparator}$address.chunk',
   );
 
   @override
-  Future<void> put(final List<int> bytes, {required final String address}) async {
+  Future<void> put(List<int> bytes, {required String address}) async {
     final file = _fileFor(address);
     if (file.existsSync()) return; // idempotent: chunks are immutable
     await file.parent.create(recursive: true);
@@ -84,10 +84,10 @@ final class FileChunkStore implements ChunkStore {
   }
 
   @override
-  Future<bool> has(final String address) async => _fileFor(address).existsSync();
+  Future<bool> has(String address) async => _fileFor(address).existsSync();
 
   @override
-  Future<Uint8List?> get(final String address) async {
+  Future<Uint8List?> get(String address) async {
     final file = _fileFor(address);
     if (!file.existsSync()) return null;
     final bytes = await file.readAsBytes();

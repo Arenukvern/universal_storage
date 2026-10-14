@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:xsoulspace_js_interop_codegen/xsoulspace_js_interop_codegen.dart';
 
-Future<void> main(final List<String> args) async {
+Future<void> main(List<String> args) async {
   final checkOnly = _parseCheckOnly(args);
   if (checkOnly == null) {
     exitCode = 2;
@@ -51,8 +51,8 @@ Future<void> main(final List<String> args) async {
   final globalSymbols =
       ((ir['globalDeclarations'] as List<dynamic>? ?? <dynamic>[])
               .cast<Map<String, Object?>>()
-              .where((final value) => value['kind'] == 'variable')
-              .map((final value) => value['name'] as String?)
+              .where((value) => value['kind'] == 'variable')
+              .map((value) => value['name'] as String?)
               .whereType<String>()
               .toList()
             ..sort())
@@ -128,7 +128,7 @@ Future<void> main(final List<String> args) async {
   }
 }
 
-bool? _parseCheckOnly(final List<String> args) {
+bool? _parseCheckOnly(List<String> args) {
   var checkOnly = false;
   for (final arg in args) {
     if (arg == '--check') {
@@ -145,7 +145,7 @@ bool? _parseCheckOnly(final List<String> args) {
   return checkOnly;
 }
 
-String emitRawCode(final Map<String, Object?> ir) {
+String emitRawCode(Map<String, Object?> ir) {
   final declarations = (ir['declarations'] as List<dynamic>? ?? <dynamic>[])
       .cast<Map<String, Object?>>();
   final globalDeclarations =
@@ -153,7 +153,7 @@ String emitRawCode(final Map<String, Object?> ir) {
           .cast<Map<String, Object?>>();
 
   final knownTypes = declarations
-      .map((final declaration) => declaration['name']! as String)
+      .map((declaration) => declaration['name']! as String)
       .toSet();
 
   final b = StringBuffer()
@@ -170,7 +170,7 @@ String emitRawCode(final Map<String, Object?> ir) {
     ..writeln();
 
   final cloudKitGlobal = globalDeclarations.firstWhere(
-    (final global) =>
+    (global) =>
         global['kind'] == 'variable' && global['name'] == 'CloudKit',
     orElse: () => const <String, Object?>{},
   );
@@ -214,9 +214,9 @@ String emitRawCode(final Map<String, Object?> ir) {
 }
 
 void emitInterface(
-  final StringBuffer b,
-  final Map<String, Object?> declaration,
-  final Set<String> knownTypes,
+  StringBuffer b,
+  Map<String, Object?> declaration,
+  Set<String> knownTypes,
 ) {
   final name = declaration['name']! as String;
   final members = (declaration['members'] as List<dynamic>? ?? <dynamic>[])
@@ -233,10 +233,10 @@ void emitInterface(
 }
 
 void emitMembers(
-  final StringBuffer b, {
-  required final Set<String> knownTypes,
-  required final List<Map<String, Object?>> members,
-  required final String indent,
+  StringBuffer b, {
+  required Set<String> knownTypes,
+  required List<Map<String, Object?>> members,
+  required String indent,
 }) {
   final signatures = <String>{};
 
@@ -372,9 +372,9 @@ void emitMembers(
 }
 
 void emitTypeAlias(
-  final StringBuffer b,
-  final Map<String, Object?> declaration,
-  final Set<String> knownTypes,
+  StringBuffer b,
+  Map<String, Object?> declaration,
+  Set<String> knownTypes,
 ) {
   final name = declaration['name']! as String;
   final rawName = '${name}Raw';
@@ -428,7 +428,7 @@ void emitTypeAlias(
     ..writeln();
 }
 
-void emitEnum(final StringBuffer b, final Map<String, Object?> declaration) {
+void emitEnum(StringBuffer b, Map<String, Object?> declaration) {
   final name = declaration['name']! as String;
   final rawName = '${name}Raw';
   final valuesClass = '${rawName}Values';

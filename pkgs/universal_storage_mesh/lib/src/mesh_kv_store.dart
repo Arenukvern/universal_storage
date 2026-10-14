@@ -20,12 +20,12 @@ export 'mesh_kv_store_memory.dart' show MemoryMeshKvStore;
 /// medium. Values are opaque JSON strings.
 abstract interface class MeshKeyValueStore {
   /// Returns the value stored under [key], or `null` when absent.
-  Future<String?> read(final String key);
+  Future<String?> read(String key);
 
   /// Writes [value] under [key], creating intermediate locations as
   /// needed (a no-op concern for non-file backings).
-  Future<void> write(final String key, final String value);
+  Future<void> write(String key, String value);
 
   /// Returns all known keys starting with [prefix], sorted ascending.
-  Future<List<String>> list(final String prefix);
+  Future<List<String>> list(String prefix);
 }

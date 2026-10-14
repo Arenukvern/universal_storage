@@ -13,9 +13,9 @@ class InterruptedProvider extends MemoryStorageProvider {
 
   @override
   Future<FileOperationResult> updateFile(
-    final String path,
-    final String content, {
-    final String? commitMessage,
+    String path,
+    String content, {
+    String? commitMessage,
   }) async {
     final result = await super.updateFile(path, content);
     if (interruptNextUpdate) {

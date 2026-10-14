@@ -20,11 +20,11 @@ abstract interface class DeltaReplica {
   List<OpRecord> get pendingOps;
 
   /// Ops this replica holds that [remoteVv] has not observed.
-  List<OpRecord> opsSince(final VersionVector remoteVv);
+  List<OpRecord> opsSince(VersionVector remoteVv);
 
   /// True when [remoteVv] is fully covered but the log was compacted away
   /// under it — only a snapshot can serve the peer.
-  bool needsSnapshotFor(final VersionVector remoteVv);
+  bool needsSnapshotFor(VersionVector remoteVv);
 
   /// The current state as a snapshot at this replica's watermark.
   Snapshot snapshotFor();
@@ -73,9 +73,9 @@ final class DeltaPlanner {
   /// and it is preserved inside [DeltaPlan.ops] (callers sort by the
   /// receiver's expressed priority before calling).
   DeltaPlan plan({
-    required final Iterable<DeltaReplica> docs,
-    required final Map<String, VersionVector> remoteVectors,
-    final int? maxOps,
+    required Iterable<DeltaReplica> docs,
+    required Map<String, VersionVector> remoteVectors,
+    int? maxOps,
   }) {
     final ops = <OpRecord>[];
     final states = <Snapshot>[];

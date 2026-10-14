@@ -5,11 +5,11 @@ import 'package:cryptography/cryptography.dart';
 import 'package:test/test.dart';
 import 'package:universal_storage_session_aead/universal_storage_session_aead.dart';
 
-Uint8List _bytes(final int length, [final int seed = 0]) => Uint8List.fromList(
-  List.generate(length, (final i) => (i * 7 + seed) & 0xff),
+Uint8List _bytes(int length, [int seed = 0]) => Uint8List.fromList(
+  List.generate(length, (i) => (i * 7 + seed) & 0xff),
 );
 
-SessionHello _hello([final String id = 'device-a']) => SessionHello(
+SessionHello _hello([String id = 'device-a']) => SessionHello(
   ephemeralKey: _bytes(32, 1),
   peerId: id,
   identityKey: _bytes(32, 2),
@@ -65,7 +65,7 @@ void main() {
   });
 
   test('malformed keys and signatures are rejected', () {
-    Uint8List bodyWith(final Map<String, Object?> overrides) =>
+    Uint8List bodyWith(Map<String, Object?> overrides) =>
         Uint8List.fromList(
           utf8.encode(
             jsonEncode({
@@ -119,8 +119,8 @@ void main() {
     final publicKey = await identity.extractPublicKey();
 
     Future<bool> verifyWith({
-      required final SessionHandshakeRole role,
-      required final Uint8List sig,
+      required SessionHandshakeRole role,
+      required Uint8List sig,
     }) =>
         SessionHandshakeCodec.verify(
           role: role,
@@ -222,7 +222,7 @@ void main() {
     final peerPub = await peer.extractPublicKey();
     final helloBody = _hello().encodeBody();
 
-    Future<Uint8List> derive(final Uint8List replyBody) async {
+    Future<Uint8List> derive(Uint8List replyBody) async {
       final shared = await SessionHandshakeCodec.sharedSecret(
         ownEphemeralKeyPair: eph,
         peerEphemeralKey: Uint8List.fromList(peerPub.bytes),

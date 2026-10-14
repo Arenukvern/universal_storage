@@ -81,8 +81,8 @@ class LocalDbUniversalStorageImpl implements LocalDbI {
   }
 
   String _getFileName({
-    required final _StorageOperationDataType dataType,
-    required final String key,
+    required _StorageOperationDataType dataType,
+    required String key,
   }) {
     final fileName = switch (dataType) {
       _StorageOperationDataType.oBool =>
@@ -110,9 +110,9 @@ class LocalDbUniversalStorageImpl implements LocalDbI {
   }
 
   Future<String> _readContent({
-    required final String key,
-    required final _StorageOperationDataType dataType,
-    final bool? createIfNotExists,
+    required String key,
+    required _StorageOperationDataType dataType,
+    bool? createIfNotExists,
   }) async {
     final fileName = _getFileName(dataType: dataType, key: key);
     final file = await _storageService.readFile(fileName);
@@ -127,16 +127,16 @@ class LocalDbUniversalStorageImpl implements LocalDbI {
   }
 
   Future<void> _writeContent({
-    required final String key,
-    required final _StorageOperationDataType dataType,
-    required final String content,
+    required String key,
+    required _StorageOperationDataType dataType,
+    required String content,
   }) async {
     final fileName = _getFileName(dataType: dataType, key: key);
     await _storageService.saveFile(fileName, content);
   }
 
   Map<String, T>? _getSingleFileCacheMap<T extends Object>({
-    required final _StorageOperationDataType dataType,
+    required _StorageOperationDataType dataType,
   }) =>
       switch (dataType) {
             _StorageOperationDataType.oBool => _singleFilesBoolsCache,
@@ -148,13 +148,13 @@ class LocalDbUniversalStorageImpl implements LocalDbI {
           as Map<String, T>?;
 
   T? _getSingleFileCacheValue<T extends Object>({
-    required final String key,
-    required final _StorageOperationDataType dataType,
+    required String key,
+    required _StorageOperationDataType dataType,
   }) => _getSingleFileCacheMap<T>(dataType: dataType)?[key];
 
   void _setSingleFileCacheMap<T extends Object>({
-    required final _StorageOperationDataType dataType,
-    required final Map<String, T> map,
+    required _StorageOperationDataType dataType,
+    required Map<String, T> map,
   }) {
     final cacheMap = _getSingleFileCacheMap<T>(dataType: dataType);
     if (cacheMap == null) return;
@@ -166,9 +166,9 @@ class LocalDbUniversalStorageImpl implements LocalDbI {
   }
 
   Future<T> _readKeyValueFromSingleFile<T extends Object>({
-    required final String key,
-    required final _StorageOperationDataType dataType,
-    required final T defaultValue,
+    required String key,
+    required _StorageOperationDataType dataType,
+    required T defaultValue,
   }) async {
     final cached = _getSingleFileCacheValue<T>(key: key, dataType: dataType);
     if (cached != null) return cached;
@@ -179,9 +179,9 @@ class LocalDbUniversalStorageImpl implements LocalDbI {
   }
 
   Future<void> _writeKeyValueToSingleFile<T extends Object>({
-    required final String key,
-    required final _StorageOperationDataType dataType,
-    required final T value,
+    required String key,
+    required _StorageOperationDataType dataType,
+    required T value,
   }) async {
     Future<Map<String, T>> getContent() async {
       final content = await _readContent(key: key, dataType: dataType);
@@ -197,8 +197,8 @@ class LocalDbUniversalStorageImpl implements LocalDbI {
 
   @override
   Future<bool> getBool({
-    required final String key,
-    final bool defaultValue = false,
+    required String key,
+    bool defaultValue = false,
   }) => _readKeyValueFromSingleFile(
     key: key,
     dataType: _StorageOperationDataType.oBool,
@@ -207,8 +207,8 @@ class LocalDbUniversalStorageImpl implements LocalDbI {
 
   @override
   Future<void> setBool({
-    required final String key,
-    required final bool value,
+    required String key,
+    required bool value,
   }) => _writeKeyValueToSingleFile(
     key: key,
     dataType: _StorageOperationDataType.oBool,
@@ -216,7 +216,7 @@ class LocalDbUniversalStorageImpl implements LocalDbI {
   );
 
   @override
-  Future<int> getInt({required final String key, final int defaultValue = 0}) =>
+  Future<int> getInt({required String key, int defaultValue = 0}) =>
       _readKeyValueFromSingleFile(
         key: key,
         dataType: _StorageOperationDataType.oInt,
@@ -224,7 +224,7 @@ class LocalDbUniversalStorageImpl implements LocalDbI {
       );
 
   @override
-  Future<void> setInt({required final String key, final int value = 0}) =>
+  Future<void> setInt({required String key, int value = 0}) =>
       _writeKeyValueToSingleFile(
         key: key,
         dataType: _StorageOperationDataType.oInt,
@@ -233,9 +233,9 @@ class LocalDbUniversalStorageImpl implements LocalDbI {
 
   @override
   Future<T> getItem<T>({
-    required final String key,
-    required final T? Function(Map<String, dynamic> p1) fromJson,
-    required final T defaultValue,
+    required String key,
+    required T? Function(Map<String, dynamic> p1) fromJson,
+    required T defaultValue,
   }) async {
     final map = await getMap(key);
     return fromJson(map) ?? defaultValue;
@@ -243,9 +243,9 @@ class LocalDbUniversalStorageImpl implements LocalDbI {
 
   @override
   Future<void> setItem<T>({
-    required final String key,
-    required final T value,
-    required final Map<String, dynamic> Function(T p1) toJson,
+    required String key,
+    required T value,
+    required Map<String, dynamic> Function(T p1) toJson,
   }) async {
     final json = toJson(value);
     await setMap(key: key, value: json);
@@ -253,9 +253,9 @@ class LocalDbUniversalStorageImpl implements LocalDbI {
 
   @override
   Future<Iterable<T>> getItemsIterable<T>({
-    required final String key,
-    required final T Function(Map<String, dynamic> p1) fromJson,
-    final List<T> defaultValue = const [],
+    required String key,
+    required T Function(Map<String, dynamic> p1) fromJson,
+    List<T> defaultValue = const [],
   }) async {
     final iterable = await getMapIterable(key: key, defaultValue: []);
     if (iterable.isEmpty) return defaultValue;
@@ -264,13 +264,13 @@ class LocalDbUniversalStorageImpl implements LocalDbI {
 
   @override
   Future<void> setItemsList<T>({
-    required final String key,
-    required final List<T> value,
-    required final Map<String, dynamic> Function(T p1) toJson,
+    required String key,
+    required List<T> value,
+    required Map<String, dynamic> Function(T p1) toJson,
   }) => setMapList(key: key, value: value.map(toJson).toList());
 
   @override
-  Future<Map<String, dynamic>> getMap(final String key) =>
+  Future<Map<String, dynamic>> getMap(String key) =>
       _readKeyValueFromSingleFile(
         key: key,
         dataType: _StorageOperationDataType.oMap,
@@ -279,8 +279,8 @@ class LocalDbUniversalStorageImpl implements LocalDbI {
 
   @override
   Future<void> setMap({
-    required final String key,
-    required final Map<String, dynamic> value,
+    required String key,
+    required Map<String, dynamic> value,
   }) => _writeKeyValueToSingleFile(
     key: key,
     dataType: _StorageOperationDataType.oMap,
@@ -298,7 +298,7 @@ class LocalDbUniversalStorageImpl implements LocalDbI {
   }
 
   @override
-  Future<void> clearKey({required final String key}) async {
+  Future<void> clearKey({required String key}) async {
     _singleFilesBoolsCache.remove(key);
     _singleFilesIntsCache.remove(key);
     _singleFilesStringsCache.remove(key);
@@ -309,8 +309,8 @@ class LocalDbUniversalStorageImpl implements LocalDbI {
 
   @override
   Future<Iterable<Map<String, dynamic>>> getMapIterable({
-    required final String key,
-    final List<Map<String, dynamic>> defaultValue = const [],
+    required String key,
+    List<Map<String, dynamic>> defaultValue = const [],
   }) async {
     // TODO(arenukvern): add separate files builder method
     // if (_routerTypes.placeMapListInSingleFile) {
@@ -330,8 +330,8 @@ class LocalDbUniversalStorageImpl implements LocalDbI {
 
   @override
   Future<void> setMapList({
-    required final String key,
-    required final List<Map<String, dynamic>> value,
+    required String key,
+    required List<Map<String, dynamic>> value,
   }) async {
     _singleFilesMapListsCache[key] = value;
     final json = jsonEncode(value);
@@ -344,8 +344,8 @@ class LocalDbUniversalStorageImpl implements LocalDbI {
 
   @override
   Future<String> getString({
-    required final String key,
-    final String defaultValue = '',
+    required String key,
+    String defaultValue = '',
   }) => _readKeyValueFromSingleFile(
     key: key,
     dataType: _StorageOperationDataType.oString,
@@ -354,8 +354,8 @@ class LocalDbUniversalStorageImpl implements LocalDbI {
 
   @override
   Future<void> setString({
-    required final String key,
-    required final String value,
+    required String key,
+    required String value,
   }) => _writeKeyValueToSingleFile(
     key: key,
     dataType: _StorageOperationDataType.oString,
@@ -364,8 +364,8 @@ class LocalDbUniversalStorageImpl implements LocalDbI {
 
   @override
   Future<Iterable<String>> getStringsIterable({
-    required final String key,
-    final List<String> defaultValue = const [],
+    required String key,
+    List<String> defaultValue = const [],
   }) async {
     final cached = _singleFilesStringsListsCache[key];
     if (cached != null) return cached;
@@ -381,8 +381,8 @@ class LocalDbUniversalStorageImpl implements LocalDbI {
 
   @override
   Future<void> setStringList({
-    required final String key,
-    required final List<String> value,
+    required String key,
+    required List<String> value,
   }) async {
     _singleFilesStringsListsCache[key] = value;
     final json = jsonEncode(value);

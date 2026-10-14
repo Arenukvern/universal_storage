@@ -5,29 +5,29 @@ import 'models/storage_profile.dart';
 
 /// Provider-agnostic contract for storage operations.
 abstract class StorageProvider {
-  Future<void> initWithConfig(final StorageConfig config);
+  Future<void> initWithConfig(StorageConfig config);
   Future<bool> isAuthenticated();
 
   Future<FileOperationResult> createFile(
-    final String path,
-    final String content, {
-    final String? commitMessage,
+    String path,
+    String content, {
+    String? commitMessage,
   });
 
-  Future<String?> getFile(final String path);
+  Future<String?> getFile(String path);
 
   Future<FileOperationResult> updateFile(
-    final String path,
-    final String content, {
-    final String? commitMessage,
+    String path,
+    String content, {
+    String? commitMessage,
   });
 
   Future<FileOperationResult> deleteFile(
-    final String path, {
-    final String? commitMessage,
+    String path, {
+    String? commitMessage,
   });
 
-  Future<List<FileEntry>> listDirectory(final String directoryPath);
+  Future<List<FileEntry>> listDirectory(String directoryPath);
 
   /// Appends [content] to the file at [path], creating it when missing.
   ///
@@ -35,9 +35,9 @@ abstract class StorageProvider {
   /// that can write only the new bytes SHOULD override this — the default
   /// read-modify-write is O(file).
   Future<FileOperationResult> appendFile(
-    final String path,
-    final String content, {
-    final String? commitMessage,
+    String path,
+    String content, {
+    String? commitMessage,
   }) async {
     final existing = await getFile(path);
     final combined = (existing ?? '') + content;
@@ -48,7 +48,7 @@ abstract class StorageProvider {
     }
   }
 
-  Future<void> restore(final String path, {final String? versionId});
+  Future<void> restore(String path, {String? versionId});
 
   /// Declared static capabilities. Providers should override to expose
   /// feature availability (sync mode, revision metadata, etc.) so the
@@ -60,8 +60,8 @@ abstract class StorageProvider {
   // sync ca be between two providers or remote and local data inside
   // one provider therefore clarify what it does
   Future<void> sync({
-    final String? pullMergeStrategy,
-    final String? pushConflictStrategy,
+    String? pullMergeStrategy,
+    String? pushConflictStrategy,
   }) {
     throw const UnsupportedOperationException(
       'This provider does not support sync.',

@@ -10,7 +10,7 @@ import 'package:universal_storage_mesh_transport/universal_storage_mesh_transpor
 import 'package:universal_storage_realtime/universal_storage_realtime.dart';
 
 /// Polls a condition the fake transports settle asynchronously.
-Future<void> _until(final bool Function() probe) async {
+Future<void> _until(bool Function() probe) async {
   for (var i = 0; i < 500; i++) {
     if (probe()) return;
     await Future<void>.delayed(const Duration(milliseconds: 10));
@@ -55,7 +55,7 @@ void main() {
     final pair = FakeMeshPair.paired();
     final link = RealtimeLink(session: await pair.a.connect(const MeshPeerRecord(peerId: 'device-b', displayName: 'b')));
     final events = <String>[];
-    link.inbound.listen((final e) => events.add('${e.type}#${e.envelope.seq}'));
+    link.inbound.listen((e) => events.add('${e.type}#${e.envelope.seq}'));
 
     // Capture the session once: the fake's incoming is single-subscription
     // and `.first` consumes the listener.
@@ -126,10 +126,10 @@ void main() {
       session: await pair.a.connect(const MeshPeerRecord(peerId: 'device-b', displayName: 'b')),
       heartbeatInterval: const Duration(milliseconds: 15),
       staleAfter: const Duration(milliseconds: 40),
-      onStale: (final reason) => stale = true,
+      onStale: (reason) => stale = true,
     );
     final appEvents = <String>[];
-    link.inbound.listen((final e) => appEvents.add(e.type));
+    link.inbound.listen((e) => appEvents.add(e.type));
 
     final other = RealtimeLink(
       session: await pair.b.incoming.first,
@@ -137,7 +137,7 @@ void main() {
       staleAfter: const Duration(milliseconds: 40),
     );
     final otherApp = <String>[];
-    other.inbound.listen((final e) => otherApp.add(e.type));
+    other.inbound.listen((e) => otherApp.add(e.type));
 
     // Heartbeats flow; NEITHER side surfaces them as app events.
     await Future<void>.delayed(const Duration(milliseconds: 60));
@@ -164,7 +164,7 @@ void main() {
       staleAfter: const Duration(seconds: 3),
       clock: () => now,
       tickDriven: true,
-      onStale: (final reason) => died = reason,
+      onStale: (reason) => died = reason,
     );
 
     // Real time passing decides NOTHING: no heartbeat, no death.
@@ -228,7 +228,7 @@ final class _RecordingSession implements MeshSession {
   Stream<Uint8List> get inbound => _inbound.stream;
 
   @override
-  Future<void> send(final Uint8List payload) async {
+  Future<void> send(Uint8List payload) async {
     if (_closed) throw StateError('Session closed');
     sent.add(payload);
   }
@@ -239,7 +239,7 @@ final class _RecordingSession implements MeshSession {
   }
 
   /// Injects a frame as if the peer sent it.
-  void receive(final Uint8List bytes) => _inbound.add(bytes);
+  void receive(Uint8List bytes) => _inbound.add(bytes);
 }
 
 /// A MeshSession whose sends park on gates — the deterministic way to
@@ -260,7 +260,7 @@ final class _GatedSession implements MeshSession {
   Stream<Uint8List> get inbound => _inbound.stream;
 
   @override
-  Future<void> send(final Uint8List payload) async {
+  Future<void> send(Uint8List payload) async {
     final gate = Completer<void>();
     _gates.add(gate);
     await gate.future;
@@ -271,5 +271,5 @@ final class _GatedSession implements MeshSession {
   Future<void> close() async {}
 
   /// Injects a frame as if the peer sent it.
-  void receive(final Uint8List bytes) => _inbound.add(bytes);
+  void receive(Uint8List bytes) => _inbound.add(bytes);
 }

@@ -12,16 +12,16 @@ final class MemoryMeshKvStore implements MeshKeyValueStore {
   final Map<String, String> _data = {};
 
   @override
-  Future<String?> read(final String key) async => _data[key];
+  Future<String?> read(String key) async => _data[key];
 
   @override
-  Future<void> write(final String key, final String value) async {
+  Future<void> write(String key, String value) async {
     _data[key] = value;
   }
 
   @override
-  Future<List<String>> list(final String prefix) async {
-    final keys = _data.keys.where((final key) => key.startsWith(prefix));
+  Future<List<String>> list(String prefix) async {
+    final keys = _data.keys.where((key) => key.startsWith(prefix));
     return (keys.toList()..sort());
   }
 }

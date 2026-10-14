@@ -87,8 +87,8 @@ void main() {
   /// The exact-bytes assertion: the encoded frame must equal the golden
   /// UTF-8 bytes — not a semantically equal JSON re-serialization.
   void expectGoldenBytes(
-    final String golden,
-    final Map<String, Object?> frame,
+    String golden,
+    Map<String, Object?> frame,
   ) {
     final bytes = MeshSyncProtocol.encode(frame);
     expect(utf8.decode(bytes), golden);

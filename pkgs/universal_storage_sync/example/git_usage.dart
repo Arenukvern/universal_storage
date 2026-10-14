@@ -22,7 +22,7 @@ Future<void> main() async {
   }
 }
 
-Future<void> demonstrateGitFeatures(final String repoPath) async {
+Future<void> demonstrateGitFeatures(String repoPath) async {
   print('📁 Repository path: $repoPath\n');
 
   // 1. Repository Initialization

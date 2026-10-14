@@ -61,22 +61,22 @@ final class StorageProfileLoader {
   /// [serviceFactory] must provide one initialized [StorageService] per
   /// namespace profile.
   Future<StorageProfileLoadResult> load({
-    required final StorageProfile profile,
-    required final NamespaceServiceFactory serviceFactory,
-    final NamespaceCapabilitiesFactory? capabilitiesFactory,
-    final bool strict = true,
-    final List<String> initialWarnings = const <String>[],
+    required StorageProfile profile,
+    required NamespaceServiceFactory serviceFactory,
+    NamespaceCapabilitiesFactory? capabilitiesFactory,
+    bool strict = true,
+    List<String> initialWarnings = const <String>[],
   }) async {
     final validationIssues = _validateProfile(profile);
-    if (strict && validationIssues.any((final issue) => issue.isError)) {
+    if (strict && validationIssues.any((issue) => issue.isError)) {
       throw ConfigurationException(_formatProfileIssues(validationIssues));
     }
 
     final warnings = <String>[
       ...initialWarnings,
       ...validationIssues
-          .where((final issue) => !issue.isError)
-          .map((final issue) => issue.message),
+          .where((issue) => !issue.isError)
+          .map((issue) => issue.message),
     ];
 
     final namespaceServices = <StorageNamespace, StorageService>{};
@@ -118,11 +118,11 @@ final class StorageProfileLoader {
 
   /// Parses profile from a map and builds kernel.
   Future<StorageProfileLoadResult> loadFromMap({
-    required final Map<String, dynamic> profileMap,
-    required final NamespaceServiceFactory serviceFactory,
-    final NamespaceCapabilitiesFactory? capabilitiesFactory,
-    final bool strict = true,
-    final List<String> initialWarnings = const <String>[],
+    required Map<String, dynamic> profileMap,
+    required NamespaceServiceFactory serviceFactory,
+    NamespaceCapabilitiesFactory? capabilitiesFactory,
+    bool strict = true,
+    List<String> initialWarnings = const <String>[],
   }) {
     final profile = StorageProfile.fromJson(profileMap);
     return load(
@@ -136,11 +136,11 @@ final class StorageProfileLoader {
 
   /// Parses profile from JSON source and builds kernel.
   Future<StorageProfileLoadResult> loadFromJson({
-    required final String jsonSource,
-    required final NamespaceServiceFactory serviceFactory,
-    final NamespaceCapabilitiesFactory? capabilitiesFactory,
-    final bool strict = true,
-    final List<String> initialWarnings = const <String>[],
+    required String jsonSource,
+    required NamespaceServiceFactory serviceFactory,
+    NamespaceCapabilitiesFactory? capabilitiesFactory,
+    bool strict = true,
+    List<String> initialWarnings = const <String>[],
   }) {
     final decoded = jsonDecode(jsonSource);
     if (decoded is! Map) {
@@ -158,7 +158,7 @@ final class StorageProfileLoader {
     );
   }
 
-  StorageCapabilities _defaultCapabilities(final StorageService service) {
+  StorageCapabilities _defaultCapabilities(StorageService service) {
     final provider = service.provider;
     final supportsSync = provider.supportsSync;
     if (provider is RemoteEngine) {
@@ -167,7 +167,7 @@ final class StorageProfileLoader {
     return StorageCapabilities(supportsBackgroundSync: supportsSync);
   }
 
-  List<_ProfileLoadIssue> _validateProfile(final StorageProfile profile) {
+  List<_ProfileLoadIssue> _validateProfile(StorageProfile profile) {
     final issues = <_ProfileLoadIssue>[];
     if (profile.name.trim().isEmpty) {
       issues.add(
@@ -240,9 +240,9 @@ final class StorageProfileLoader {
     return issues;
   }
 
-  String _formatProfileIssues(final List<_ProfileLoadIssue> issues) {
+  String _formatProfileIssues(List<_ProfileLoadIssue> issues) {
     final buffer = StringBuffer('Invalid storage profile configuration.');
-    for (final issue in issues.where((final issue) => issue.isError)) {
+    for (final issue in issues.where((issue) => issue.isError)) {
       buffer
         ..writeln()
         ..write('- ')

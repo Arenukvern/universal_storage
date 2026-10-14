@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:universal_storage_sync/universal_storage_sync.dart';
 
-Future<void> main(final List<String> args) async {
+Future<void> main(List<String> args) async {
   var outputPath = '../../../tool/artifacts/storage_release_gate_g6.json';
   var scenario = 'pass';
 
@@ -50,8 +50,8 @@ Future<void> main(final List<String> args) async {
     'scenario': scenario,
     'evaluated_at_utc': report.evaluatedAtUtc.toIso8601String(),
     'blocking_findings': report.findings
-        .where((final finding) => finding.isBlocking)
-        .map((final finding) => finding.toJson())
+        .where((finding) => finding.isBlocking)
+        .map((finding) => finding.toJson())
         .toList(growable: false),
     'report': report.toJson(),
   };
@@ -77,7 +77,7 @@ Future<void> main(final List<String> args) async {
   );
 }
 
-StorageReleaseGateInput _buildInput({required final bool failingEvidence}) {
+StorageReleaseGateInput _buildInput({required bool failingEvidence}) {
   final performanceEvidence = failingEvidence
       ? const StoragePerformanceEvidence(
           writeLatencies: <Duration>[

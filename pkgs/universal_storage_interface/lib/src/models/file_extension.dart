@@ -8,13 +8,13 @@ import 'package:path/path.dart' as path;
 /// {@endtemplate}
 extension type const FileExtension(String value) {
   /// Creates a [FileExtension] from a file path.
-  factory FileExtension.fromFilePath(final String filePath) {
+  factory FileExtension.fromFilePath(String filePath) {
     final extension = path.extension(filePath);
     return FileExtension.fromString(extension);
   }
 
   /// Creates a [FileExtension] from a string value.
-  factory FileExtension.fromString(final String extension) {
+  factory FileExtension.fromString(String extension) {
     // Normalize extension (remove leading dot, lowercase)
     final normalized =
         (extension.startsWith('.') ? extension.substring(1) : extension)

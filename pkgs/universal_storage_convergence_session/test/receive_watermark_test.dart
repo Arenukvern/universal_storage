@@ -12,7 +12,7 @@ import 'package:universal_storage_convergence_session/universal_storage_converge
 /// Coverage is a (wall, counter) notion, never a full-HLC compareTo: the
 /// watermark is re-anchored to the receiver's actor, so its HLC never
 /// travels and its actor never participates in ordering.
-bool covers(final Hlc watermark, final Hlc delivery) =>
+bool covers(Hlc watermark, Hlc delivery) =>
     watermark.wallMillis > delivery.wallMillis ||
     (watermark.wallMillis == delivery.wallMillis &&
         watermark.counter >= delivery.counter);

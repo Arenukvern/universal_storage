@@ -30,7 +30,7 @@ final class RgaTextStrategy implements MergeStrategy {
   Map<String, Object?> initialState() => <String, Object?>{};
 
   @override
-  void fold(final Map<String, Object?> state, final OpRecord op) {
+  void fold(Map<String, Object?> state, OpRecord op) {
     final key = op.payload['k'];
     if (key is! String || key.isEmpty) {
       throw ArgumentError.value(
@@ -48,9 +48,9 @@ final class RgaTextStrategy implements MergeStrategy {
   }
 
   void _foldInsert(
-    final Map<String, Object?> state,
-    final String key,
-    final OpRecord op,
+    Map<String, Object?> state,
+    String key,
+    OpRecord op,
   ) {
     final text = op.payload['text'];
     if (text is! String || text.isEmpty) {
@@ -83,9 +83,9 @@ final class RgaTextStrategy implements MergeStrategy {
   }
 
   void _foldDelete(
-    final Map<String, Object?> state,
-    final String key,
-    final Object? tombstones,
+    Map<String, Object?> state,
+    String key,
+    Object? tombstones,
   ) {
     if (tombstones is! List || tombstones.isEmpty) {
       throw ArgumentError.value(
@@ -112,8 +112,8 @@ final class RgaTextStrategy implements MergeStrategy {
   /// JSON-encodable; tombstones recorded before their element arrives are
   /// honored at read time.
   static Map<String, Object?> _bucket(
-    final Map<String, Object?> state,
-    final String key,
+    Map<String, Object?> state,
+    String key,
   ) {
     final existing = state[key];
     if (existing is Map<String, Object?>) return existing;
@@ -134,7 +134,7 @@ final class RgaTextStrategy implements MergeStrategy {
   /// sibling list ordered by `(Hlc, indexInOp)`. Unresolvable elements
   /// (anchor not yet received) are simply not visited — they appear when
   /// their anchor arrives, deterministically on every replica.
-  static String? readText(final Map<String, Object?> state, final String key) {
+  static String? readText(Map<String, Object?> state, String key) {
     final raw = state[key];
     if (raw is! Map<String, Object?>) return null;
     final nodesRaw = raw['nodes'];
@@ -154,13 +154,13 @@ final class RgaTextStrategy implements MergeStrategy {
 
     // Index children by anchor.
     final children = <String?, List<MapEntry<String, Map<String, Object?>>>>{};
-    nodes.forEach((final id, final node) {
+    nodes.forEach((id, node) {
       final anchor = node['a'] as String?;
       children.putIfAbsent(anchor, () => []).add(MapEntry(id, node));
     });
     // Total order within each sibling list.
     for (final list in children.values) {
-      list.sort((final a, final b) {
+      list.sort((a, b) {
         final ha = hlcFromJson(a.value['h']);
         final hb = hlcFromJson(b.value['h']);
         final byHlc = ha.compareTo(hb);
@@ -170,7 +170,7 @@ final class RgaTextStrategy implements MergeStrategy {
     }
 
     final buffer = StringBuffer();
-    void visit(final String? anchor) {
+    void visit(String? anchor) {
       final siblings =
           children[anchor] ?? const <MapEntry<String, Map<String, Object?>>>[];
       for (final entry in siblings) {
@@ -186,8 +186,8 @@ final class RgaTextStrategy implements MergeStrategy {
   /// Element ids currently live (non-tombstoned) for [key] — the anchors
   /// a local editor needs to issue the next insert.
   static Set<String> liveElementIds(
-    final Map<String, Object?> state,
-    final String key,
+    Map<String, Object?> state,
+    String key,
   ) {
     final raw = state[key];
     if (raw is! Map<String, Object?>) return const {};

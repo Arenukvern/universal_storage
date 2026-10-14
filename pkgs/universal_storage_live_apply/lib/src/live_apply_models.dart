@@ -31,7 +31,7 @@ class LiveApplyPrior {
   final int? mode;
 
   /// Serialize the durable wire record.
-  Map<String, dynamic> toMap({final bool includeFileState = true}) =>
+  Map<String, dynamic> toMap({bool includeFileState = true}) =>
       <String, dynamic>{
         'sha256': sha256,
         'content': content,
@@ -40,7 +40,7 @@ class LiveApplyPrior {
 
   /// Read the durable wire record.
   // ignore: prefer_constructors_over_static_methods
-  static LiveApplyPrior fromMap(final Map<String, dynamic> map) =>
+  static LiveApplyPrior fromMap(Map<String, dynamic> map) =>
       LiveApplyPrior(
         sha256: map['sha256'] as String,
         content: map['content'] as String,
@@ -104,7 +104,7 @@ class LiveApplyEntry {
   bool get wasAbsent => prior == null;
 
   /// Serialize the durable wire record.
-  Map<String, dynamic> toMap({final bool includeFileState = true}) =>
+  Map<String, dynamic> toMap({bool includeFileState = true}) =>
       <String, dynamic>{
         'path': path,
         if (prior != null)
@@ -123,7 +123,7 @@ class LiveApplyEntry {
 
   /// Read the durable wire record.
   // ignore: prefer_constructors_over_static_methods
-  static LiveApplyEntry fromMap(final Map<String, dynamic> map) =>
+  static LiveApplyEntry fromMap(Map<String, dynamic> map) =>
       LiveApplyEntry(
         path: map['path'] as String,
         prior: map['prior'] == null
@@ -193,7 +193,7 @@ class LiveApplyJournal {
   /// never inferred from current files or silently added to legacy records.
   Map<String, dynamic> toMap() {
     final rows = entries
-        .map((final e) => e.toMap(includeFileState: fileStateProfile != null))
+        .map((e) => e.toMap(includeFileState: fileStateProfile != null))
         .toList();
     if (fileStateProfile != null) {
       _validateFileStateRows(fileStateProfile, rows);
@@ -210,7 +210,7 @@ class LiveApplyJournal {
 
   /// Read the durable wire record.
   // ignore: prefer_constructors_over_static_methods
-  static LiveApplyJournal fromMap(final Map<String, dynamic> map) {
+  static LiveApplyJournal fromMap(Map<String, dynamic> map) {
     final version = map['schema_version'] ?? 1;
     if (version != 1 && version != 2 && version != 3) {
       throw const FormatException('unsupported live-apply journal version');
@@ -228,7 +228,7 @@ class LiveApplyJournal {
     }
     if (version == 1 &&
         rows.any(
-          (final e) => (e as Map)['post_sha256'] == liveApplyDeletedSha256,
+          (e) => (e as Map)['post_sha256'] == liveApplyDeletedSha256,
         )) {
       throw const FormatException(
         'legacy journal has ambiguous empty/deleted state; '
@@ -237,7 +237,7 @@ class LiveApplyJournal {
     }
     if ((version == 2 || version == 3) &&
         rows.any(
-          (final e) =>
+          (e) =>
               (e as Map)['post_absent'] is! bool ||
               e['pending'] is! bool ||
               e['inverse_started'] is! bool ||
@@ -250,12 +250,12 @@ class LiveApplyJournal {
       createdUtc: map['created_utc'] as String,
       fileStateProfile: profile as String?,
       status: LiveApplyRunStatus.values.firstWhere(
-        (final s) => s.name == map['status'],
+        (s) => s.name == map['status'],
         orElse: () => throw const FormatException('unknown run status'),
       ),
       entries: ((map['entries'] as List?) ?? const [])
           .map(
-            (final e) => LiveApplyEntry.fromMap(
+            (e) => LiveApplyEntry.fromMap(
               _entryMap(e as Map, fileState: version == 3),
             ),
           )

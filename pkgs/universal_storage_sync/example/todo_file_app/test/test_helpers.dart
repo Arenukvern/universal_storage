@@ -5,8 +5,8 @@ import 'package:universal_storage_interface/universal_storage_interface.dart';
 
 /// Creates a test widget with necessary providers and material app wrapper
 Widget createTestWidget({
-  required final Widget child,
-  final AppState? appState,
+  required Widget child,
+  AppState? appState,
 }) => ChangeNotifierProvider(
   create: (_) => appState ?? AppState(),
   child: MaterialApp(home: Scaffold(body: child)),

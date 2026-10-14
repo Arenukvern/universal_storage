@@ -80,7 +80,7 @@ void main() {
     final gate = Completer<void>();
     sessionA.attachParticipant(
       _RecordingParticipant(
-        onPhase: (final phase) {
+        onPhase: (phase) {
           if (phase == 'flush') flushes.add(flushes.length);
         },
         beforeFlush: () async {
@@ -143,17 +143,17 @@ final class _FileBackedParticipant implements MeshSyncParticipant {
   final Map<String, String> _durable;
 
   @override
-  Future<void> flush(final StorageService storage) async {
+  Future<void> flush(StorageService storage) async {
     for (final entry in _durable.entries) {
       await _provider.updateFile(entry.key, entry.value);
     }
   }
 
   @override
-  Future<void> absorb(final StorageService storage) async {}
+  Future<void> absorb(StorageService storage) async {}
 
   @override
-  Future<void> compact(final StorageService storage) async {}
+  Future<void> compact(StorageService storage) async {}
 }
 
 /// A participant that records its phases and can park mid-phase.
@@ -169,19 +169,19 @@ final class _RecordingParticipant implements MeshSyncParticipant {
   final Future<void> Function()? duringSync;
 
   @override
-  Future<void> flush(final StorageService storage) async {
+  Future<void> flush(StorageService storage) async {
     await beforeFlush?.call();
     onPhase('flush');
     await duringSync?.call();
   }
 
   @override
-  Future<void> absorb(final StorageService storage) async {
+  Future<void> absorb(StorageService storage) async {
     onPhase('absorb');
   }
 
   @override
-  Future<void> compact(final StorageService storage) async {
+  Future<void> compact(StorageService storage) async {
     onPhase('compact');
   }
 }

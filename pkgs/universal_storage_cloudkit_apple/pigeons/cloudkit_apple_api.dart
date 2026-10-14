@@ -10,22 +10,22 @@ import 'package:pigeon/pigeon.dart';
 @HostApi()
 abstract class CloudKitAppleHostApi {
   @async
-  void initialize(final CloudKitAppleConfigData config);
+  void initialize(CloudKitAppleConfigData config);
 
   @async
-  CloudKitAppleRecordData? fetchRecordByPath(final String path);
+  CloudKitAppleRecordData? fetchRecordByPath(String path);
 
   @async
-  void saveRecord(final CloudKitAppleRecordData record);
+  void saveRecord(CloudKitAppleRecordData record);
 
   @async
-  void deleteRecord(final String recordName);
+  void deleteRecord(String recordName);
 
   @async
-  List<CloudKitAppleRecordData> queryByPathPrefix(final String pathPrefix);
+  List<CloudKitAppleRecordData> queryByPathPrefix(String pathPrefix);
 
   @async
-  CloudKitAppleDeltaData fetchChanges(final String? serverChangeToken);
+  CloudKitAppleDeltaData fetchChanges(String? serverChangeToken);
 
   @async
   void dispose();

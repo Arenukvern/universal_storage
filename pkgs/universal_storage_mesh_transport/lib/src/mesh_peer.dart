@@ -13,13 +13,13 @@ final class MeshPeerRecord {
   }) : assert(peerId != ''),
        assert(displayName != '');
 
-  factory MeshPeerRecord.fromJson(final Map<String, dynamic> json) =>
+  factory MeshPeerRecord.fromJson(Map<String, dynamic> json) =>
       MeshPeerRecord(
         peerId: json['peer_id'] as String,
         displayName: (json['display_name'] ?? '') as String,
         endpointHints:
             (json['endpoint_hints'] as Map<dynamic, dynamic>?)?.map(
-              (final k, final v) => MapEntry(k as String, v as String),
+              (k, v) => MapEntry(k as String, v as String),
             ) ??
             const {},
         identityKey: base64Decode(json['identity_key'] as String? ?? ''),
@@ -44,7 +44,7 @@ final class MeshPeerRecord {
   };
 
   @override
-  bool operator ==(final Object other) =>
+  bool operator ==(Object other) =>
       identical(this, other) ||
       (other is MeshPeerRecord && other.peerId == peerId);
 

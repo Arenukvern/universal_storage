@@ -46,7 +46,7 @@ class LiveApplyStorageProvider implements StorageProvider {
       _store ??= LiveApplyJournalStore(storePath: journalStorePath);
 
   @override
-  Future<void> initWithConfig(final StorageConfig config) =>
+  Future<void> initWithConfig(StorageConfig config) =>
       inner.initWithConfig(config);
 
   @override
@@ -71,27 +71,27 @@ class LiveApplyStorageProvider implements StorageProvider {
 
   @override
   Future<void> sync({
-    final String? pullMergeStrategy,
-    final String? pushConflictStrategy,
+    String? pullMergeStrategy,
+    String? pushConflictStrategy,
   }) => inner.sync(
     pullMergeStrategy: pullMergeStrategy,
     pushConflictStrategy: pushConflictStrategy,
   );
 
   @override
-  Future<String?> getFile(final String path) => inner.getFile(path);
+  Future<String?> getFile(String path) => inner.getFile(path);
 
   @override
-  Future<List<FileEntry>> listDirectory(final String directoryPath) =>
+  Future<List<FileEntry>> listDirectory(String directoryPath) =>
       inner.listDirectory(directoryPath);
 
   @override
   Future<FileOperationResult> createFile(
-    final String path,
-    final String content, {
-    final String? commitMessage,
+    String path,
+    String content, {
+    String? commitMessage,
   }) => _journaled(
-    (final tx) => tx.mutate(
+    (tx) => tx.mutate(
       path,
       content,
       () => inner.createFile(path, content, commitMessage: commitMessage),
@@ -100,11 +100,11 @@ class LiveApplyStorageProvider implements StorageProvider {
 
   @override
   Future<FileOperationResult> updateFile(
-    final String path,
-    final String content, {
-    final String? commitMessage,
+    String path,
+    String content, {
+    String? commitMessage,
   }) => _journaled(
-    (final tx) => tx.mutate(
+    (tx) => tx.mutate(
       path,
       content,
       () => inner.updateFile(path, content, commitMessage: commitMessage),
@@ -115,19 +115,19 @@ class LiveApplyStorageProvider implements StorageProvider {
   /// provider owns the O(chunk) fast path when it has one.
   @override
   Future<FileOperationResult> appendFile(
-    final String path,
-    final String content, {
-    final String? commitMessage,
+    String path,
+    String content, {
+    String? commitMessage,
   }) => _journaled(
-    (final tx) => tx.appendFile(path, content, commitMessage: commitMessage),
+    (tx) => tx.appendFile(path, content, commitMessage: commitMessage),
   );
 
   @override
   Future<FileOperationResult> deleteFile(
-    final String path, {
-    final String? commitMessage,
+    String path, {
+    String? commitMessage,
   }) => _journaled(
-    (final tx) => tx.mutate(
+    (tx) => tx.mutate(
       path,
       null,
       () => inner.deleteFile(path, commitMessage: commitMessage),
@@ -138,10 +138,10 @@ class LiveApplyStorageProvider implements StorageProvider {
   /// back (the only undo this layer owns); anything else delegates to the
   /// inner provider.
   @override
-  Future<void> restore(final String path, {final String? versionId}) async {
+  Future<void> restore(String path, {String? versionId}) async {
     if (versionId != null) {
       final journal = await store.read(versionId);
-      if (journal != null && journal.entries.any((final e) => e.path == path)) {
+      if (journal != null && journal.entries.any((e) => e.path == path)) {
         final tx = await LiveApplyTransaction.reopen(
           inner,
           store,
@@ -159,7 +159,7 @@ class LiveApplyStorageProvider implements StorageProvider {
   /// rollback window. Failed operations retain recovery evidence unless
   /// locked read-back proves that the footprint is unchanged.
   Future<FileOperationResult> _journaled(
-    final Future<FileOperationResult> Function(LiveApplyTransaction tx) op,
+    Future<FileOperationResult> Function(LiveApplyTransaction tx) op,
   ) async {
     final tx = await beginTransaction();
     final previousRunId = _lastRunId;
@@ -196,7 +196,7 @@ class LiveApplyStorageProvider implements StorageProvider {
   String? get lastRunId => _lastRunId;
 
   /// Undoes the most recent retained run (or an explicit [runId]).
-  Future<void> rollbackLast({final String? runId}) async {
+  Future<void> rollbackLast({String? runId}) async {
     final id = runId ?? _lastRunId;
     if (id == null) {
       throw const LiveApplyRefusalException('no live-apply run to roll back');
@@ -212,7 +212,7 @@ class LiveApplyStorageProvider implements StorageProvider {
 
   /// Accepts the most recent retained run (or an explicit [runId]): prunes
   /// its journal; the state is frozen.
-  Future<void> commitLast({final String? runId}) async {
+  Future<void> commitLast({String? runId}) async {
     final id = runId ?? _lastRunId;
     if (id == null) {
       throw const LiveApplyRefusalException('no live-apply run to commit');

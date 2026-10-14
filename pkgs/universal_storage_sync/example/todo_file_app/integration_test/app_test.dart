@@ -24,7 +24,7 @@ void main() {
     });
 
     testWidgets('app starts with folder picker when no workspace selected', (
-      final tester,
+      tester,
     ) async {
       app.main();
       await tester.pumpAndSettle();
@@ -35,7 +35,7 @@ void main() {
       expect(find.byIcon(Icons.folder_open), findsWidgets);
     });
 
-    testWidgets('shows folder picker tips and help text', (final tester) async {
+    testWidgets('shows folder picker tips and help text', (tester) async {
       app.main();
       await tester.pumpAndSettle();
 
@@ -51,7 +51,7 @@ void main() {
     });
 
     testWidgets('folder picker shows error for invalid actions', (
-      final tester,
+      tester,
     ) async {
       app.main();
       await tester.pumpAndSettle();

@@ -75,7 +75,7 @@ final class AgentEditStager {
     await _queueStore.mutateState(
       namespace: AgentStagingNamespace.namespace,
       service: service,
-      update: (final state) async => state.copyWith(
+      update: (state) async => state.copyWith(
         outbox: <SyncOutboxEntry>[
           ...state.outbox.where((e) => e.id != entryId),
           entry,
@@ -157,7 +157,7 @@ final class AgentEditStager {
     await _queueStore.mutateState(
       namespace: AgentStagingNamespace.namespace,
       service: service,
-      update: (final state) async => state.copyWith(
+      update: (state) async => state.copyWith(
         outbox: state.outbox.where((e) => e.id != entryId).toList(),
       ),
     );

@@ -46,7 +46,7 @@ final class CompositeLaneMismatchError extends Error {
 ///   named error on restore.
 final class CompositeMergeStrategy implements MergeStrategy {
   /// Validates and wraps [lanes] (insertion order = lane order).
-  factory CompositeMergeStrategy(final Map<String, MergeStrategy> lanes) {
+  factory CompositeMergeStrategy(Map<String, MergeStrategy> lanes) {
     if (lanes.isEmpty) {
       throw ArgumentError.value(lanes, 'lanes', 'must have at least one lane');
     }
@@ -68,7 +68,7 @@ final class CompositeMergeStrategy implements MergeStrategy {
   /// `composite:` in [CompositeMergeStrategy.name]). Unknown
   /// sub-strategy names are a named error — a lane-map mismatch on
   /// restore is never a silent re-route (ADR 0030 §1).
-  factory CompositeMergeStrategy.fromSpec(final String spec) {
+  factory CompositeMergeStrategy.fromSpec(String spec) {
     if (spec.isEmpty) {
       throw ArgumentError.value(spec, 'spec', 'empty lane spec');
     }
@@ -103,7 +103,7 @@ final class CompositeMergeStrategy implements MergeStrategy {
   @override
   String get name {
     final laneSpec = lanes.entries
-        .map((final e) => '${e.key}=>${e.value.name}')
+        .map((e) => '${e.key}=>${e.value.name}')
         .join(',');
     return '$specPrefix$laneSpec';
   }
@@ -112,13 +112,13 @@ final class CompositeMergeStrategy implements MergeStrategy {
   Map<String, Object?> initialState() => <String, Object?>{};
 
   @override
-  void fold(final Map<String, Object?> state, final OpRecord op) =>
+  void fold(Map<String, Object?> state, OpRecord op) =>
       laneFor(op).fold(state, op);
 
   /// The lane owning [op]: longest-matching prefix over its payload key.
   /// Throws [CompositeLaneMismatchError] when no lane matches (or the op
   /// carries no string key) — named, never dropped.
-  MergeStrategy laneFor(final OpRecord op) {
+  MergeStrategy laneFor(OpRecord op) {
     final key = op.payload['k'];
     String? best;
     var bestLength = -1;

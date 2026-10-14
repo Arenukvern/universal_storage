@@ -25,8 +25,8 @@ typedef ChunkStoreFactory = Future<ChunkStore> Function();
 
 /// Runs the full chunk-store conformance suite against a factory.
 void chunkStoreConformanceTests(
-  final String storeName, {
-  required final ChunkStoreFactory create,
+  String storeName, {
+  required ChunkStoreFactory create,
 }) {
   const kilobyte = 1024;
   group('$storeName conformance', () {

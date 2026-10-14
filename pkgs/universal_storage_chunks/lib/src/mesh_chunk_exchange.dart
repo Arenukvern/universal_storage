@@ -41,12 +41,12 @@ final class MeshChunkExchange {
   /// Batches the request so a huge gap set doesn't build an unbounded
   /// frame; [batchSize] addresses go out per request.
   static Future<int> fetch({
-    required final MeshSession session,
-    required final Iterable<String> addresses,
-    required final ChunkStore sink,
-    final int batchSize = 64,
+    required MeshSession session,
+    required Iterable<String> addresses,
+    required ChunkStore sink,
+    int batchSize = 64,
   }) async {
-    final queue = addresses.where((final a) => a.isNotEmpty).toList();
+    final queue = addresses.where((a) => a.isNotEmpty).toList();
     var received = 0;
     final inbound = StreamIterator<Uint8List>(session.inbound);
     for (var i = 0; i < queue.length; i += batchSize) {
@@ -87,13 +87,13 @@ final class MeshChunkExchange {
   /// dialer-only topology ships bytes: the phone dials one session and
   /// pushes; no second server ever exists.
   static Future<int> push({
-    required final MeshSession session,
-    required final Iterable<String> addresses,
-    required final ChunkStore store,
-    final int batchSize = 16,
+    required MeshSession session,
+    required Iterable<String> addresses,
+    required ChunkStore store,
+    int batchSize = 16,
   }) async {
     var sent = 0;
-    final queue = addresses.where((final a) => a.isNotEmpty).toList();
+    final queue = addresses.where((a) => a.isNotEmpty).toList();
     for (var i = 0; i < queue.length; i += batchSize) {
       final batch = queue.sublist(
         i,
@@ -123,8 +123,8 @@ final class MeshChunkExchange {
   /// verified before storing — the PoP law holds for pushes too).
   /// Returns when the inbound stream closes (the peer is done).
   static Future<void> serve({
-    required final MeshSession session,
-    required final ChunkStore store,
+    required MeshSession session,
+    required ChunkStore store,
   }) async {
     await for (final frame in session.inbound) {
       final message = MeshChunkProtocol.decode(frame);
@@ -168,14 +168,14 @@ final class MeshChunkExchange {
 final class MeshChunkProtocol {
   const MeshChunkProtocol._();
 
-  static Uint8List encode(final Map<String, Object?> message) =>
+  static Uint8List encode(Map<String, Object?> message) =>
       Uint8List.fromList(utf8.encode(jsonEncode(message)));
 
-  static Map<String, Object?> decode(final Uint8List bytes) =>
+  static Map<String, Object?> decode(Uint8List bytes) =>
       Map<String, Object?>.from(
         jsonDecode(utf8.decode(bytes)) as Map<dynamic, dynamic>,
       );
 }
 
-Uint8List _encode(final Map<String, Object?> message) =>
+Uint8List _encode(Map<String, Object?> message) =>
     MeshChunkProtocol.encode(message);

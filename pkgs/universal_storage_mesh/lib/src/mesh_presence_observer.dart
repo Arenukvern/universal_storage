@@ -80,7 +80,7 @@ final class MeshPresenceObserver {
   /// Starts consuming [frames]. Returns the subscription (also cancelled
   /// by [dispose]); safe to call once per observer.
   StreamSubscription<MeshEphemeralFrame> attach(
-    final Stream<MeshEphemeralFrame> frames,
+    Stream<MeshEphemeralFrame> frames,
   ) => frames.listen(_onFrame);
 
   /// How many inbound frames were dropped as named data (ADR 0031 §3).
@@ -90,7 +90,7 @@ final class MeshPresenceObserver {
   List<MeshFrameRejection> get rejections => List.unmodifiable(_rejections);
 
   /// Drops expired entries from the tracker; also run before every fold.
-  int sweep({final DateTime? now}) => tracker.sweep(now ?? _clock());
+  int sweep({DateTime? now}) => tracker.sweep(now ?? _clock());
 
   /// Stops consuming; queued frames are ignored.
   Future<void> dispose() async {
@@ -99,7 +99,7 @@ final class MeshPresenceObserver {
     _framesSub = null;
   }
 
-  void _onFrame(final MeshEphemeralFrame frame) {
+  void _onFrame(MeshEphemeralFrame frame) {
     // Ownership is decided NOW, synchronously: the verification chain
     // below runs in a later microtask, by which time a local session may
     // have opened for this doc — and a frame delivered here was NEVER
@@ -110,12 +110,12 @@ final class MeshPresenceObserver {
     // chain — that frame is simply not folded, the next one is).
     _inbound = _inbound
         .then((_) => _processFrame(frame, owned))
-        .catchError((final Object _) {});
+        .catchError((Object _) {});
   }
 
   Future<void> _processFrame(
-    final MeshEphemeralFrame frame,
-    final bool owned,
+    MeshEphemeralFrame frame,
+    bool owned,
   ) async {
     if (_disposed || owned) return;
     if (frame.fromPeerId == selfId) return; // local echo

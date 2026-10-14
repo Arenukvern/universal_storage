@@ -9,31 +9,31 @@ class _FakeDelegate implements OAuthFlowDelegate {
 
   @override
   Future<String> getAuthorizationCode(
-    final Uri authorizationUrl,
-    final Uri redirectUrl, {
-    final String? state,
+    Uri authorizationUrl,
+    Uri redirectUrl, {
+    String? state,
   }) => throw UnimplementedError();
 
   @override
   Future<void> handleDeviceFlow({
-    required final String deviceCode,
-    required final String userCode,
-    required final Uri verificationUrl,
-    required final int expiresIn,
-    required final int interval,
-    final Uri? verificationUrlComplete,
+    required String deviceCode,
+    required String userCode,
+    required Uri verificationUrl,
+    required int expiresIn,
+    required int interval,
+    Uri? verificationUrlComplete,
   }) async {}
 
   @override
   Future<void> onAuthorizationSuccess({
-    required final String maskedToken,
-    required final List<String> scopes,
+    required String maskedToken,
+    required List<String> scopes,
   }) async {}
 
   @override
   Future<void> onAuthorizationError({
-    required final String error,
-    final String? description,
+    required String error,
+    String? description,
   }) async {}
 }
 
@@ -41,24 +41,24 @@ class _InMemoryStorage implements CredentialStorage {
   final Map<GitPlatform, StoredCredentials> _store = {};
 
   @override
-  Future<void> clearCredentials(final GitPlatform platform) async =>
+  Future<void> clearCredentials(GitPlatform platform) async =>
       _store.remove(platform);
 
   @override
   Future<void> clearAllCredentials() async => _store.clear();
 
   @override
-  Future<bool> hasCredentials(final GitPlatform platform) async =>
+  Future<bool> hasCredentials(GitPlatform platform) async =>
       _store.containsKey(platform);
 
   @override
-  Future<StoredCredentials?> getCredentials(final GitPlatform platform) async =>
+  Future<StoredCredentials?> getCredentials(GitPlatform platform) async =>
       _store[platform];
 
   @override
   Future<void> storeCredentials(
-    final GitPlatform platform,
-    final StoredCredentials credentials,
+    GitPlatform platform,
+    StoredCredentials credentials,
   ) async => _store[platform] = credentials;
 }
 
@@ -69,10 +69,10 @@ class _ScriptedHttpClient implements http.Client {
 
   @override
   Future<http.Response> post(
-    final Uri url, {
-    final Map<String, String>? headers,
-    final Object? body,
-    final Encoding? encoding,
+    Uri url, {
+    Map<String, String>? headers,
+    Object? body,
+    Encoding? encoding,
   }) async {
     if ('$url'.contains('/device/code')) {
       return http.Response(
@@ -99,12 +99,12 @@ class _ScriptedHttpClient implements http.Client {
 
   @override
   Future<http.Response> get(
-    final Uri url, {
-    final Map<String, String>? headers,
+    Uri url, {
+    Map<String, String>? headers,
   }) async => http.Response(jsonEncode({'login': 'octocat', 'id': 1}), 200);
 
   @override
-  dynamic noSuchMethod(final Invocation invocation) =>
+  dynamic noSuchMethod(Invocation invocation) =>
       super.noSuchMethod(invocation);
 }
 

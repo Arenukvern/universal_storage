@@ -41,7 +41,7 @@ final class JourneyTransitionError extends Error {
   @override
   String toString() =>
       'JourneyTransitionError: illegal $from -> $to '
-      '(allowed: ${_allowed[from]?.map((final p) => p.name).join(", ")})';
+      '(allowed: ${_allowed[from]?.map((p) => p.name).join(", ")})';
 }
 
 const _allowed = <JourneyPhase, Set<JourneyPhase>>{
@@ -75,13 +75,13 @@ final class JourneyState {
 
   bool get isIdle => _phase == JourneyPhase.idle;
 
-  bool canTransitionTo(final JourneyPhase next) =>
+  bool canTransitionTo(JourneyPhase next) =>
       next == JourneyPhase.idle || _allowed[_phase]!.contains(next);
 
   /// Moves to [next], optionally naming the destination on departure from
   /// idle. Throws [JourneyTransitionError] on an illegal move — an
   /// orchestration bug, deliberately loud.
-  void transitionTo(final JourneyPhase next, {final String? targetDocId}) {
+  void transitionTo(JourneyPhase next, {String? targetDocId}) {
     if (!canTransitionTo(next)) {
       throw JourneyTransitionError(_phase, next);
     }

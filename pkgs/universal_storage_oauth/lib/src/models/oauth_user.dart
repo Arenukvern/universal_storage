@@ -15,7 +15,7 @@ extension type const OAuthUser(Map<String, dynamic> value) {
   /// Parameters:
   /// - [jsonData]: The JSON data to decode, typically a map or dynamic value.
   // ignore: avoid_annotating_with_dynamic
-  factory OAuthUser.fromJson(final dynamic jsonData) {
+  factory OAuthUser.fromJson(dynamic jsonData) {
     final map = jsonDecodeMap(jsonData);
     return OAuthUser(map);
   }

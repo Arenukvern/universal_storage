@@ -33,9 +33,9 @@ class LiveApplyTransaction {
 
   /// Persist a new run before any effect.
   static Future<LiveApplyTransaction> begin(
-    final StorageProvider inner,
-    final LiveApplyJournalStore store, {
-    final int? maxSnapshotFileBytes,
+    StorageProvider inner,
+    LiveApplyJournalStore store, {
+    int? maxSnapshotFileBytes,
   }) => store.withExclusive(() async {
     final runId = 'run-${DateTime.now().toUtc().microsecondsSinceEpoch}';
     if (await store.read(runId) != null) {
@@ -60,10 +60,10 @@ class LiveApplyTransaction {
 
   /// Reopen a retained run without dispatching effects.
   static Future<LiveApplyTransaction> reopen(
-    final StorageProvider inner,
-    final LiveApplyJournalStore store,
-    final String runId, {
-    final int? maxSnapshotFileBytes,
+    StorageProvider inner,
+    LiveApplyJournalStore store,
+    String runId, {
+    int? maxSnapshotFileBytes,
   }) => store.withExclusive(() async {
     final journal = await store.read(runId);
     if (journal == null) {
@@ -88,7 +88,7 @@ class LiveApplyTransaction {
   /// Last loaded lifecycle state.
   LiveApplyRunStatus get status => journal.status;
 
-  Future<T> _exclusive<T>(final Future<T> Function() action) =>
+  Future<T> _exclusive<T>(Future<T> Function() action) =>
       store.withExclusive(() async {
         final saved = await store.read(runId);
         if (saved == null) {
@@ -105,7 +105,7 @@ class LiveApplyTransaction {
         'run $runId is ${status.name}; cannot mutate',
       );
     }
-    if (journal.entries.any((final e) => e.pending)) {
+    if (journal.entries.any((e) => e.pending)) {
       throw const LiveApplyRefusalException(
         'unfinished mutation; roll back before further mutation',
       );
@@ -113,8 +113,8 @@ class LiveApplyTransaction {
   }
 
   static StorageFileStatePort? _requireStatePort(
-    final StorageProvider provider,
-    final String? profile,
+    StorageProvider provider,
+    String? profile,
   ) {
     if (profile == null) {
       if (provider is StorageFileStatePort &&
@@ -133,7 +133,7 @@ class LiveApplyTransaction {
     return provider as StorageFileStatePort;
   }
 
-  Future<StorageFileState> _readState(final String path) async {
+  Future<StorageFileState> _readState(String path) async {
     final port = _requireStatePort(inner, journal.fileStateProfile);
     if (port == null) {
       return StorageFileState(content: await inner.getFile(path), mode: null);
@@ -144,19 +144,19 @@ class LiveApplyTransaction {
   }
 
   bool _matches(
-    final StorageFileState actual,
-    final String? hash,
-    final int? mode,
+    StorageFileState actual,
+    String? hash,
+    int? mode,
   ) =>
       (actual.content == null
           ? hash == null
           : hash != null && liveApplySha256(actual.content!) == hash) &&
       (journal.fileStateProfile == null || actual.mode == mode);
-  String? _post(final LiveApplyEntry e) => e.postAbsent ? null : e.postSha256;
-  String? _prior(final LiveApplyEntry e) => e.prior?.sha256;
+  String? _post(LiveApplyEntry e) => e.postAbsent ? null : e.postSha256;
+  String? _prior(LiveApplyEntry e) => e.prior?.sha256;
 
-  Future<LiveApplyEntry> _snapshot(final String path) async {
-    final existing = journal.entries.where((final e) => e.path == path);
+  Future<LiveApplyEntry> _snapshot(String path) async {
+    final existing = journal.entries.where((e) => e.path == path);
     if (existing.isNotEmpty) return existing.first;
     final state = await _readState(path);
     final prior = state.content;
@@ -188,7 +188,7 @@ class LiveApplyTransaction {
 
   /// Snapshot-only callers must use [mutate] to declare an effect before it
   /// runs.
-  Future<void> snapshot(final String path) => _exclusive(() async {
+  Future<void> snapshot(String path) => _exclusive(() async {
     _requireMutable();
     await _snapshot(path);
   });
@@ -197,7 +197,7 @@ class LiveApplyTransaction {
   /// recoverable.
   /// Retained for source compatibility; callers migrate to [mutate].
   @Deprecated('Use mutate to persist intended state before the provider effect')
-  Future<void> recordPost(final String path, final String? content) =>
+  Future<void> recordPost(String path, String? content) =>
       Future<void>.error(
         const LiveApplyRefusalException(
           'post-only journaling is unsafe; use mutate with declared content',
@@ -208,15 +208,15 @@ class LiveApplyTransaction {
   /// Intended presence/hash and the pre-operation hash persist BEFORE dispatch.
   /// A thrown/unfinished operation retains both possible states for recovery.
   Future<FileOperationResult> mutate(
-    final String path,
-    final String? content,
-    final Future<FileOperationResult> Function() effect,
+    String path,
+    String? content,
+    Future<FileOperationResult> Function() effect,
   ) => _exclusive(() => _mutate(path, content, effect));
 
   Future<FileOperationResult> _mutate(
-    final String path,
-    final String? content,
-    final Future<FileOperationResult> Function() effect,
+    String path,
+    String? content,
+    Future<FileOperationResult> Function() effect,
   ) async {
     _requireMutable();
     final entry = await _snapshot(path);
@@ -265,9 +265,9 @@ class LiveApplyTransaction {
   }
 
   void _retainReceipt(
-    final LiveApplyEntry entry,
-    final FileOperationResult result,
-    final LiveApplyReceiptPhase phase,
+    LiveApplyEntry entry,
+    FileOperationResult result,
+    LiveApplyReceiptPhase phase,
   ) {
     if (journal.fileStateProfile == null) return;
     final receipt = LiveApplyProviderReceipt.fromMetadata(
@@ -279,20 +279,20 @@ class LiveApplyTransaction {
 
   /// Create or update one path under write-ahead intent.
   Future<FileOperationResult> writeFile(
-    final String path,
-    final String content,
+    String path,
+    String content,
   ) => mutate(path, content, () => _putFile(path, content));
 
   /// Delete one path under write-ahead intent.
-  Future<FileOperationResult> deleteFile(final String path) =>
+  Future<FileOperationResult> deleteFile(String path) =>
       mutate(path, null, () => inner.deleteFile(path));
 
   /// Append is lowered from one current read while holding the same lock.
   /// The provider still owns its append implementation and exception contract.
   Future<FileOperationResult> appendFile(
-    final String path,
-    final String content, {
-    final String? commitMessage,
+    String path,
+    String content, {
+    String? commitMessage,
   }) => _exclusive(() async {
     _requireMutable();
     final before = await inner.getFile(path);
@@ -304,8 +304,8 @@ class LiveApplyTransaction {
   });
 
   Future<FileOperationResult> _putFile(
-    final String path,
-    final String content,
+    String path,
+    String content,
   ) async {
     final existing = await inner.getFile(path);
     return existing == null
@@ -324,7 +324,7 @@ class LiveApplyTransaction {
   /// Finalize completed work and close the undo window. Hosts with a separate
   /// verification phase require the durable applied state under this same lock.
   Future<void> commit({
-    final bool requireApplied = false,
+    bool requireApplied = false,
   }) => _exclusive(() async {
     if (requireApplied && status != LiveApplyRunStatus.applied) {
       throw const LiveApplyRefusalException(
@@ -333,7 +333,7 @@ class LiveApplyTransaction {
     }
     if ((status != LiveApplyRunStatus.open &&
             status != LiveApplyRunStatus.applied) ||
-        journal.entries.any((final e) => e.pending)) {
+        journal.entries.any((e) => e.pending)) {
       throw const LiveApplyRefusalException(
         'unfinished/closed run cannot finalize',
       );
@@ -369,7 +369,7 @@ class LiveApplyTransaction {
     return true;
   });
 
-  bool _recoverable(final LiveApplyEntry e, final StorageFileState actual) {
+  bool _recoverable(LiveApplyEntry e, StorageFileState actual) {
     if (e.restored) return _matches(actual, _prior(e), e.prior?.mode);
     if (e.inverseStarted && _matches(actual, _prior(e), e.prior?.mode)) {
       return true;

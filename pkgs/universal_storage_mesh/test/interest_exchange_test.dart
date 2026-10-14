@@ -125,7 +125,7 @@ void main() {
     await replicaA.createFile('docs/gone', 'x');
     await replicaA.deleteFile('docs/gone');
 
-    final refs = replicaA.memberRefs().map((final r) => r.docId).toSet();
+    final refs = replicaA.memberRefs().map((r) => r.docId).toSet();
     expect(refs, {'docs/a', 'docs/b'});
 
     expect(replicaA.urnOf('docs/a').value, 'world://local/docs/a');
@@ -173,7 +173,7 @@ final class ScriptedOldPeerTransport implements MeshTransport {
   Stream<MeshSession> get incoming => _incoming.stream;
 
   @override
-  Future<MeshSession> connect(final MeshPeerRecord peer) async {
+  Future<MeshSession> connect(MeshPeerRecord peer) async {
     final fromReplica = StreamController<Uint8List>();
     final fromPeer = StreamController<Uint8List>();
     final replicaSession = _ScriptedSession(
@@ -185,8 +185,8 @@ final class ScriptedOldPeerTransport implements MeshTransport {
   }
 
   Future<void> _serve(
-    final Stream<Uint8List> replicaFrames,
-    final StreamController<Uint8List> toReplica,
+    Stream<Uint8List> replicaFrames,
+    StreamController<Uint8List> toReplica,
   ) async {
     await for (final frame in replicaFrames) {
       final message =
@@ -214,7 +214,7 @@ final class ScriptedOldPeerTransport implements MeshTransport {
     }
   }
 
-  Uint8List _frame(final Map<String, Object?> message) =>
+  Uint8List _frame(Map<String, Object?> message) =>
       Uint8List.fromList(utf8.encode(jsonEncode(message)));
 }
 
@@ -235,7 +235,7 @@ final class _ScriptedSession implements MeshSession {
   Stream<Uint8List> get inbound => _inbound;
 
   @override
-  Future<void> send(final Uint8List payload) async => _onSend(payload);
+  Future<void> send(Uint8List payload) async => _onSend(payload);
 
   @override
   Future<void> close() async {}

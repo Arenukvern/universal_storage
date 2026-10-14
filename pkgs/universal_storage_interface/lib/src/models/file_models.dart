@@ -9,10 +9,10 @@ class FileEntry {
     required this.name,
     required this.isDirectory,
     this.size = 0,
-    final DateTime? modifiedAt,
+    DateTime? modifiedAt,
   }) : modifiedAt = modifiedAt ?? DateTime.fromMillisecondsSinceEpoch(0);
 
-  factory FileEntry.fromJson(final Map<String, dynamic> json) => FileEntry(
+  factory FileEntry.fromJson(Map<String, dynamic> json) => FileEntry(
     name: jsonDecodeString(json['name']),
     isDirectory: jsonDecodeBool(json['is_directory']),
     size: jsonDecodeInt(json['size']),
@@ -44,7 +44,7 @@ class FileOperationResult {
     this.metadata = const <String, dynamic>{},
   });
 
-  factory FileOperationResult.fromJson(final Map<String, dynamic> json) =>
+  factory FileOperationResult.fromJson(Map<String, dynamic> json) =>
       FileOperationResult(
         path: jsonDecodeString(json['path']),
         revisionId: jsonDecodeString(json['revision_id']),
@@ -67,9 +67,9 @@ class FileOperationResult {
   };
 
   static FileOperationResult created({
-    required final String path,
-    final String revisionId = '',
-    final Map<String, dynamic> metadata = const <String, dynamic>{},
+    required String path,
+    String revisionId = '',
+    Map<String, dynamic> metadata = const <String, dynamic>{},
   }) => FileOperationResult(
     path: path,
     revisionId: revisionId,
@@ -78,9 +78,9 @@ class FileOperationResult {
   );
 
   static FileOperationResult updated({
-    required final String path,
-    final String revisionId = '',
-    final Map<String, dynamic> metadata = const <String, dynamic>{},
+    required String path,
+    String revisionId = '',
+    Map<String, dynamic> metadata = const <String, dynamic>{},
   }) => FileOperationResult(
     path: path,
     revisionId: revisionId,
@@ -88,9 +88,9 @@ class FileOperationResult {
   );
 
   static FileOperationResult deleted({
-    required final String path,
-    final String revisionId = '',
-    final Map<String, dynamic> metadata = const <String, dynamic>{},
+    required String path,
+    String revisionId = '',
+    Map<String, dynamic> metadata = const <String, dynamic>{},
   }) => FileOperationResult(
     path: path,
     revisionId: revisionId,

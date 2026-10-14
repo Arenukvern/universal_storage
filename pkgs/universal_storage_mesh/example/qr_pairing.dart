@@ -50,7 +50,7 @@ Future<void> main() async {
   stdout.writeln('alice derived matching keys for bob');
 }
 
-String _terminalQr(final Uint8List payload) {
+String _terminalQr(Uint8List payload) {
   final qr = QrCode(
     payload: QrPayload.fromTypedData(payload),
   );
@@ -58,7 +58,7 @@ String _terminalQr(final Uint8List payload) {
   final modules = image.moduleCount;
   final buffer = StringBuffer();
 
-  String half(final bool top, final bool bottom) => !top && !bottom
+  String half(bool top, bool bottom) => !top && !bottom
       ? '██'
       : top && !bottom
       ? '▀▀'

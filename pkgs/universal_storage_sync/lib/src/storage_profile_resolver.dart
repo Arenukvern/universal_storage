@@ -4,18 +4,18 @@ import 'package:universal_storage_interface/universal_storage_interface.dart';
 abstract interface class StorageProfileResolver {
   Iterable<StorageNamespace> get namespaces;
 
-  Future<StorageService> resolveService(final StorageNamespace namespace);
+  Future<StorageService> resolveService(StorageNamespace namespace);
 
   Future<StorageCapabilities> resolveCapabilities(
-    final StorageNamespace namespace,
+    StorageNamespace namespace,
   );
 }
 
 /// In-memory resolver for profile-based routing.
 final class InMemoryStorageProfileResolver implements StorageProfileResolver {
   InMemoryStorageProfileResolver({
-    required final Map<StorageNamespace, StorageService> namespaceServices,
-    final Map<StorageNamespace, StorageCapabilities>? namespaceCapabilities,
+    required Map<StorageNamespace, StorageService> namespaceServices,
+    Map<StorageNamespace, StorageCapabilities>? namespaceCapabilities,
   }) : _namespaceServices = Map.unmodifiable(namespaceServices),
        _namespaceCapabilities = Map.unmodifiable(
          namespaceCapabilities ??
@@ -30,7 +30,7 @@ final class InMemoryStorageProfileResolver implements StorageProfileResolver {
 
   @override
   Future<StorageService> resolveService(
-    final StorageNamespace namespace,
+    StorageNamespace namespace,
   ) async {
     final service = _namespaceServices[namespace];
     if (service == null) {
@@ -43,6 +43,6 @@ final class InMemoryStorageProfileResolver implements StorageProfileResolver {
 
   @override
   Future<StorageCapabilities> resolveCapabilities(
-    final StorageNamespace namespace,
+    StorageNamespace namespace,
   ) async => _namespaceCapabilities[namespace] ?? StorageCapabilities.none;
 }

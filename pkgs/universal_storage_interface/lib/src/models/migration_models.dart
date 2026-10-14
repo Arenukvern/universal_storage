@@ -23,11 +23,11 @@ final class MigrationPlan {
     this.status = MigrationStatus.draft,
   });
 
-  factory MigrationPlan.fromJson(final Map<String, dynamic> json) {
+  factory MigrationPlan.fromJson(Map<String, dynamic> json) {
     final statusName = (json['status'] ?? MigrationStatus.draft.name)
         .toString();
     final status = MigrationStatus.values.firstWhere(
-      (final e) => e.name == statusName,
+      (e) => e.name == statusName,
       orElse: () => MigrationStatus.draft,
     );
 
@@ -59,8 +59,8 @@ final class MigrationPlan {
   final MigrationStatus status;
 
   MigrationPlan copyWith({
-    final MigrationStatus? status,
-    final Map<String, dynamic>? metadata,
+    MigrationStatus? status,
+    Map<String, dynamic>? metadata,
   }) => MigrationPlan(
     id: id,
     sourceProfileHash: sourceProfileHash,

@@ -21,7 +21,7 @@ enum ProviderType {
 /// {@endtemplate}
 mixin PathNormalizer {
   /// Normalizes a path for the specified provider type
-  static String normalize(final String path, final ProviderType providerType) {
+  static String normalize(String path, ProviderType providerType) {
     if (path.isEmpty) return path;
 
     switch (providerType) {
@@ -39,7 +39,7 @@ mixin PathNormalizer {
   /// Normalizes paths for filesystem operations
   // Convert forward slashes to platform-specific separators
   // Remove redundant separators and resolve relative paths
-  static String _normalizeFilesystemPath(final String path) => path
+  static String _normalizeFilesystemPath(String path) => path
       .replaceAll(RegExp(r'[/\\]+'), _platformSeparator)
       .replaceAll(RegExp(r'^[/\\]+'), '') // Remove leading separators
       .replaceAll(RegExp(r'[/\\]+$'), ''); // Remove trailing separators
@@ -47,7 +47,7 @@ mixin PathNormalizer {
   /// Normalizes paths for GitHub API operations
   // GitHub API always uses forward slashes
   // Remove leading/trailing slashes and resolve relative paths
-  static String _normalizeGitHubPath(final String path) => path
+  static String _normalizeGitHubPath(String path) => path
       .replaceAll(RegExp(r'\\+'), '/') // Convert backslashes to forward slashes
       .replaceAll(RegExp('/+'), '/') // Remove duplicate slashes
       .replaceAll(RegExp('^/+'), '') // Remove leading slashes
@@ -55,14 +55,14 @@ mixin PathNormalizer {
 
   /// Normalizes paths for Git operations
   // Git uses forward slashes regardless of platform
-  static String _normalizeGitPath(final String path) => path
+  static String _normalizeGitPath(String path) => path
       .replaceAll(RegExp(r'\\+'), '/') // Convert backslashes to forward slashes
       .replaceAll(RegExp('/+'), '/') // Remove duplicate slashes
       .replaceAll(RegExp('^/+'), '') // Remove leading slashes
       .replaceAll(RegExp(r'/+$'), ''); // Remove trailing slashes
 
   /// Normalizes paths for CloudKit operations
-  static String _normalizeCloudKitPath(final String path) => path
+  static String _normalizeCloudKitPath(String path) => path
       .replaceAll(RegExp(r'\\+'), '/') // Convert backslashes to forward slashes
       .replaceAll(RegExp('/+'), '/') // Remove duplicate slashes
       .replaceAll(RegExp('^/+'), '') // Remove leading slashes
@@ -75,7 +75,7 @@ mixin PathNormalizer {
       '/'; // Default to forward slash for cross-platform compatibility
 
   /// Validates if a path is safe for the given provider
-  static bool isSafePath(final String path, final ProviderType providerType) {
+  static bool isSafePath(String path, ProviderType providerType) {
     if (path.isEmpty) return false;
 
     // Check for dangerous path patterns
@@ -105,7 +105,7 @@ mixin PathNormalizer {
 
   /// Validates GitHub API path requirements
   // GitHub has specific requirements for file paths
-  static bool _isValidGitHubPath(final String path) =>
+  static bool _isValidGitHubPath(String path) =>
       path.length <= 255 && // Max path length
       !path.startsWith('.') && // No hidden files at root
       !path.endsWith('.') && // No paths ending with dot
@@ -113,13 +113,13 @@ mixin PathNormalizer {
 
   /// Validates filesystem path requirements
   // Basic filesystem validation
-  static bool _isValidFilesystemPath(final String path) =>
+  static bool _isValidFilesystemPath(String path) =>
       path.length <= 260 && // Windows MAX_PATH limit
       !path.contains(RegExp(r'[<>:"|?*\x00-\x1f]')); // No invalid characters
 
   /// Validates Git path requirements
   // Git path validation
-  static bool _isValidGitPath(final String path) =>
+  static bool _isValidGitPath(String path) =>
       path.length <= 255 && // Max path length
           !path.contains(
             RegExp(r'[<>:"|?*\x00-\x1f]'),
@@ -128,15 +128,15 @@ mixin PathNormalizer {
       path.contains(RegExp(r'^[a-zA-Z0-9._/-]+$')); // Only safe characters
 
   /// Validates CloudKit key path requirements.
-  static bool _isValidCloudKitPath(final String path) =>
+  static bool _isValidCloudKitPath(String path) =>
       path.length <= 1024 && // Keep key size bounded for record-name hashing
       !path.startsWith('.') &&
       !path.contains(RegExp(r'[\x00-\x1f]'));
 
   /// Joins path segments with the appropriate separator for the provider
   static String join(
-    final List<String> segments,
-    final ProviderType providerType,
+    List<String> segments,
+    ProviderType providerType,
   ) {
     if (segments.isEmpty) return '';
 
@@ -145,22 +145,22 @@ mixin PathNormalizer {
         : '/';
 
     return segments
-        .where((final segment) => segment.isNotEmpty)
-        .map((final segment) => normalize(segment, providerType))
+        .where((segment) => segment.isNotEmpty)
+        .map((segment) => normalize(segment, providerType))
         .join(separator);
   }
 
   /// Splits a path into its component segments
   static List<String> split(
-    final String path,
-    final ProviderType providerType,
+    String path,
+    ProviderType providerType,
   ) {
     final normalizedPath = normalize(path, providerType);
     if (normalizedPath.isEmpty) return [];
 
     return normalizedPath
         .split(RegExp(r'[/\\]'))
-        .where((final segment) => segment.isNotEmpty)
+        .where((segment) => segment.isNotEmpty)
         .toList();
   }
 }

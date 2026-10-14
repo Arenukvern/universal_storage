@@ -28,7 +28,7 @@ final class IsolateFrameSigner
   final Map<int, Completer<Uint8List>> _pending = <int, Completer<Uint8List>>{};
   int _nextRequestId = 0;
 
-  static Future<IsolateFrameSigner> spawn(final SimpleKeyPair keyPair) async {
+  static Future<IsolateFrameSigner> spawn(SimpleKeyPair keyPair) async {
     final seed = Uint8List.fromList(await keyPair.extractPrivateKeyBytes());
     final publicKey = Uint8List.fromList(
       (await keyPair.extractPublicKey()).bytes,
@@ -37,7 +37,7 @@ final class IsolateFrameSigner
   }
 
   @override
-  Future<Uint8List> sign(final MeshEphemeralFrame frame) async {
+  Future<Uint8List> sign(MeshEphemeralFrame frame) async {
     // The canonical signing input is computed here (cheap); only the
     // Ed25519 math runs on the worker.
     final input = frame.signingInput();
@@ -59,7 +59,7 @@ final class IsolateFrameSigner
     final ready = Completer<SendPort>();
     final replyPort = ReceivePort();
     late final StreamSubscription<Object?> subscription;
-    subscription = replyPort.listen((final message) {
+    subscription = replyPort.listen((message) {
       if (message is SendPort) {
         ready.complete(message);
         return;
@@ -129,13 +129,13 @@ final class IsolateFrameAuthenticator implements EphemeralFrameAuthenticator {
   int _nextRequestId = 0;
 
   static Future<IsolateFrameAuthenticator> spawn(
-    final Map<String, List<int>> identityKeys,
+    Map<String, List<int>> identityKeys,
   ) async => IsolateFrameAuthenticator._(
-    identityKeys.map((final k, final v) => MapEntry(k, List<int>.of(v))),
+    identityKeys.map((k, v) => MapEntry(k, List<int>.of(v))),
   );
 
   @override
-  Future<bool> verify(final MeshEphemeralFrame frame) async {
+  Future<bool> verify(MeshEphemeralFrame frame) async {
     final workerPort = await _ensureWorker();
     final requestId = _nextRequestId++;
     final request = Completer<bool>();
@@ -150,7 +150,7 @@ final class IsolateFrameAuthenticator implements EphemeralFrameAuthenticator {
     final ready = Completer<SendPort>();
     final replyPort = ReceivePort();
     late final StreamSubscription<Object?> subscription;
-    subscription = replyPort.listen((final message) {
+    subscription = replyPort.listen((message) {
       if (message is SendPort) {
         ready.complete(message);
         return;
@@ -184,7 +184,7 @@ Future<void> _authenticatorWorkerMain(
   final (replyPort, identityKeys) = init;
   final authenticator = MeshFrameAuthenticator(
     identityKeys: identityKeys.map(
-      (final k, final v) => MapEntry(k, Uint8List.fromList(v)),
+      (k, v) => MapEntry(k, Uint8List.fromList(v)),
     ),
     trustOnFirstUse: false,
   );

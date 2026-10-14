@@ -7,11 +7,11 @@ import 'world_urn.dart';
 /// naming. Games may namespace by save/world id; the harness by workspace
 /// id; nobody is forced to.
 abstract interface class UrnResolver {
-  WorldUrn urnForDoc(final String docId, {final String? worldId});
+  WorldUrn urnForDoc(String docId, {String? worldId});
 
   /// The docId a URN addresses, or null when this resolver does not own
   /// the urn's world.
-  String? docIdForUrn(final WorldUrn urn);
+  String? docIdForUrn(WorldUrn urn);
 }
 
 /// Identity mapping: `memberPath == docId`. The default, preserving every
@@ -23,11 +23,11 @@ final class PathUrnResolver implements UrnResolver {
   final String defaultWorldId;
 
   @override
-  WorldUrn urnForDoc(final String docId, {final String? worldId}) => WorldUrn(
+  WorldUrn urnForDoc(String docId, {String? worldId}) => WorldUrn(
     worldId: worldId ?? defaultWorldId,
     memberPath: docId,
   );
 
   @override
-  String? docIdForUrn(final WorldUrn urn) => urn.memberPath;
+  String? docIdForUrn(WorldUrn urn) => urn.memberPath;
 }

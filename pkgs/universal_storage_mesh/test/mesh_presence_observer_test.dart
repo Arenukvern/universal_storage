@@ -42,12 +42,12 @@ final class _FakeEndpoint implements EphemeralFrameTransport {
   Stream<MeshEphemeralFrame> get frames => _frames.stream;
 
   @override
-  Future<void> send(final MeshEphemeralFrame frame) async {
+  Future<void> send(MeshEphemeralFrame frame) async {
     sent.add(frame);
     _hub._deliverFrom(peerId, frame);
   }
 
-  void _receive(final MeshEphemeralFrame frame) {
+  void _receive(MeshEphemeralFrame frame) {
     if (_frames.hasListener) {
       _frames.add(frame);
     } else {
@@ -63,10 +63,10 @@ final class _FakeEndpoint implements EphemeralFrameTransport {
 final class _FakeHub {
   final Map<String, _FakeEndpoint> _endpoints = {};
 
-  _FakeEndpoint endpoint(final String peerId) =>
+  _FakeEndpoint endpoint(String peerId) =>
       _endpoints.putIfAbsent(peerId, () => _FakeEndpoint(peerId, this));
 
-  void _deliverFrom(final String from, final MeshEphemeralFrame frame) {
+  void _deliverFrom(String from, MeshEphemeralFrame frame) {
     for (final endpoint in _endpoints.values) {
       if (endpoint.peerId != from) endpoint._receive(frame);
     }
@@ -79,11 +79,11 @@ Future<void> _settle() =>
     Future<void>.delayed(const Duration(milliseconds: 30));
 
 MeshPresenceSession _session({
-  required final _FakeEndpoint transport,
-  required final MeshPresenceTracker tracker,
-  final String docId = 'doc/1',
-  final EphemeralFrameSigner? signer,
-  final EphemeralFrameAuthenticator? authenticator,
+  required _FakeEndpoint transport,
+  required MeshPresenceTracker tracker,
+  String docId = 'doc/1',
+  EphemeralFrameSigner? signer,
+  EphemeralFrameAuthenticator? authenticator,
 }) => MeshPresenceSession(
   transport: transport,
   tracker: tracker,
@@ -171,7 +171,7 @@ void main() {
         tracker: hostTracker,
         authenticator: hostAuth,
         selfId: 'device-a',
-        hasLocalSession: (final docId) => sessionOpen && docId == 'doc/1',
+        hasLocalSession: (docId) => sessionOpen && docId == 'doc/1',
         clock: () => t0,
       );
       final sub = observer.attach(host.frames);

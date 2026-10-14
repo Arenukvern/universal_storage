@@ -54,14 +54,14 @@ void main() {
       return docs;
     }
 
-    List<OpRecord> allOps(final List<ConvergenceDoc> docs) => [
+    List<OpRecord> allOps(List<ConvergenceDoc> docs) => [
       for (final doc in docs) ...doc.pendingOps,
     ];
 
     void deliverShuffled(
-      final ConvergenceDoc doc,
-      final List<OpRecord> ops,
-      final int seed,
+      ConvergenceDoc doc,
+      List<OpRecord> ops,
+      int seed,
     ) {
       final shuffled = [...ops]..shuffle(Random(seed));
       for (var i = 0; i < shuffled.length; i += 2) {
@@ -79,7 +79,7 @@ void main() {
         deliverShuffled(docs[i], ops, 10 + i);
       }
       final texts = docs
-          .map((final d) => RgaTextStrategy.readText(d.state, 'body'))
+          .map((d) => RgaTextStrategy.readText(d.state, 'body'))
           .toList();
       expect(texts[0], isNotNull);
       expect(texts[0], texts[1]);
@@ -99,7 +99,7 @@ void main() {
       // r3 deletes the two elements r1 emitted first ('H', 'e').
       final helloId = ops
           .firstWhere(
-            (final op) =>
+            (op) =>
                 op.actorId == 'r1' &&
                 op.payload['text'] == 'Hello ' &&
                 op.payload['del'] == null,
@@ -114,7 +114,7 @@ void main() {
         deliverShuffled(docs[i], all, 40 + i);
       }
       final texts = docs
-          .map((final d) => RgaTextStrategy.readText(d.state, 'body'))
+          .map((d) => RgaTextStrategy.readText(d.state, 'body'))
           .toList();
       expect(texts[0], texts[1]);
       expect(texts[1], texts[2]);

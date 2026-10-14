@@ -63,25 +63,25 @@ class ApiException extends OAuthException {
   /// {@template api_exception_network}
   /// Network connectivity error.
   /// {@endtemplate}
-  const ApiException.network([final String? details])
+  const ApiException.network([String? details])
     : super('Network error occurred', details);
 
   /// {@template api_exception_unauthorized}
   /// Unauthorized access error (401).
   /// {@endtemplate}
-  const ApiException.unauthorized([final String? details])
+  const ApiException.unauthorized([String? details])
     : super('Unauthorized access', details);
 
   /// {@template api_exception_rate_limited}
   /// Rate limit exceeded error (429).
   /// {@endtemplate}
-  const ApiException.rateLimited([final String? details])
+  const ApiException.rateLimited([String? details])
     : super('Rate limit exceeded', details);
 
   /// {@template api_exception_not_found}
   /// Resource not found error (404).
   /// {@endtemplate}
-  const ApiException.notFound([final String? details])
+  const ApiException.notFound([String? details])
     : super('Resource not found', details);
 
   @override
@@ -102,19 +102,19 @@ class RepositoryException extends OAuthException {
   /// {@template repository_exception_not_found}
   /// Repository not found error.
   /// {@endtemplate}
-  const RepositoryException.notFound(final String repoName)
+  const RepositoryException.notFound(String repoName)
     : super('Repository not found', repoName);
 
   /// {@template repository_exception_access_denied}
   /// Access denied to repository error.
   /// {@endtemplate}
-  const RepositoryException.accessDenied(final String repoName)
+  const RepositoryException.accessDenied(String repoName)
     : super('Access denied to repository', repoName);
 
   /// {@template repository_exception_already_exists}
   /// Repository already exists error.
   /// {@endtemplate}
-  const RepositoryException.alreadyExists(final String repoName)
+  const RepositoryException.alreadyExists(String repoName)
     : super('Repository already exists', repoName);
 
   @override
@@ -141,7 +141,7 @@ class StorageException extends OAuthException {
   /// {@template storage_exception_corrupted_data}
   /// Corrupted data in secure storage.
   /// {@endtemplate}
-  const StorageException.corruptedData(final String dataType)
+  const StorageException.corruptedData(String dataType)
     : super('Corrupted stored data', dataType);
 
   @override

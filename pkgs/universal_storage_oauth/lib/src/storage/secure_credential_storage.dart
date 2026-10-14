@@ -15,7 +15,7 @@ class SecureCredentialStorage implements CredentialStorage {
   ///
   /// Parameters:
   /// - [storage]: The FlutterSecureStorage instance to use.
-  SecureCredentialStorage([final FlutterSecureStorage? storage])
+  SecureCredentialStorage([FlutterSecureStorage? storage])
     : _storage =
           storage ??
           const FlutterSecureStorage(
@@ -27,13 +27,13 @@ class SecureCredentialStorage implements CredentialStorage {
   final FlutterSecureStorage _storage;
 
   /// Get the key for the credentials.
-  String _getKey(final GitPlatform platform) =>
+  String _getKey(GitPlatform platform) =>
       'oauth_credentials_${platform.name}';
 
   @override
   Future<void> storeCredentials(
-    final GitPlatform platform,
-    final StoredCredentials credentials,
+    GitPlatform platform,
+    StoredCredentials credentials,
   ) async {
     try {
       final key = _getKey(platform);
@@ -48,7 +48,7 @@ class SecureCredentialStorage implements CredentialStorage {
   }
 
   @override
-  Future<StoredCredentials?> getCredentials(final GitPlatform platform) async {
+  Future<StoredCredentials?> getCredentials(GitPlatform platform) async {
     try {
       final key = _getKey(platform);
       final value = await _storage.read(key: key);
@@ -79,7 +79,7 @@ class SecureCredentialStorage implements CredentialStorage {
   }
 
   @override
-  Future<void> clearCredentials(final GitPlatform platform) async {
+  Future<void> clearCredentials(GitPlatform platform) async {
     try {
       final key = _getKey(platform);
       await _storage.delete(key: key);
@@ -120,7 +120,7 @@ class SecureCredentialStorage implements CredentialStorage {
   }
 
   @override
-  Future<bool> hasCredentials(final GitPlatform platform) async {
+  Future<bool> hasCredentials(GitPlatform platform) async {
     try {
       final credentials = await getCredentials(platform);
       return credentials != null && !credentials.isExpired;

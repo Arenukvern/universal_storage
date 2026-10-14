@@ -11,7 +11,7 @@ class PairingPage extends StatelessWidget {
   final MeshAppState state;
 
   @override
-  Widget build(final BuildContext context) => Scaffold(
+  Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(title: Text('${state.selfId} pairing')),
     body: ListenableBuilder(
       listenable: state,
@@ -75,7 +75,7 @@ class PairingPage extends StatelessWidget {
     ),
   );
 
-  Future<void> _pastePayload(final BuildContext context) async {
+  Future<void> _pastePayload(BuildContext context) async {
     final controller = TextEditingController();
     final accepted = await showDialog<bool>(
       context: context,
@@ -109,7 +109,7 @@ class _TerminalQrPainter extends CustomPainter {
   final List<int> payload;
 
   @override
-  void paint(final Canvas canvas, final Size size) {
+  void paint(Canvas canvas, Size size) {
     final image = QrImage(
       QrCode(
         payload: QrPayload.fromTypedData(Uint8List.fromList(payload)),
@@ -130,7 +130,7 @@ class _TerminalQrPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(final _TerminalQrPainter oldDelegate) =>
+  bool shouldRepaint(_TerminalQrPainter oldDelegate) =>
       payload.length != oldDelegate.payload.length ||
       payload.indexed.any(
         (record) => record.$2 != oldDelegate.payload[record.$1],

@@ -12,7 +12,7 @@ import 'package:universal_storage_sync/universal_storage_sync.dart';
 /// - queue file deleted entirely → user data unaffected
 void main() {
   Future<(StorageKernel, Directory)> buildKernel({
-    required final String name,
+    required String name,
     SyncQueueStore? queueStore,
   }) async {
     final directory = await Directory.systemTemp.createTemp('chaos_$name');

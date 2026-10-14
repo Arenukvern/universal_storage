@@ -16,8 +16,8 @@ import 'package:universal_storage_session_aead/universal_storage_session_aead.da
 /// them (replay/forgery attempts).
 final class _WiretapPair {
   factory _WiretapPair.paired({
-    final String a = 'device-a',
-    final String b = 'device-b',
+    String a = 'device-a',
+    String b = 'device-b',
   }) {
     final sideA = _WiretapTransport(a);
     final sideB = _WiretapTransport(b);
@@ -48,7 +48,7 @@ final class _WiretapTransport implements MeshTransport {
   Stream<MeshSession> get incoming => _incoming.stream;
 
   @override
-  Future<MeshSession> connect(final MeshPeerRecord peer) async {
+  Future<MeshSession> connect(MeshPeerRecord peer) async {
     final remote = _remote;
     if (remote == null || remote.selfId != peer.peerId) {
       throw MeshConnectionException(peer.peerId, 'not linked');
@@ -58,7 +58,7 @@ final class _WiretapTransport implements MeshTransport {
     final initiator = _WiretapSession(
       peer.peerId,
       initiatorIn,
-      (final bytes) {
+      (bytes) {
         outbound.add(bytes);
         responderIn.add(bytes);
       },
@@ -66,7 +66,7 @@ final class _WiretapTransport implements MeshTransport {
     final responder = _WiretapSession(
       selfId,
       responderIn,
-      (final bytes) {
+      (bytes) {
         remote.outbound.add(bytes);
         initiatorIn.add(bytes);
       },
@@ -89,13 +89,13 @@ final class _WiretapSession implements MeshSession {
   Stream<Uint8List> get inbound => _inbound.stream;
 
   @override
-  Future<void> send(final Uint8List payload) async => _onSend(payload);
+  Future<void> send(Uint8List payload) async => _onSend(payload);
 
   @override
   Future<void> close() async => unawaited(_inbound.close());
 
   /// Pushes raw bytes onto the inbound stream as if the wire emitted them.
-  void inject(final Uint8List bytes) => _inbound.add(bytes);
+  void inject(Uint8List bytes) => _inbound.add(bytes);
 }
 
 Future<({SimpleKeyPair identity, Uint8List publicKey})> _identity() async {
@@ -104,7 +104,7 @@ Future<({SimpleKeyPair identity, Uint8List publicKey})> _identity() async {
   return (identity: keyPair, publicKey: Uint8List.fromList(publicKey.bytes));
 }
 
-MeshPeerRecord _recordOf(final String id, final List<int> key) =>
+MeshPeerRecord _recordOf(String id, List<int> key) =>
     MeshPeerRecord(peerId: id, displayName: id, identityKey: key);
 
 void main() {
@@ -115,7 +115,7 @@ void main() {
     final pair = _WiretapPair.paired();
 
     final accepted = Completer<SessionAeadSession>();
-    pair.b.incoming.listen((final raw) async {
+    pair.b.incoming.listen((raw) async {
       try {
         accepted.complete(
           await SessionAeadSession.accept(
@@ -181,7 +181,7 @@ void main() {
     final pair = _WiretapPair.paired(b: 'host');
 
     final accepted = Completer<SessionAeadSession>();
-    pair.b.incoming.listen((final raw) async {
+    pair.b.incoming.listen((raw) async {
       try {
         accepted.complete(
           await SessionAeadSession.accept(
@@ -219,7 +219,7 @@ void main() {
     final pair = _WiretapPair.paired(a: 'device-z', b: 'host');
 
     final accepted = Completer<SessionAeadSession>();
-    pair.b.incoming.listen((final raw) async {
+    pair.b.incoming.listen((raw) async {
       try {
         accepted.complete(
           await SessionAeadSession.accept(
@@ -263,7 +263,7 @@ void main() {
     final pair = _WiretapPair.paired();
 
     final accepted = Completer<SessionAeadSession>();
-    pair.b.incoming.listen((final raw) async {
+    pair.b.incoming.listen((raw) async {
       accepted.complete(
         await SessionAeadSession.accept(
           raw: raw,
@@ -305,7 +305,7 @@ void main() {
 
     final accepted = Completer<SessionAeadSession>();
     late final _WiretapSession rawResponder;
-    pair.b.incoming.listen((final raw) async {
+    pair.b.incoming.listen((raw) async {
       rawResponder = raw as _WiretapSession;
       accepted.complete(
         await SessionAeadSession.accept(
@@ -399,7 +399,7 @@ void main() {
       inner: pair.a,
       identityKeyPair: a.identity,
       selfId: 'device-a',
-      onHandshakeFailure: (final _, final error, final _) =>
+      onHandshakeFailure: (_, error, _) =>
           failures.add(error),
     );
     final pinnedB = SessionAeadTransport(
@@ -439,7 +439,7 @@ void main() {
   });
 }
 
-bool _contains(final List<int> haystack, final List<int> needle) {
+bool _contains(List<int> haystack, List<int> needle) {
   if (needle.isEmpty || haystack.length < needle.length) return false;
   outer:
   for (var i = 0; i <= haystack.length - needle.length; i++) {

@@ -17,7 +17,7 @@ import 'package:universal_storage_world/universal_storage_world.dart';
 
 StorageService _memoryStorage() => StorageService(MeshStorageProvider());
 
-Future<StorageService> _init(final StorageService storage) async {
+Future<StorageService> _init(StorageService storage) async {
   await (storage.provider as MeshStorageProvider).initWithConfig(
     MeshStorageConfig(storePath: ':memory:', peerId: 't', displayName: 't'),
   );
@@ -27,7 +27,7 @@ Future<StorageService> _init(final StorageService storage) async {
 /// The fake pair's close does not propagate a done event to the peer
 /// (sessions die independently), so serve() lifetime is observed through
 /// the store.
-Future<void> _until(final Future<bool> Function() probe) async {
+Future<void> _until(Future<bool> Function() probe) async {
   for (var i = 0; i < 500; i++) {
     if (await probe()) return;
     await Future<void>.delayed(const Duration(milliseconds: 10));
@@ -42,7 +42,7 @@ void main() {
     final lane = MeshBlobLane(
       storage: storage,
       blobs: ChunkedBlobStore(chunks: MemoryChunkStore()),
-      onPublished: (final docId, final entry) => published[docId] = entry,
+      onPublished: (docId, entry) => published[docId] = entry,
     );
 
     final manifest = await lane.publish(
@@ -93,7 +93,7 @@ void main() {
       docId,
       dial: pair.b,
       peer: const MeshPeerRecord(peerId: 'device-a', displayName: 'A'),
-      onProgress: (final fetched, final total) {
+      onProgress: (fetched, total) {
         progressFired = fetched == total;
       },
     );
@@ -151,7 +151,7 @@ void main() {
     final blobDials = <MeshSession>[];
     blobPlane.incoming.listen(blobDials.add);
 
-    Uint8List frame(final Map<String, Object?> json) =>
+    Uint8List frame(Map<String, Object?> json) =>
         Uint8List.fromList(utf8.encode(jsonEncode(json)));
 
     hub.openSession('rt').receive(frame({'session_id': 's', 'event_type': 'x'}));
@@ -169,7 +169,7 @@ void main() {
   });
 
   test('the plane classifiers never cross-claim each other', () {
-    Uint8List frame(final Map<String, Object?> json) =>
+    Uint8List frame(Map<String, Object?> json) =>
         Uint8List.fromList(utf8.encode(jsonEncode(json)));
     final syncHello = frame({'v': 2, 'type': 'hello'});
     final chunkReq = frame({'v': 1, 'type': 'chunk-req'});

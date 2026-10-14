@@ -6,13 +6,13 @@ import 'package:universal_storage_interface/universal_storage_interface.dart';
 abstract interface class DecisionStore {
   /// Saves decision state by unique [decisionId].
   Future<void> saveState({
-    required final String decisionId,
-    required final DecisionState state,
-    final String note = '',
+    required String decisionId,
+    required DecisionState state,
+    String note = '',
   });
 
   /// Loads state for a single decision.
-  Future<DecisionState?> loadState(final String decisionId);
+  Future<DecisionState?> loadState(String decisionId);
 
   /// Loads all known decision states.
   Future<Map<String, DecisionState>> loadAllStates();
@@ -24,15 +24,15 @@ final class InMemoryDecisionStore implements DecisionStore {
 
   @override
   Future<void> saveState({
-    required final String decisionId,
-    required final DecisionState state,
-    final String note = '',
+    required String decisionId,
+    required DecisionState state,
+    String note = '',
   }) async {
     _states[decisionId] = state;
   }
 
   @override
-  Future<DecisionState?> loadState(final String decisionId) async =>
+  Future<DecisionState?> loadState(String decisionId) async =>
       _states[decisionId];
 
   @override
@@ -59,9 +59,9 @@ final class StorageServiceDecisionStore implements DecisionStore {
 
   @override
   Future<void> saveState({
-    required final String decisionId,
-    required final DecisionState state,
-    final String note = '',
+    required String decisionId,
+    required DecisionState state,
+    String note = '',
   }) async {
     final current = await _loadStore();
     current[decisionId] = <String, String>{
@@ -77,7 +77,7 @@ final class StorageServiceDecisionStore implements DecisionStore {
   }
 
   @override
-  Future<DecisionState?> loadState(final String decisionId) async {
+  Future<DecisionState?> loadState(String decisionId) async {
     final states = await _loadStore();
     final rawState = states[decisionId]?['state'];
     if (rawState is! String || rawState.isEmpty) {
@@ -85,7 +85,7 @@ final class StorageServiceDecisionStore implements DecisionStore {
     }
 
     return DecisionState.values.firstWhere(
-      (final item) => item.name == rawState,
+      (item) => item.name == rawState,
       orElse: () => DecisionState.autoResolved,
     );
   }
@@ -101,7 +101,7 @@ final class StorageServiceDecisionStore implements DecisionStore {
         continue;
       }
       result[entry.key] = DecisionState.values.firstWhere(
-        (final item) => item.name == rawState,
+        (item) => item.name == rawState,
         orElse: () => DecisionState.autoResolved,
       );
     }
@@ -147,7 +147,7 @@ final class StorageServiceDecisionStore implements DecisionStore {
   }
 
   Map<String, dynamic> _serializeStore(
-    final Map<String, Map<String, String>> store,
+    Map<String, Map<String, String>> store,
   ) => <String, dynamic>{
     'schema_version': 1,
     'namespace': namespace.value,

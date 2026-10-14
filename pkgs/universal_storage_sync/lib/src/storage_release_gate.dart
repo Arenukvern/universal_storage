@@ -326,7 +326,7 @@ final class StorageReleaseGateReport {
   Map<String, dynamic> toJson() => <String, dynamic>{
     'status': status.name,
     'evaluated_at_utc': evaluatedAtUtc.toIso8601String(),
-    'findings': findings.map((final finding) => finding.toJson()).toList(),
+    'findings': findings.map((finding) => finding.toJson()).toList(),
     'summary': summary,
   };
 }
@@ -336,7 +336,7 @@ final class StorageReleaseGateEvaluator {
   const StorageReleaseGateEvaluator();
 
   StorageReleaseGateReport evaluate({
-    required final StorageReleaseGateInput input,
+    required StorageReleaseGateInput input,
   }) {
     final findings = <StorageReleaseGateFinding>[];
     final now = (input.evaluationTimeUtc ?? DateTime.now().toUtc()).toUtc();
@@ -350,7 +350,7 @@ final class StorageReleaseGateEvaluator {
       'deprecation': _evaluateDeprecation(input, findings, now),
     };
 
-    final status = findings.any((final finding) => finding.isBlocking)
+    final status = findings.any((finding) => finding.isBlocking)
         ? StorageReleaseGateStatus.failed
         : StorageReleaseGateStatus.passed;
 
@@ -363,8 +363,8 @@ final class StorageReleaseGateEvaluator {
   }
 
   Map<String, dynamic> _evaluatePerformance(
-    final StorageReleaseGateInput input,
-    final List<StorageReleaseGateFinding> findings,
+    StorageReleaseGateInput input,
+    List<StorageReleaseGateFinding> findings,
   ) {
     final budgets = input.performanceBudgets;
     final evidence = input.performanceEvidence;
@@ -504,8 +504,8 @@ final class StorageReleaseGateEvaluator {
   }
 
   Map<String, dynamic> _evaluateReliability(
-    final StorageReleaseGateInput input,
-    final List<StorageReleaseGateFinding> findings,
+    StorageReleaseGateInput input,
+    List<StorageReleaseGateFinding> findings,
   ) {
     final criteria = input.reliabilityCriteria;
     final evidence = input.reliabilityEvidence;
@@ -604,8 +604,8 @@ final class StorageReleaseGateEvaluator {
   }
 
   Map<String, dynamic> _evaluateSecurity(
-    final StorageReleaseGateInput input,
-    final List<StorageReleaseGateFinding> findings,
+    StorageReleaseGateInput input,
+    List<StorageReleaseGateFinding> findings,
   ) {
     if (input.securityControls.isEmpty) {
       findings.add(
@@ -680,8 +680,8 @@ final class StorageReleaseGateEvaluator {
   }
 
   Map<String, dynamic> _evaluateObservability(
-    final StorageReleaseGateInput input,
-    final List<StorageReleaseGateFinding> findings,
+    StorageReleaseGateInput input,
+    List<StorageReleaseGateFinding> findings,
   ) {
     final evidence = input.observabilityEvidence;
 
@@ -737,8 +737,8 @@ final class StorageReleaseGateEvaluator {
   }
 
   Map<String, dynamic> _evaluateCompatibility(
-    final StorageReleaseGateInput input,
-    final List<StorageReleaseGateFinding> findings,
+    StorageReleaseGateInput input,
+    List<StorageReleaseGateFinding> findings,
   ) {
     final policy = input.compatibilityPolicy;
     final evidence = input.compatibilityEvidence;
@@ -862,9 +862,9 @@ final class StorageReleaseGateEvaluator {
   }
 
   Map<String, dynamic> _evaluateReleaseAndRollback(
-    final StorageReleaseGateInput input,
-    final List<StorageReleaseGateFinding> findings,
-    final DateTime now,
+    StorageReleaseGateInput input,
+    List<StorageReleaseGateFinding> findings,
+    DateTime now,
   ) {
     if (input.releaseChecklist.isEmpty) {
       findings.add(
@@ -901,7 +901,7 @@ final class StorageReleaseGateEvaluator {
     }
 
     final successfulDrills = input.rollbackDrills
-        .where((final drill) => drill.success)
+        .where((drill) => drill.success)
         .toList(growable: false);
     if (successfulDrills.isEmpty) {
       findings.add(
@@ -913,7 +913,7 @@ final class StorageReleaseGateEvaluator {
       );
     } else {
       successfulDrills.sort(
-        (final a, final b) => b.executedAtUtc.compareTo(a.executedAtUtc),
+        (a, b) => b.executedAtUtc.compareTo(a.executedAtUtc),
       );
       final latestDrill = successfulDrills.first.executedAtUtc.toUtc();
       if (now.difference(latestDrill) > input.maxRollbackDrillAge) {
@@ -941,9 +941,9 @@ final class StorageReleaseGateEvaluator {
   }
 
   Map<String, dynamic> _evaluateDeprecation(
-    final StorageReleaseGateInput input,
-    final List<StorageReleaseGateFinding> findings,
-    final DateTime now,
+    StorageReleaseGateInput input,
+    List<StorageReleaseGateFinding> findings,
+    DateTime now,
   ) {
     if (input.deprecationSchedule.isEmpty) {
       findings.add(
@@ -991,11 +991,11 @@ final class StorageReleaseGateEvaluator {
   }
 
   void _requireSamples({
-    required final List<StorageReleaseGateFinding> findings,
-    required final String metricId,
-    required final int actualSamples,
-    required final int minSamples,
-    required final String message,
+    required List<StorageReleaseGateFinding> findings,
+    required String metricId,
+    required int actualSamples,
+    required int minSamples,
+    required String message,
   }) {
     if (actualSamples >= minSamples) {
       return;
@@ -1010,8 +1010,8 @@ final class StorageReleaseGateEvaluator {
   }
 
   Duration? _percentileDuration(
-    final List<Duration> values,
-    final double percentile,
+    List<Duration> values,
+    double percentile,
   ) {
     if (values.isEmpty) {
       return null;
@@ -1021,7 +1021,7 @@ final class StorageReleaseGateEvaluator {
     return sorted[index];
   }
 
-  int? _percentileInt(final List<int> values, final double percentile) {
+  int? _percentileInt(List<int> values, double percentile) {
     if (values.isEmpty) {
       return null;
     }
@@ -1030,7 +1030,7 @@ final class StorageReleaseGateEvaluator {
     return sorted[index];
   }
 
-  int _percentileIndex(final int length, final double percentile) {
+  int _percentileIndex(int length, double percentile) {
     if (length <= 1) {
       return 0;
     }

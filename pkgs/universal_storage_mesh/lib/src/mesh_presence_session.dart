@@ -123,8 +123,8 @@ final class MeshPresenceSession {
   /// Joins the channel: announces presence, starts listening for peer
   /// frames, and starts the adaptive ping/sweep cycle.
   Future<void> open({
-    final DateTime? now,
-    final Map<String, Object?> details = const {},
+    DateTime? now,
+    Map<String, Object?> details = const {},
   }) async {
     if (_open) return;
     _open = true;
@@ -141,7 +141,7 @@ final class MeshPresenceSession {
   /// Leaves the channel: announces [MeshEphemeralEvent.leave] so peers
   /// drop this peer immediately (their ttl sweep is the backstop when
   /// this never runs — a crash, say), then stops timers and listening.
-  Future<void> close({final DateTime? now}) async {
+  Future<void> close({DateTime? now}) async {
     if (!_open) return;
     _open = false;
     _pingTimer?.cancel();
@@ -153,8 +153,8 @@ final class MeshPresenceSession {
 
   /// Explicit liveness refresh (also used by the internal cycle).
   Future<void> ping({
-    final DateTime? now,
-    final Map<String, Object?> details = const {},
+    DateTime? now,
+    Map<String, Object?> details = const {},
   }) async {
     if (!_open) return;
     _lastPingAt = now ?? _clock();
@@ -170,7 +170,7 @@ final class MeshPresenceSession {
   /// active — the next cycle pings at the preset's shortest interval —
   /// and pings immediately when the last ping is older than
   /// [PresenceConfig.minPingInterval] (throttled so bursts cannot flood).
-  Future<void> notifyActivity({final DateTime? now}) async {
+  Future<void> notifyActivity({DateTime? now}) async {
     if (!_open) return;
     _activeSinceLastPing = true;
     final at = now ?? _clock();
@@ -183,18 +183,18 @@ final class MeshPresenceSession {
   /// Expires past-ttl entries from the tracker; returns how many were
   /// dropped. Also run by the internal cycle every ping interval — ttl is
   /// the crash backstop (ADR 0031 §1), not a polling requirement.
-  int sweep({final DateTime? now}) => tracker.sweep(now ?? _clock());
+  int sweep({DateTime? now}) => tracker.sweep(now ?? _clock());
 
   // -- Internals -----------------------------------------------------------
 
-  Duration _ttlFor({required final Duration interval}) =>
+  Duration _ttlFor({required Duration interval}) =>
       presenceConfig.ttlFor(interval);
 
   Future<void> _announce(
-    final MeshEphemeralEvent event, {
-    final DateTime? now,
-    final Duration? ttl,
-    final Map<String, Object?> details = const {},
+    MeshEphemeralEvent event, {
+    DateTime? now,
+    Duration? ttl,
+    Map<String, Object?> details = const {},
   }) async {
     final at = now ?? _clock();
     var frame = tracker.announce(
@@ -241,7 +241,7 @@ final class MeshPresenceSession {
     await transport.send(frame);
   }
 
-  void _schedulePing([final Duration? interval]) {
+  void _schedulePing([Duration? interval]) {
     _pingTimer?.cancel();
     if (!_open) return;
     _pingTimer = Timer(
@@ -268,17 +268,17 @@ final class MeshPresenceSession {
     _schedulePing(nextInterval);
   }
 
-  void _onFrame(final MeshEphemeralFrame frame) {
+  void _onFrame(MeshEphemeralFrame frame) {
     // Serialize processing so verification + fold order matches arrival.
     // One bad frame (a throwing authenticator, say) must never kill the
     // pipeline: the chain swallows the error and stays usable — that
     // frame is simply not folded, the next one is still processed.
     _inbound = _inbound
         .then((_) => _processFrame(frame))
-        .catchError((final Object _) {});
+        .catchError((Object _) {});
   }
 
-  Future<void> _processFrame(final MeshEphemeralFrame frame) async {
+  Future<void> _processFrame(MeshEphemeralFrame frame) async {
     if (!_open || frame.docId != docId) return;
     if (frame.fromPeerId == tracker.actorId) return; // local echo
     final localAuthenticator = authenticator;

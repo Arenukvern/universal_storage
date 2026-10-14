@@ -42,7 +42,7 @@ void main() {
     await provider.registerPeer(
       const MeshPeerRecord(peerId: 'host-1', displayName: 'Host'),
     );
-    expect(provider.peers.map((final p) => p.peerId), ['host-1']);
+    expect(provider.peers.map((p) => p.peerId), ['host-1']);
   });
 
   test('peer records and docs persist across a reload', () async {
@@ -57,9 +57,9 @@ void main() {
     // (on web, what localStorage restores; without localStorage this is
     // the documented session-only behavior).
     final second = await webReplica(backing);
-    expect(second.peers.map((final p) => p.peerId), ['host-1']);
+    expect(second.peers.map((p) => p.peerId), ['host-1']);
     expect(await second.getFile('notes/todo.txt'), 'pair the host');
-    expect((await second.listDirectory('notes')).map((final e) => e.name), [
+    expect((await second.listDirectory('notes')).map((e) => e.name), [
       'todo.txt',
     ]);
   });

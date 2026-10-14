@@ -30,9 +30,9 @@ abstract interface class OAuthFlowDelegate {
   /// Throws [OAuthFlowCancelledException] if user cancels the flow.
   /// Throws [OAuthFlowException] for other flow-related errors.
   Future<String> getAuthorizationCode(
-    final Uri authorizationUrl,
-    final Uri redirectUrl, {
-    final String? state,
+    Uri authorizationUrl,
+    Uri redirectUrl, {
+    String? state,
   });
 
   /// Handles device flow verification for CLI/desktop applications.
@@ -50,12 +50,12 @@ abstract interface class OAuthFlowDelegate {
   /// Returns when user has completed authorization or throws exception.
   /// Implementation should handle the display and polling logic.
   Future<void> handleDeviceFlow({
-    required final String deviceCode,
-    required final String userCode,
-    required final Uri verificationUrl,
-    required final int expiresIn,
-    required final int interval,
-    final Uri? verificationUrlComplete,
+    required String deviceCode,
+    required String userCode,
+    required Uri verificationUrl,
+    required int expiresIn,
+    required int interval,
+    Uri? verificationUrlComplete,
   });
 
   /// Called when OAuth flow completes successfully.
@@ -66,8 +66,8 @@ abstract interface class OAuthFlowDelegate {
   /// [accessToken] - The obtained access token (masked for security)
   /// [scopes] - The granted scopes
   Future<void> onAuthorizationSuccess({
-    required final String maskedToken,
-    required final List<String> scopes,
+    required String maskedToken,
+    required List<String> scopes,
   });
 
   /// Called when OAuth flow fails.
@@ -78,8 +78,8 @@ abstract interface class OAuthFlowDelegate {
   /// [error] - The error that occurred
   /// [description] - Optional error description
   Future<void> onAuthorizationError({
-    required final String error,
-    final String? description,
+    required String error,
+    String? description,
   });
 }
 

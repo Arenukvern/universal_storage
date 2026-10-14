@@ -37,8 +37,8 @@ final class MeshStorageProvider implements StorageProvider {
   /// backed under `dart:io`, `localStorage`-backed on web); tests inject
   /// a store directly to exercise web semantics on the VM.
   MeshStorageProvider({
-    final MemberCodec? memberCodec,
-    final UrnResolver? urnResolver,
+    MemberCodec? memberCodec,
+    UrnResolver? urnResolver,
     @visibleForTesting this._kvStoreFactory,
   }) : _memberCodec = memberCodec ?? const SingleFieldMemberCodec(),
        _urnResolver = urnResolver ?? const PathUrnResolver();
@@ -57,7 +57,7 @@ final class MeshStorageProvider implements StorageProvider {
 
   /// World-model naming for [docId] (pure naming layer; the wire and store
   /// keys stay bare docIds).
-  WorldUrn urnOf(final String docId) => _urnResolver.urnForDoc(docId);
+  WorldUrn urnOf(String docId) => _urnResolver.urnForDoc(docId);
 
   /// World-model refs of every LIVE local member — catalog and warm-plan
   /// raw material (ADR 0047 §2).
@@ -100,27 +100,27 @@ final class MeshStorageProvider implements StorageProvider {
   /// from [policy] immediately. Re-set before every pulse — policies are
   /// per-cycle resolvers (movement between zones re-subscribes without
   /// protocol change). Null clears back to the wildcard.
-  void setInterest(final InterestPolicy? policy) =>
+  void setInterest(InterestPolicy? policy) =>
       _interest = policy?.resolve();
 
   /// Receiver-expressed delivery preference for the NEXT exchanges: the
   /// peer sends these docIds' ops first (ascending rank). Optional;
   /// unranked members follow deterministically after.
-  void setDeliveryPriority(final Map<String, int> priority) =>
+  void setDeliveryPriority(Map<String, int> priority) =>
       _deliveryPriority = Map.unmodifiable(priority);
 
   /// Asks peers to cap their delta to [maxOps] ops per exchange
   /// (backpressure-lite: the remainder arrives on a later pulse). Null =
   /// unlimited (the default, and the pre-0048 behavior).
-  void setIncomingBudget(final int? maxOps) => _incomingBudget = maxOps;
+  void setIncomingBudget(int? maxOps) => _incomingBudget = maxOps;
 
   /// Registers a transport for this replica and wires inbound sessions.
   /// Call once per transport after [initWithConfig]; a replica may hold
   /// several transports simultaneously (e.g. LAN + BLE).
-  void attachTransport(final MeshTransport transport) {
+  void attachTransport(MeshTransport transport) {
     _transports.add(transport);
     _incomingSubscriptions.add(
-      transport.incoming.listen((final session) async {
+      transport.incoming.listen((session) async {
         try {
           await _runExchange(session);
         } finally {
@@ -131,7 +131,7 @@ final class MeshStorageProvider implements StorageProvider {
   }
 
   /// Outcome of QR scanning: adds a paired peer to the durable registry.
-  Future<void> registerPeer(final MeshPeerRecord peer) async {
+  Future<void> registerPeer(MeshPeerRecord peer) async {
     _ensureInitialized();
     await _registry!.register(peer);
   }
@@ -152,7 +152,7 @@ final class MeshStorageProvider implements StorageProvider {
   // -- StorageProvider contract -------------------------------------------
 
   @override
-  Future<void> initWithConfig(final StorageConfig config) async {
+  Future<void> initWithConfig(StorageConfig config) async {
     if (config is! MeshStorageConfig) {
       throw ConfigurationException(
         'MeshStorageProvider requires MeshStorageConfig, '
@@ -184,9 +184,9 @@ final class MeshStorageProvider implements StorageProvider {
 
   @override
   Future<FileOperationResult> createFile(
-    final String path,
-    final String content, {
-    final String? commitMessage,
+    String path,
+    String content, {
+    String? commitMessage,
   }) async {
     _ensureInitialized();
     return _applyContentOp(normalizeMeshPath(path), content, true);
@@ -194,16 +194,16 @@ final class MeshStorageProvider implements StorageProvider {
 
   @override
   Future<FileOperationResult> updateFile(
-    final String path,
-    final String content, {
-    final String? commitMessage,
+    String path,
+    String content, {
+    String? commitMessage,
   }) async {
     _ensureInitialized();
     return _applyContentOp(normalizeMeshPath(path), content, false);
   }
 
   @override
-  Future<String?> getFile(final String path) async {
+  Future<String?> getFile(String path) async {
     _ensureInitialized();
     final doc = _docs[normalizeMeshPath(path)];
     if (doc == null) return null;
@@ -216,9 +216,9 @@ final class MeshStorageProvider implements StorageProvider {
   /// is enough; the append-mostly hot paths belong to local engines.
   @override
   Future<FileOperationResult> appendFile(
-    final String path,
-    final String content, {
-    final String? commitMessage,
+    String path,
+    String content, {
+    String? commitMessage,
   }) async {
     _ensureInitialized();
     final docPath = normalizeMeshPath(path);
@@ -234,8 +234,8 @@ final class MeshStorageProvider implements StorageProvider {
 
   @override
   Future<FileOperationResult> deleteFile(
-    final String path, {
-    final String? commitMessage,
+    String path, {
+    String? commitMessage,
   }) async {
     _ensureInitialized();
     final docPath = normalizeMeshPath(path);
@@ -248,7 +248,7 @@ final class MeshStorageProvider implements StorageProvider {
   }
 
   @override
-  Future<List<FileEntry>> listDirectory(final String directoryPath) async {
+  Future<List<FileEntry>> listDirectory(String directoryPath) async {
     _ensureInitialized();
     final prefix = '${normalizeMeshPath(directoryPath)}/';
     final entries = <FileEntry>[];
@@ -261,12 +261,12 @@ final class MeshStorageProvider implements StorageProvider {
         FileEntry(name: docPath.substring(prefix.length), isDirectory: false),
       );
     }
-    entries.sort((final a, final b) => a.name.compareTo(b.name));
+    entries.sort((a, b) => a.name.compareTo(b.name));
     return entries;
   }
 
   @override
-  Future<void> restore(final String path, {final String? versionId}) async {
+  Future<void> restore(String path, {String? versionId}) async {
     throw const UnsupportedOperationException(
       'Mesh replicas have no version history; restore is not supported.',
     );
@@ -274,8 +274,8 @@ final class MeshStorageProvider implements StorageProvider {
 
   @override
   Future<void> sync({
-    final String? pullMergeStrategy,
-    final String? pushConflictStrategy,
+    String? pullMergeStrategy,
+    String? pushConflictStrategy,
   }) async {
     _ensureInitialized();
     if (_transports.isEmpty) return; // No transports: nothing to do.
@@ -327,9 +327,9 @@ final class MeshStorageProvider implements StorageProvider {
   // -- Internals -----------------------------------------------------------
 
   Future<FileOperationResult> _applyContentOp(
-    final String docPath,
-    final String content,
-    final bool allowNew,
+    String docPath,
+    String content,
+    bool allowNew,
   ) async {
     final doc = _ensureDoc(docPath);
     final hadEntry = _memberCodec.wasWritten(doc);
@@ -345,12 +345,12 @@ final class MeshStorageProvider implements StorageProvider {
     );
   }
 
-  ConvergenceDoc _ensureDoc(final String docPath) => _docs.putIfAbsent(
+  ConvergenceDoc _ensureDoc(String docPath) => _docs.putIfAbsent(
     docPath,
     () => ConvergenceDoc(docId: docPath, actorId: _config!.peerId),
   );
 
-  Future<void> _runExchange(final MeshSession session) async {
+  Future<void> _runExchange(MeshSession session) async {
     // Symmetric script (ADR 0010 §4 + ADR 0048 §2): both sides send
     // hello + sub + vv, compute deltas, exchange, close.
     //
@@ -419,9 +419,9 @@ final class MeshStorageProvider implements StorageProvider {
     // byte-identically with ecsly world sync.
     final wanted =
         _docs.values
-            .where((final doc) => selection.matchesDocId(doc.docId))
+            .where((doc) => selection.matchesDocId(doc.docId))
             .toList()
-          ..sort((final a, final b) {
+          ..sort((a, b) {
             final rankA = priority[a.docId] ?? _unrankedDeliveryRank;
             final rankB = priority[b.docId] ?? _unrankedDeliveryRank;
             if (rankA != rankB) return rankA.compareTo(rankB);
@@ -446,7 +446,7 @@ final class MeshStorageProvider implements StorageProvider {
     for (final op in incoming.ops) {
       grouped.putIfAbsent(op.docId, () => []).add(op);
     }
-    grouped.forEach((final docId, final ops) {
+    grouped.forEach((docId, ops) {
       final doc = _ensureDoc(docId);
       doc.applyRemote(ops);
       touched.add(doc);
@@ -463,8 +463,8 @@ final class MeshStorageProvider implements StorageProvider {
   }
 
   Future<Map<String, Object?>> _recvOfType(
-    final StreamIterator<Uint8List> inbound,
-    final String type,
+    StreamIterator<Uint8List> inbound,
+    String type,
   ) async {
     Uint8List? lastMismatch;
     while (await inbound.moveNext()) {
@@ -497,7 +497,7 @@ final class MeshStorageProvider implements StorageProvider {
     }
   }
 
-  Future<void> _persist(final ConvergenceDoc doc) async {
+  Future<void> _persist(ConvergenceDoc doc) async {
     if (_inMemory) return;
     final store = _store;
     // An inbound exchange may still be finishing while dispose() runs —
@@ -534,10 +534,10 @@ final class _DocDeltaSource implements DeltaReplica {
   @override
   List<OpRecord> get pendingOps => _doc.pendingOps;
   @override
-  List<OpRecord> opsSince(final VersionVector remoteVv) =>
+  List<OpRecord> opsSince(VersionVector remoteVv) =>
       _doc.opsSince(remoteVv);
   @override
-  bool needsSnapshotFor(final VersionVector remoteVv) =>
+  bool needsSnapshotFor(VersionVector remoteVv) =>
       _doc.needsSnapshotFor(remoteVv);
   @override
   Snapshot snapshotFor() => _doc.snapshotFor();

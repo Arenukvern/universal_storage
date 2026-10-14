@@ -11,10 +11,10 @@ import 'dart:typed_data';
 import 'package:test/test.dart';
 import 'package:universal_storage_mesh_transport/universal_storage_mesh_transport.dart';
 
-Uint8List _frame(final Map<String, Object?> json) =>
+Uint8List _frame(Map<String, Object?> json) =>
     Uint8List.fromList(utf8.encode(jsonEncode(json)));
 
-bool _isSyncHello(final Uint8List frame) {
+bool _isSyncHello(Uint8List frame) {
   try {
     final decoded = jsonDecode(utf8.decode(frame));
     return decoded is Map && decoded['type'] == 'hello';
@@ -41,7 +41,7 @@ void main() {
     // The consumer sees the hello it must answer, then every later frame.
     final inbound = <String>[];
     final ready = Completer<void>();
-    claimed.single.inbound.listen((final frame) {
+    claimed.single.inbound.listen((frame) {
       inbound.add(utf8.decode(frame));
       if (!ready.isCompleted) ready.complete();
     });
@@ -68,7 +68,7 @@ void main() {
 
     final inbound = <String>[];
     final ready = Completer<void>();
-    passthrough.single.inbound.listen((final frame) {
+    passthrough.single.inbound.listen((frame) {
       inbound.add(utf8.decode(frame));
       if (!ready.isCompleted) ready.complete();
     });
@@ -142,7 +142,7 @@ void main() {
   test('outbound dials pass through untouched', () async {
     final pair = FakeMeshPair.paired(a: 'host', b: 'phone');
     final planes = ClaimingMeshTransport(inner: pair.a, claim: _isSyncHello);
-    pair.b.incoming.listen((final session) async {
+    pair.b.incoming.listen((session) async {
       await session.send(_frame({'type': 'hello', 'v': 2}));
     });
     final dialed = await planes.passthrough.connect(

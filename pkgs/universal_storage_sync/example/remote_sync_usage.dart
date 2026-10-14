@@ -22,7 +22,7 @@ Future<void> main() async {
   }
 }
 
-Future<void> demonstrateRemoteSync(final String localPath) async {
+Future<void> demonstrateRemoteSync(String localPath) async {
   print('1. Creating OfflineGitStorageProvider with remote configuration...');
 
   // Configure with remote repository

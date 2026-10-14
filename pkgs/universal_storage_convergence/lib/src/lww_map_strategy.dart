@@ -38,7 +38,7 @@ final class LwwMapStrategy implements MergeStrategy {
   Map<String, Object?> initialState() => <String, Object?>{};
 
   @override
-  void fold(final Map<String, Object?> state, final OpRecord op) {
+  void fold(Map<String, Object?> state, OpRecord op) {
     final key = op.payload['k'];
     if (key is! String || key.isEmpty) {
       throw ArgumentError.value(
@@ -61,15 +61,15 @@ final class LwwMapStrategy implements MergeStrategy {
 
   /// Reads the current value for [key]; returns `null` when missing or
   /// tombstoned.
-  static String? readValue(final Map<String, Object?> state, final String key) =>
+  static String? readValue(Map<String, Object?> state, String key) =>
       readDynamicValue(state, key) as String?;
 
   /// Reads the full JSON-encodable register value for [key] without
   /// assuming a String payload — the "structured JSON namespaces" case of
   /// ADR 0011 §2 (maps, lists, manifests). Null when missing or tombstoned.
   static Object? readDynamicValue(
-    final Map<String, Object?> state,
-    final String key,
+    Map<String, Object?> state,
+    String key,
   ) {
     final entry = _readEntry(state[key]);
     if (entry == null || entry.$2) return null;
@@ -77,12 +77,12 @@ final class LwwMapStrategy implements MergeStrategy {
   }
 
   /// Reads the HLC that last wrote [key]; `null` when the key is absent.
-  static Hlc? readHlc(final Map<String, Object?> state, final String key) {
+  static Hlc? readHlc(Map<String, Object?> state, String key) {
     final entry = _readEntry(state[key]);
     return entry?.$1;
   }
 
-  static (Hlc, bool, Object?)? _readEntry(final Object? raw) {
+  static (Hlc, bool, Object?)? _readEntry(Object? raw) {
     if (raw is! Map) return null;
     final hlcRaw = raw['hlc'];
     if (hlcRaw is! Map) return null;

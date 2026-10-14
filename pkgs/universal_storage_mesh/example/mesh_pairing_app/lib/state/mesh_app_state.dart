@@ -81,7 +81,7 @@ class MeshAppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> acceptPairing(final String pastedBase64) async {
+  Future<void> acceptPairing(String pastedBase64) async {
     if (_identity == null) return;
     try {
       final payload = base64Decode(pastedBase64.trim());
@@ -105,7 +105,7 @@ class MeshAppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> createFile(final String path, final String content) async {
+  Future<void> createFile(String path, String content) async {
     await _provider.createFile(path, content);
     await refreshFiles();
   }
@@ -132,7 +132,7 @@ class MeshAppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<String?> readFile(final FileEntry entry) =>
+  Future<String?> readFile(FileEntry entry) =>
       _provider.getFile(entry.name);
 
   String pairingCodeBase64() {
@@ -142,7 +142,7 @@ class MeshAppState extends ChangeNotifier {
     return base64Encode(_qrPayload!);
   }
 
-  Uint8List _peerIdentityKeyFromEnvelope(final Uint8List payload) {
+  Uint8List _peerIdentityKeyFromEnvelope(Uint8List payload) {
     final text = utf8.decode(payload, allowMalformed: true);
     final jsonStart = text.indexOf('{');
     final signatureStart = payload.length - 64;
@@ -164,7 +164,7 @@ class MeshAppState extends ChangeNotifier {
     return base64Decode(match.group(1)!);
   }
 
-  int _peerPort(final Uint8List payload) {
+  int _peerPort(Uint8List payload) {
     final text = utf8.decode(payload, allowMalformed: true);
     final match = RegExp(r'tcp:127\.0\.0\.1:(\d+)').firstMatch(text);
     return int.parse(match?.group(1) ?? '45911');

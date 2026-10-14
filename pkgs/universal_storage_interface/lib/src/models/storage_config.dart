@@ -30,8 +30,8 @@ class FileSystemConfig extends StorageConfig {
 
   /// Creates a [FileSystemConfig] from a [FilePathConfig].
   factory FileSystemConfig.fromFilePathConfig(
-    final FilePathConfig filePathConfig, {
-    final String? databaseName,
+    FilePathConfig filePathConfig, {
+    String? databaseName,
   }) => FileSystemConfig(
     filePathConfig: filePathConfig,
     databaseName: databaseName ?? '',

@@ -69,7 +69,7 @@ final class StorageDebugBundleCollector {
   var _lastQueueDepth = 0;
 
   /// Ingests one kernel observation event and updates counters.
-  void ingest(final StorageObservationEvent event) {
+  void ingest(StorageObservationEvent event) {
     final sanitized = _sanitizeMap(event.metadata);
     final correlationId = _resolveCorrelationId(
       event: event,
@@ -97,7 +97,7 @@ final class StorageDebugBundleCollector {
   }
 
   /// Records local write latency sample.
-  void recordWriteLatency(final Duration latency) {
+  void recordWriteLatency(Duration latency) {
     if (latency.isNegative) {
       return;
     }
@@ -105,7 +105,7 @@ final class StorageDebugBundleCollector {
   }
 
   /// Records local read latency sample.
-  void recordReadLatency(final Duration latency) {
+  void recordReadLatency(Duration latency) {
     if (latency.isNegative) {
       return;
     }
@@ -113,7 +113,7 @@ final class StorageDebugBundleCollector {
   }
 
   /// Records recovery replay duration sample.
-  void recordRecoveryReplayDuration(final Duration duration) {
+  void recordRecoveryReplayDuration(Duration duration) {
     if (duration.isNegative) {
       return;
     }
@@ -152,7 +152,7 @@ final class StorageDebugBundleCollector {
       hasCorrelationIds:
           _entries.isNotEmpty &&
           _entries.every(
-            (final entry) => entry.correlationId.trim().isNotEmpty,
+            (entry) => entry.correlationId.trim().isNotEmpty,
           ),
       hasDebugExportBundle: true,
       availableMetrics: Set<String>.unmodifiable(availableMetrics),
@@ -160,12 +160,12 @@ final class StorageDebugBundleCollector {
   }
 
   /// Exports sanitized structured logs and key metrics for support bundles.
-  Map<String, dynamic> exportDebugBundle({final int logLimit = 200}) {
+  Map<String, dynamic> exportDebugBundle({int logLimit = 200}) {
     final normalizedLogLimit = logLimit < 1 ? 1 : logLimit;
     final fromIndex = max(_entries.length - normalizedLogLimit, 0);
     final logs = _entries
         .sublist(fromIndex)
-        .map((final entry) => entry.toJson())
+        .map((entry) => entry.toJson())
         .toList(growable: false);
 
     final totalDecisionEvents =
@@ -199,8 +199,8 @@ final class StorageDebugBundleCollector {
   }
 
   String _resolveCorrelationId({
-    required final StorageObservationEvent event,
-    required final Map<String, dynamic> metadata,
+    required StorageObservationEvent event,
+    required Map<String, dynamic> metadata,
   }) {
     final raw = metadata['correlation_id']?.toString().trim() ?? '';
     if (raw.isNotEmpty) {
@@ -215,7 +215,7 @@ final class StorageDebugBundleCollector {
     return generated;
   }
 
-  void _updateCounters(final StorageStructuredLogEntry entry) {
+  void _updateCounters(StorageStructuredLogEntry entry) {
     final metadata = entry.metadata;
     final degradeReason = metadata['interaction_downgrade_reason']
         ?.toString()
@@ -272,7 +272,7 @@ final class StorageDebugBundleCollector {
     }
   }
 
-  int? _asInt(final Object? value) {
+  int? _asInt(Object? value) {
     if (value is int) {
       return value;
     }
@@ -286,8 +286,8 @@ final class StorageDebugBundleCollector {
   }
 
   int? _percentileDurationMs(
-    final List<Duration> values,
-    final double percentile,
+    List<Duration> values,
+    double percentile,
   ) {
     if (values.isEmpty) {
       return null;
@@ -297,7 +297,7 @@ final class StorageDebugBundleCollector {
     return sorted[index].inMilliseconds;
   }
 
-  int _percentileIndex(final int length, final double percentile) {
+  int _percentileIndex(int length, double percentile) {
     if (length <= 1) {
       return 0;
     }
@@ -305,9 +305,9 @@ final class StorageDebugBundleCollector {
     return position.clamp(0, length - 1);
   }
 
-  Map<String, dynamic> _sanitizeMap(final Map<String, dynamic> source) {
+  Map<String, dynamic> _sanitizeMap(Map<String, dynamic> source) {
     final sanitized = <String, dynamic>{};
-    source.forEach((final rawKey, final rawValue) {
+    source.forEach((rawKey, rawValue) {
       final key = rawKey;
       sanitized[key] = _sanitizeValue(key: key, value: rawValue);
     });
@@ -315,8 +315,8 @@ final class StorageDebugBundleCollector {
   }
 
   Object? _sanitizeValue({
-    required final String key,
-    required final Object? value,
+    required String key,
+    required Object? value,
   }) {
     if (value is Map) {
       return _sanitizeMap(Map<String, dynamic>.from(value));
@@ -324,7 +324,7 @@ final class StorageDebugBundleCollector {
     if (value is List) {
       return value
           .map(
-            (final item) =>
+            (item) =>
                 _sanitizeValue(key: key, value: item) ?? redactedValue,
           )
           .toList(growable: false);
@@ -335,7 +335,7 @@ final class StorageDebugBundleCollector {
     return value;
   }
 
-  bool _isSensitiveKey(final String key) {
+  bool _isSensitiveKey(String key) {
     final normalized = key.toLowerCase();
     const sensitiveParts = <String>[
       'token',
@@ -351,7 +351,7 @@ final class StorageDebugBundleCollector {
     return sensitiveParts.any(normalized.contains);
   }
 
-  bool _looksSensitiveValue(final Object? value) {
+  bool _looksSensitiveValue(Object? value) {
     if (value is! String) {
       return false;
     }

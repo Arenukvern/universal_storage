@@ -37,7 +37,7 @@ final class ChunkManifest {
   };
 
   /// Null-safe decode (a malformed manifest is an absent manifest).
-  static ChunkManifest? tryFromJson(final Object? raw) {
+  static ChunkManifest? tryFromJson(Object? raw) {
     if (raw is! Map) return null;
     final chunks = raw['chunks'];
     if (chunks is! List || raw['root'] is! String || raw['size'] is! int) {
@@ -52,7 +52,7 @@ final class ChunkManifest {
   }
 
   /// Addresses referenced but not present in [store].
-  Future<List<String>> missingChunks(final ChunkStore store) async {
+  Future<List<String>> missingChunks(ChunkStore store) async {
     final missing = <String>[];
     for (final address in chunks) {
       if (!await store.has(address)) missing.add(address);

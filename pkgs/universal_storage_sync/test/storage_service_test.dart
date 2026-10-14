@@ -8,7 +8,7 @@ class _FakeStorageProvider extends StorageProvider {
   var _initialized = false;
 
   @override
-  Future<void> initWithConfig(final StorageConfig config) async {
+  Future<void> initWithConfig(StorageConfig config) async {
     _initialized = true;
   }
 
@@ -25,9 +25,9 @@ class _FakeStorageProvider extends StorageProvider {
 
   @override
   Future<FileOperationResult> createFile(
-    final String path,
-    final String content, {
-    final String? commitMessage,
+    String path,
+    String content, {
+    String? commitMessage,
   }) async {
     _ensureInitialized();
     if (_files.containsKey(path)) {
@@ -38,16 +38,16 @@ class _FakeStorageProvider extends StorageProvider {
   }
 
   @override
-  Future<String?> getFile(final String path) async {
+  Future<String?> getFile(String path) async {
     _ensureInitialized();
     return _files[path];
   }
 
   @override
   Future<FileOperationResult> updateFile(
-    final String path,
-    final String content, {
-    final String? commitMessage,
+    String path,
+    String content, {
+    String? commitMessage,
   }) async {
     _ensureInitialized();
     if (!_files.containsKey(path)) {
@@ -59,8 +59,8 @@ class _FakeStorageProvider extends StorageProvider {
 
   @override
   Future<FileOperationResult> deleteFile(
-    final String path, {
-    final String? commitMessage,
+    String path, {
+    String? commitMessage,
   }) async {
     _ensureInitialized();
     if (!_files.containsKey(path)) {
@@ -71,7 +71,7 @@ class _FakeStorageProvider extends StorageProvider {
   }
 
   @override
-  Future<List<FileEntry>> listDirectory(final String directoryPath) async {
+  Future<List<FileEntry>> listDirectory(String directoryPath) async {
     _ensureInitialized();
     final now = DateTime.now();
 
@@ -109,7 +109,7 @@ class _FakeStorageProvider extends StorageProvider {
   }
 
   @override
-  Future<void> restore(final String path, {final String? versionId}) async {
+  Future<void> restore(String path, {String? versionId}) async {
     _ensureInitialized();
     throw const UnsupportedOperationException('Restore not supported in fake');
   }
@@ -186,7 +186,7 @@ void main() {
       await storageService.saveFile('subdir/file3.txt', 'Content 3');
 
       final entries = await storageService.listDirectory('.');
-      final names = entries.map((final e) => e.name).toList();
+      final names = entries.map((e) => e.name).toList();
 
       expect(names, contains('file1.txt'));
       expect(names, contains('file2.txt'));

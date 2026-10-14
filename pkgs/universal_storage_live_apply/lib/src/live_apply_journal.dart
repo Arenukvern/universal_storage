@@ -10,7 +10,7 @@ import 'live_apply_models.dart';
 export 'live_apply_models.dart' show liveApplyDeletedSha256;
 
 /// SHA-256 (hex) of UTF-8 [content].
-String liveApplySha256(final String content) =>
+String liveApplySha256(String content) =>
     crypto.sha256.convert(utf8.encode(content)).toString();
 
 /// On-disk store for run journals: `<storePath>/undo/<runId>/journal.json`.
@@ -28,7 +28,7 @@ class LiveApplyJournalStore {
   /// Cooperating callers serialize one complete check/journal/effect sequence.
   /// The lock inode is retained. Bypassing providers need host writer
   /// exclusion.
-  Future<T> withExclusive<T>(final Future<T> Function() action) async {
+  Future<T> withExclusive<T>(Future<T> Function() action) async {
     await ensureRoot();
     final key = await Directory(storePath).resolveSymbolicLinks();
     if (!_activeStores.add(key)) {
@@ -68,10 +68,10 @@ class LiveApplyJournalStore {
   Directory get _runsRoot => Directory(p.join(storePath, 'undo'));
 
   /// Directory holding the retained run.
-  Directory runDirectory(final String runId) =>
+  Directory runDirectory(String runId) =>
       Directory(p.join(_runsRoot.path, runId));
 
-  File _journalFile(final String runId) =>
+  File _journalFile(String runId) =>
       File(p.join(runDirectory(runId).path, 'journal.json'));
 
   /// Creates the store root if missing.
@@ -82,7 +82,7 @@ class LiveApplyJournalStore {
   }
 
   /// Persists [journal] atomically.
-  Future<void> write(final LiveApplyJournal journal) async {
+  Future<void> write(LiveApplyJournal journal) async {
     await ensureRoot();
     final file = _journalFile(journal.runId);
     final dir = file.parent;
@@ -98,7 +98,7 @@ class LiveApplyJournalStore {
   }
 
   /// Reads a run's journal, or `null` when the run does not exist.
-  Future<LiveApplyJournal?> read(final String runId) async {
+  Future<LiveApplyJournal?> read(String runId) async {
     final file = _journalFile(runId);
     if (!file.existsSync()) return null;
     try {
@@ -124,12 +124,12 @@ class LiveApplyJournalStore {
       final journal = await read(p.basename(entry.path));
       if (journal != null) runs.add(journal);
     }
-    runs.sort((final a, final b) => b.createdUtc.compareTo(a.createdUtc));
+    runs.sort((a, b) => b.createdUtc.compareTo(a.createdUtc));
     return runs;
   }
 
   /// Deletes a run directory entirely (commit path).
-  Future<void> prune(final String runId) async {
+  Future<void> prune(String runId) async {
     final dir = runDirectory(runId);
     if (dir.existsSync()) {
       await dir.delete(recursive: true);

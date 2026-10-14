@@ -18,7 +18,7 @@ extension type const OAuthError(String value) {
   /// Returns:
   /// - An OAuthError instance containing the decoded error message.
   // ignore: avoid_annotating_with_dynamic
-  factory OAuthError.fromJson(final dynamic value) =>
+  factory OAuthError.fromJson(dynamic value) =>
       OAuthError(jsonDecodeString(value));
 
   /// Converts the OAuthError to JSON format.
@@ -52,7 +52,7 @@ extension type const OAuthError(String value) {
   ///
   /// Returns:
   /// - This OAuthError if not empty, otherwise the provided fallback error.
-  OAuthError whenEmptyUse(final OAuthError other) => isEmpty ? other : this;
+  OAuthError whenEmptyUse(OAuthError other) => isEmpty ? other : this;
 
   /// An empty OAuthError instance.
   ///
@@ -102,15 +102,15 @@ extension type const OAuthResult(Map<String, dynamic> value) {
   /// Parameters:
   /// - [jsonData]: The JSON data to decode, typically a map or dynamic value.
   // ignore: avoid_annotating_with_dynamic
-  factory OAuthResult.fromJson(final dynamic jsonData) {
+  factory OAuthResult.fromJson(dynamic jsonData) {
     final map = jsonDecodeMap(jsonData);
     return OAuthResult(map);
   }
 
   /// Create a successful OAuth result
   factory OAuthResult.success({
-    required final StoredCredentials credentials,
-    required final OAuthUser user,
+    required StoredCredentials credentials,
+    required OAuthUser user,
   }) => OAuthResult({
     'success': true,
     'credentials': credentials.toJson(),
@@ -118,7 +118,7 @@ extension type const OAuthResult(Map<String, dynamic> value) {
   });
 
   /// Create a failed OAuth result
-  factory OAuthResult.failure({required final OAuthError error}) =>
+  factory OAuthResult.failure({required OAuthError error}) =>
       OAuthResult({'success': false, 'error': error.toJson()});
 
   /// Whether the authentication was successful

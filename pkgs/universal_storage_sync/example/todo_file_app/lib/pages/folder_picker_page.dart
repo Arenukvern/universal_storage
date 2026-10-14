@@ -34,7 +34,7 @@ class _FolderPickerPageState extends State<FolderPickerPage> {
         // Navigate to the main app screen after setting the path
         if (mounted) {
           await Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (final context) => const TodoListPage()),
+            MaterialPageRoute(builder: (context) => const TodoListPage()),
           );
         }
       case PickFailure(reason: final FailureReason reason):
@@ -47,9 +47,9 @@ class _FolderPickerPageState extends State<FolderPickerPage> {
     setState(() => _isPicking = false);
   }
 
-  void _showErrorDialog(final String message) => showDialog(
+  void _showErrorDialog(String message) => showDialog(
     context: context,
-    builder: (final context) => AlertDialog(
+    builder: (context) => AlertDialog(
       title: const Text('Error'),
       content: Text('Could not select directory: $message'),
       actions: [
@@ -62,7 +62,7 @@ class _FolderPickerPageState extends State<FolderPickerPage> {
   );
 
   @override
-  Widget build(final BuildContext context) => Scaffold(
+  Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(title: const Text('Select Storage Folder')),
     body: Center(
       child: Column(

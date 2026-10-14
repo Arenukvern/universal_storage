@@ -9,7 +9,7 @@ import 'package:universal_storage_sync/src/storage_profile_resolver.dart';
 class _KernelFakeStorageProvider extends StorageProvider {
   _KernelFakeStorageProvider({
     this.syncEnabled = false,
-    final List<Object> syncErrors = const <Object>[],
+    List<Object> syncErrors = const <Object>[],
   }) : _syncErrors = List<Object>.from(syncErrors);
 
   final bool syncEnabled;
@@ -21,7 +21,7 @@ class _KernelFakeStorageProvider extends StorageProvider {
   var _initialized = false;
 
   @override
-  Future<void> initWithConfig(final StorageConfig config) async {
+  Future<void> initWithConfig(StorageConfig config) async {
     _initialized = true;
   }
 
@@ -36,9 +36,9 @@ class _KernelFakeStorageProvider extends StorageProvider {
 
   @override
   Future<FileOperationResult> createFile(
-    final String path,
-    final String content, {
-    final String? commitMessage,
+    String path,
+    String content, {
+    String? commitMessage,
   }) async {
     _ensureInitialized();
     files[path] = content;
@@ -52,16 +52,16 @@ class _KernelFakeStorageProvider extends StorageProvider {
   }
 
   @override
-  Future<String?> getFile(final String path) async {
+  Future<String?> getFile(String path) async {
     _ensureInitialized();
     return files[path];
   }
 
   @override
   Future<FileOperationResult> updateFile(
-    final String path,
-    final String content, {
-    final String? commitMessage,
+    String path,
+    String content, {
+    String? commitMessage,
   }) async {
     _ensureInitialized();
     files[path] = content;
@@ -76,8 +76,8 @@ class _KernelFakeStorageProvider extends StorageProvider {
 
   @override
   Future<FileOperationResult> deleteFile(
-    final String path, {
-    final String? commitMessage,
+    String path, {
+    String? commitMessage,
   }) async {
     _ensureInitialized();
     files.remove(path);
@@ -91,11 +91,11 @@ class _KernelFakeStorageProvider extends StorageProvider {
   }
 
   @override
-  Future<List<FileEntry>> listDirectory(final String directoryPath) async {
+  Future<List<FileEntry>> listDirectory(String directoryPath) async {
     _ensureInitialized();
     return files.keys
         .map(
-          (final e) => FileEntry(
+          (e) => FileEntry(
             name: e,
             isDirectory: false,
             size: files[e]!.length,
@@ -106,7 +106,7 @@ class _KernelFakeStorageProvider extends StorageProvider {
   }
 
   @override
-  Future<void> restore(final String path, {final String? versionId}) async {
+  Future<void> restore(String path, {String? versionId}) async {
     _ensureInitialized();
   }
 
@@ -115,8 +115,8 @@ class _KernelFakeStorageProvider extends StorageProvider {
 
   @override
   Future<void> sync({
-    final String? pullMergeStrategy,
-    final String? pushConflictStrategy,
+    String? pullMergeStrategy,
+    String? pushConflictStrategy,
   }) async {
     _ensureInitialized();
     lastPullMergeStrategy = pullMergeStrategy;
@@ -157,7 +157,7 @@ final class _KernelMigrationEndpointFake implements MigrationEndpoint {
 
   @override
   Future<MigrationPreparationResult> prepareMigration({
-    required final MigrationPlan plan,
+    required MigrationPlan plan,
   }) async => MigrationPreparationResult(
     ok: true,
     metadata: <String, dynamic>{'plan_id': plan.id},
@@ -165,19 +165,19 @@ final class _KernelMigrationEndpointFake implements MigrationEndpoint {
 
   @override
   Future<MigrationExecutionResult> executeMigration({
-    required final MigrationPlan plan,
+    required MigrationPlan plan,
   }) async => executeMigrationWithOptions(plan: plan);
 
   @override
   Future<MigrationExecutionResult> executeMigrationWithOptions({
-    required final MigrationPlan plan,
-    final bool overwrite = true,
-    final bool dryRun = false,
-    final bool collectDiffs = false,
-    final bool pauseForDecisions = false,
-    final Map<String, MigrationDecisionAction> decisionActions =
+    required MigrationPlan plan,
+    bool overwrite = true,
+    bool dryRun = false,
+    bool collectDiffs = false,
+    bool pauseForDecisions = false,
+    Map<String, MigrationDecisionAction> decisionActions =
         const <String, MigrationDecisionAction>{},
-    final Map<String, DecisionState> decisionStates =
+    Map<String, DecisionState> decisionStates =
         const <String, DecisionState>{},
   }) async {
     executeWithOptionsCalls++;
@@ -195,7 +195,7 @@ final class _KernelMigrationEndpointFake implements MigrationEndpoint {
 
   @override
   Future<MigrationExecutionResult> rollbackMigration({
-    required final MigrationPlan plan,
+    required MigrationPlan plan,
   }) async => const MigrationExecutionResult(
     ok: true,
     status: MigrationStatus.rolledBack,
@@ -373,7 +373,7 @@ void main() {
         final kernel = StorageKernel(profile: profile, resolver: resolver);
         final syncEventFuture = kernel
             .observe(namespace: StorageNamespace.projects)
-            .where((final event) => event.type == StorageObservationType.synced)
+            .where((event) => event.type == StorageObservationType.synced)
             .first;
 
         await kernel.write(
@@ -466,7 +466,7 @@ void main() {
 
       final eventFuture = kernel
           .observe(namespace: StorageNamespace.settings)
-          .where((final event) => event.type == StorageObservationType.created)
+          .where((event) => event.type == StorageObservationType.created)
           .first;
       await kernel.write(
         namespace: StorageNamespace.settings,
@@ -502,7 +502,7 @@ void main() {
 
       final eventFuture = kernel
           .observe(namespace: StorageNamespace.settings)
-          .where((final event) => event.type == StorageObservationType.created)
+          .where((event) => event.type == StorageObservationType.created)
           .first;
       await kernel.write(
         namespace: StorageNamespace.settings,
@@ -550,7 +550,7 @@ void main() {
       final syncEventsFuture = kernel
           .observe()
           .where(
-            (final event) =>
+            (event) =>
                 event.type == StorageObservationType.syncSkipped ||
                 event.type == StorageObservationType.synced,
           )
@@ -563,7 +563,7 @@ void main() {
       expect(events.length, 2);
       expect(
         events.any(
-          (final e) =>
+          (e) =>
               e.type == StorageObservationType.syncSkipped &&
               e.namespace == StorageNamespace.settings,
         ),
@@ -571,7 +571,7 @@ void main() {
       );
       expect(
         events.any(
-          (final e) =>
+          (e) =>
               e.type == StorageObservationType.synced &&
               e.namespace == StorageNamespace.projects,
         ),
@@ -856,7 +856,7 @@ void main() {
       expect(outbox, isEmpty);
       expect(
         deadLetter.any(
-          (final entry) => entry.id == conflicts.single.outboxEntryId,
+          (entry) => entry.id == conflicts.single.outboxEntryId,
         ),
         isTrue,
       );

@@ -135,8 +135,8 @@ class _Harness {
   final _InMemoryStorageProvider provider;
 
   static Future<_Harness> create({
-    final UniversalStorageDbConfig config = const UniversalStorageDbConfig(),
-    final String subfolderPath = '',
+    UniversalStorageDbConfig config = const UniversalStorageDbConfig(),
+    String subfolderPath = '',
   }) async {
     final tempDir = await Directory.systemTemp.createTemp('universal_db_test_');
     final db = UniversalStorageDb(
@@ -184,7 +184,7 @@ class _InMemoryStorageProvider extends StorageProvider {
   }
 
   @override
-  Future<void> initWithConfig(final StorageConfig config) async {
+  Future<void> initWithConfig(StorageConfig config) async {
     if (config is! FileSystemConfig) {
       throw ArgumentError(
         'Expected FileSystemConfig, got ${config.runtimeType}',
@@ -198,9 +198,9 @@ class _InMemoryStorageProvider extends StorageProvider {
 
   @override
   Future<FileOperationResult> createFile(
-    final String path,
-    final String content, {
-    final String? commitMessage,
+    String path,
+    String content, {
+    String? commitMessage,
   }) async {
     _ensureInitialized();
     if (files.containsKey(path)) {
@@ -211,16 +211,16 @@ class _InMemoryStorageProvider extends StorageProvider {
   }
 
   @override
-  Future<String?> getFile(final String path) async {
+  Future<String?> getFile(String path) async {
     _ensureInitialized();
     return files[path];
   }
 
   @override
   Future<FileOperationResult> updateFile(
-    final String path,
-    final String content, {
-    final String? commitMessage,
+    String path,
+    String content, {
+    String? commitMessage,
   }) async {
     _ensureInitialized();
     if (!files.containsKey(path)) {
@@ -232,8 +232,8 @@ class _InMemoryStorageProvider extends StorageProvider {
 
   @override
   Future<FileOperationResult> deleteFile(
-    final String path, {
-    final String? commitMessage,
+    String path, {
+    String? commitMessage,
   }) async {
     _ensureInitialized();
     if (!files.containsKey(path)) {
@@ -244,13 +244,13 @@ class _InMemoryStorageProvider extends StorageProvider {
   }
 
   @override
-  Future<List<FileEntry>> listDirectory(final String directoryPath) async {
+  Future<List<FileEntry>> listDirectory(String directoryPath) async {
     _ensureInitialized();
     return const <FileEntry>[];
   }
 
   @override
-  Future<void> restore(final String path, {final String? versionId}) {
+  Future<void> restore(String path, {String? versionId}) {
     throw const UnsupportedOperationException(
       'Restore operation is not supported by _InMemoryStorageProvider.',
     );

@@ -25,8 +25,8 @@ class FileSystemStorageProvider extends StorageProvider
   /// {@macro filesystem_storage_provider}
   FileSystemStorageProvider({
     this.maxReplayEntriesPerNamespace = 5000,
-    final FileSystemPathAccess? pathAccess,
-    final void Function(FileSystemWriteBoundary)? onWriteBoundary,
+    FileSystemPathAccess? pathAccess,
+    void Function(FileSystemWriteBoundary)? onWriteBoundary,
   }) : _pathAccess = pathAccess ?? const DefaultFileSystemPathAccess(),
        // Preserve a public constructor port backed by a private callback.
        // ignore: prefer_initializing_formals
@@ -65,7 +65,7 @@ class FileSystemStorageProvider extends StorageProvider
       Map<String, dynamic>.from(_lastRecoveryReport);
 
   @override
-  Future<void> initWithConfig(final StorageConfig config) async {
+  Future<void> initWithConfig(StorageConfig config) async {
     if (config is! FileSystemConfig) {
       throw ArgumentError(
         'Expected FileSystemConfig, got ${config.runtimeType}',
@@ -90,12 +90,12 @@ class FileSystemStorageProvider extends StorageProvider
       posix.supportsPosixFileState ? storagePosixRwxProfile : null;
 
   @override
-  Future<StorageFileState> readFileState(final String filePath) {
+  Future<StorageFileState> readFileState(String filePath) {
     _ensureInitialized();
     return _readFileState(filePath);
   }
 
-  Future<StorageFileState> _readFileState(final String filePath) async {
+  Future<StorageFileState> _readFileState(String filePath) async {
     if (fileStateProfile == null) {
       throw const UnsupportedOperationException('POSIX file state unavailable');
     }
@@ -122,8 +122,8 @@ class FileSystemStorageProvider extends StorageProvider
 
   @override
   StorageFileState intendedFileState(
-    final StorageFileState before,
-    final String? content,
+    StorageFileState before,
+    String? content,
   ) {
     if (fileStateProfile == null) {
       throw const UnsupportedOperationException('POSIX file state unavailable');
@@ -138,8 +138,8 @@ class FileSystemStorageProvider extends StorageProvider
 
   @override
   Future<FileOperationResult> restoreFileState(
-    final String filePath,
-    final StorageFileState state,
+    String filePath,
+    StorageFileState state,
   ) => _enqueueMutation<FileOperationResult>(() async {
     _ensureInitialized();
     if (fileStateProfile == null) {
@@ -175,9 +175,9 @@ class FileSystemStorageProvider extends StorageProvider
 
   @override
   Future<FileOperationResult> createFile(
-    final String filePath,
-    final String content, {
-    final String? commitMessage,
+    String filePath,
+    String content, {
+    String? commitMessage,
   }) => _enqueueMutation<FileOperationResult>(() async {
     _ensureInitialized();
 
@@ -199,7 +199,7 @@ class FileSystemStorageProvider extends StorageProvider
   });
 
   @override
-  Future<String?> getFile(final String filePath) async {
+  Future<String?> getFile(String filePath) async {
     _ensureInitialized();
 
     final relativePath = _normalizeRelativePath(filePath);
@@ -219,9 +219,9 @@ class FileSystemStorageProvider extends StorageProvider
 
   @override
   Future<FileOperationResult> updateFile(
-    final String filePath,
-    final String content, {
-    final String? commitMessage,
+    String filePath,
+    String content, {
+    String? commitMessage,
   }) => _enqueueMutation<FileOperationResult>(() async {
     _ensureInitialized();
 
@@ -243,8 +243,8 @@ class FileSystemStorageProvider extends StorageProvider
 
   @override
   Future<FileOperationResult> deleteFile(
-    final String filePath, {
-    final String? commitMessage,
+    String filePath, {
+    String? commitMessage,
   }) => _enqueueMutation<FileOperationResult>(() async {
     _ensureInitialized();
 
@@ -263,9 +263,9 @@ class FileSystemStorageProvider extends StorageProvider
   /// empty chunk is a no-op so flush bookkeeping cannot churn the journal.
   @override
   Future<FileOperationResult> appendFile(
-    final String filePath,
-    final String content, {
-    final String? commitMessage,
+    String filePath,
+    String content, {
+    String? commitMessage,
   }) => _enqueueMutation<FileOperationResult>(() async {
     _ensureInitialized();
     final relativePath = _normalizeRelativePath(filePath);
@@ -285,7 +285,7 @@ class FileSystemStorageProvider extends StorageProvider
   });
 
   @override
-  Future<List<FileEntry>> listDirectory(final String directoryPath) async {
+  Future<List<FileEntry>> listDirectory(String directoryPath) async {
     _ensureInitialized();
 
     final normalizedPath = directoryPath.trim().isEmpty
@@ -322,7 +322,7 @@ class FileSystemStorageProvider extends StorageProvider
   }
 
   @override
-  Future<void> restore(final String filePath, {final String? versionId}) {
+  Future<void> restore(String filePath, {String? versionId}) {
     throw const UnsupportedOperationException(
       'Restore operation is not supported by FileSystemStorageProvider. '
       'Consider using OfflineGitStorageProvider for version control features.',
@@ -350,7 +350,7 @@ class FileSystemStorageProvider extends StorageProvider
     _config = FileSystemConfig.empty;
   }
 
-  Future<T> _enqueueMutation<T>(final Future<T> Function() action) {
+  Future<T> _enqueueMutation<T>(Future<T> Function() action) {
     final completer = Completer<T>();
     _mutationQueue = _mutationQueue.then((_) async {
       try {
@@ -378,10 +378,10 @@ class FileSystemStorageProvider extends StorageProvider
   }
 
   Future<Map<String, dynamic>> _durableWrite({
-    required final String relativePath,
-    required final String content,
-    required final _DurabilityOperationType operationType,
-    final int? declaredMode,
+    required String relativePath,
+    required String content,
+    required _DurabilityOperationType operationType,
+    int? declaredMode,
   }) async {
     final qualified = fileStateProfile != null;
     final before = qualified ? await readFileState(relativePath) : null;
@@ -476,7 +476,7 @@ class FileSystemStorageProvider extends StorageProvider
   }
 
   Future<Map<String, dynamic>> _durableDelete({
-    required final String relativePath,
+    required String relativePath,
   }) async {
     final namespace = _namespaceForPath(relativePath);
     final checkpoint = await _loadCheckpoint(namespace);
@@ -532,8 +532,8 @@ class FileSystemStorageProvider extends StorageProvider
   /// traces. Recovery ([_recoverPreparedAppend]) replays the chunk from
   /// the temp copy, so a crash mid-append cannot tear the file.
   Future<Map<String, dynamic>> _durableAppend({
-    required final String relativePath,
-    required final String chunk,
+    required String relativePath,
+    required String chunk,
   }) async {
     final namespace = _namespaceForPath(relativePath);
     final checkpoint = await _loadCheckpoint(namespace);
@@ -646,7 +646,7 @@ class FileSystemStorageProvider extends StorageProvider
     for (final namespace in namespaces) {
       final rawEntries =
           namespaceEntries[namespace] ?? <_DurabilityJournalEntry>[]
-            ..sort((final a, final b) => a.sequence.compareTo(b.sequence));
+            ..sort((a, b) => a.sequence.compareTo(b.sequence));
 
       var truncatedEntries = 0;
       final entries = rawEntries.length > maxReplayEntriesPerNamespace
@@ -668,7 +668,7 @@ class FileSystemStorageProvider extends StorageProvider
       }
 
       final ordered = replayByOperationId.values.toList()
-        ..sort((final a, final b) => a.sequence.compareTo(b.sequence));
+        ..sort((a, b) => a.sequence.compareTo(b.sequence));
 
       var namespaceReplayed = 0;
       var namespaceRecoveredWrites = 0;
@@ -796,7 +796,7 @@ class FileSystemStorageProvider extends StorageProvider
       final namespace = _namespaceFromJournalFile(entity.path);
       final reports = _lastRecoveryReport['namespaces'] as List;
       final unresolved = reports.any(
-        (final raw) =>
+        (raw) =>
             raw is Map &&
             raw['namespace'] == namespace &&
             ((raw['issues'] as List).isNotEmpty ||
@@ -810,7 +810,7 @@ class FileSystemStorageProvider extends StorageProvider
   }
 
   Future<bool> _recoverPreparedWrite(
-    final _DurabilityJournalEntry prepared,
+    _DurabilityJournalEntry prepared,
   ) async {
     if (prepared.schemaVersion == 2) {
       if (fileStateProfile != prepared.fileStateProfile ||
@@ -873,7 +873,7 @@ class FileSystemStorageProvider extends StorageProvider
     return _fileChecksum(targetFile) == prepared.checksum;
   }
 
-  void _requireReadableMode(final int mode) {
+  void _requireReadableMode(int mode) {
     // This text provider verifies by reading published bytes as the owner.
     // Do not publish an unreadable state and then claim complete recovery.
     if (mode & 0x100 == 0) {
@@ -884,9 +884,9 @@ class FileSystemStorageProvider extends StorageProvider
   }
 
   bool _matchesFileState(
-    final File file,
-    final String checksum,
-    final int mode,
+    File file,
+    String checksum,
+    int mode,
   ) {
     if (FileSystemEntity.typeSync(file.path, followLinks: false) !=
         FileSystemEntityType.file) {
@@ -900,7 +900,7 @@ class FileSystemStorageProvider extends StorageProvider
   }
 
   Future<bool> _recoverPreparedDelete(
-    final _DurabilityJournalEntry prepared,
+    _DurabilityJournalEntry prepared,
   ) async {
     final targetFile = File(path.join(_basePath, prepared.relativePath));
     if (targetFile.existsSync()) {
@@ -915,7 +915,7 @@ class FileSystemStorageProvider extends StorageProvider
   /// truncate-and-replay is the only idempotent answer. Missing temp copy
   /// with a fully-appended file is still a success (verify the tail).
   Future<bool> _recoverPreparedAppend(
-    final _DurabilityJournalEntry prepared,
+    _DurabilityJournalEntry prepared,
   ) async {
     final targetFile = File(path.join(_basePath, prepared.relativePath));
     final expectedEnd = prepared.appendOffset + prepared.appendSize;
@@ -967,7 +967,7 @@ class FileSystemStorageProvider extends StorageProvider
   }
 
   /// SHA-256 hex of the last [byteCount] bytes of [file], UTF-8 decoded.
-  String _tailChecksum(final File file, final int byteCount) {
+  String _tailChecksum(File file, int byteCount) {
     final random = file.openSync();
     try {
       random.setPositionSync(file.lengthSync() - byteCount);
@@ -978,7 +978,7 @@ class FileSystemStorageProvider extends StorageProvider
     }
   }
 
-  Future<_DurabilityCheckpoint> _loadCheckpoint(final String namespace) async {
+  Future<_DurabilityCheckpoint> _loadCheckpoint(String namespace) async {
     final cached = _checkpointCache[namespace];
     if (cached != null) {
       return cached;
@@ -1012,7 +1012,7 @@ class FileSystemStorageProvider extends StorageProvider
   }
 
   Future<void> _persistCheckpoint(
-    final _DurabilityCheckpoint checkpoint,
+    _DurabilityCheckpoint checkpoint,
   ) async {
     _checkpointCache[checkpoint.namespace] = checkpoint;
     final checkpointFile = File(_checkpointPath(checkpoint.namespace));
@@ -1025,7 +1025,7 @@ class FileSystemStorageProvider extends StorageProvider
     );
   }
 
-  Future<void> _appendJournalEntry(final _DurabilityJournalEntry entry) async {
+  Future<void> _appendJournalEntry(_DurabilityJournalEntry entry) async {
     final journalFile = File(_journalPath(entry.namespace));
     if (!journalFile.parent.existsSync()) {
       await journalFile.parent.create(recursive: true);
@@ -1037,7 +1037,7 @@ class FileSystemStorageProvider extends StorageProvider
     );
   }
 
-  Future<void> _persistRecoveryReport(final Map<String, dynamic> report) async {
+  Future<void> _persistRecoveryReport(Map<String, dynamic> report) async {
     final recoveryFile = File(_recoveryReportPath);
     if (!recoveryFile.parent.existsSync()) {
       await recoveryFile.parent.create(recursive: true);
@@ -1045,13 +1045,13 @@ class FileSystemStorageProvider extends StorageProvider
     await recoveryFile.writeAsString(jsonEncode(report), flush: true);
   }
 
-  String _fileChecksum(final File file) =>
+  String _fileChecksum(File file) =>
       normalizedSha256Hex(file.readAsStringSync());
 
   String _operationId({
-    required final String namespace,
-    required final int sequence,
-    required final _DurabilityOperationType operationType,
+    required String namespace,
+    required int sequence,
+    required _DurabilityOperationType operationType,
   }) {
     final nowMicros = DateTime.now().toUtc().microsecondsSinceEpoch;
     // ignore: lines_longer_than_80_chars
@@ -1059,15 +1059,15 @@ class FileSystemStorageProvider extends StorageProvider
   }
 
   String _tempRelativePath({
-    required final String namespace,
-    required final String operationId,
+    required String namespace,
+    required String operationId,
   }) {
     final safeNamespace = _sanitizeSegment(namespace);
     final safeOperationId = _sanitizeSegment(operationId);
     return path.join('.us', 'tmp', safeNamespace, '$safeOperationId.tmp');
   }
 
-  String _namespaceForPath(final String relativePath) {
+  String _namespaceForPath(String relativePath) {
     final normalized = _normalizeRelativePath(relativePath);
     final separatorIndex = normalized.indexOf('/');
     if (separatorIndex <= 0) {
@@ -1076,7 +1076,7 @@ class FileSystemStorageProvider extends StorageProvider
     return normalized.substring(0, separatorIndex);
   }
 
-  String _normalizeRelativePath(final String rawPath) {
+  String _normalizeRelativePath(String rawPath) {
     final normalized = rawPath
         .trim()
         .replaceAll(r'\', '/')
@@ -1090,17 +1090,17 @@ class FileSystemStorageProvider extends StorageProvider
     return normalized;
   }
 
-  String _sanitizeSegment(final String value) => value
+  String _sanitizeSegment(String value) => value
       .replaceAll(RegExp('[^A-Za-z0-9._-]'), '_')
       .replaceAll(RegExp('_+'), '_');
 
-  String _journalPath(final String namespace) =>
+  String _journalPath(String namespace) =>
       path.join(_journalRootPath, '${_sanitizeSegment(namespace)}.log');
 
-  String _checkpointPath(final String namespace) =>
+  String _checkpointPath(String namespace) =>
       path.join(_checkpointRootPath, '${_sanitizeSegment(namespace)}.json');
 
-  String _namespaceFromJournalFile(final String journalFilePath) {
+  String _namespaceFromJournalFile(String journalFilePath) {
     final base = path.basenameWithoutExtension(journalFilePath);
     if (base.trim().isEmpty) {
       return _rootNamespace;
@@ -1152,7 +1152,7 @@ final class _DurabilityJournalEntry {
     this.fileStateProfile,
   });
 
-  static _DurabilityJournalEntry? tryParse(final String jsonLine) {
+  static _DurabilityJournalEntry? tryParse(String jsonLine) {
     try {
       final dynamic decoded = jsonDecode(jsonLine);
       if (decoded is! Map) {
@@ -1177,11 +1177,11 @@ final class _DurabilityJournalEntry {
       }
 
       final operationType = _DurabilityOperationType.values.firstWhere(
-        (final value) => value.name == operationTypeName,
+        (value) => value.name == operationTypeName,
         orElse: () => _DurabilityOperationType.update,
       );
       final stage = _DurabilityJournalStage.values.firstWhere(
-        (final value) => value.name == stageName,
+        (value) => value.name == stageName,
         orElse: () => _DurabilityJournalStage.prepared,
       );
 
@@ -1260,8 +1260,8 @@ final class _DurabilityJournalEntry {
   final int appendSize;
 
   _DurabilityJournalEntry copyWith({
-    final _DurabilityJournalStage? stage,
-    final bool? recovered,
+    _DurabilityJournalStage? stage,
+    bool? recovered,
   }) => _DurabilityJournalEntry(
     schemaVersion: schemaVersion,
     fileMode: fileMode,
@@ -1309,7 +1309,7 @@ final class _DurabilityReplayOperation {
   bool committed = false;
   int sequence = 0;
 
-  void track(final _DurabilityJournalEntry entry) {
+  void track(_DurabilityJournalEntry entry) {
     if (entry.sequence > sequence) {
       sequence = entry.sequence;
     }
@@ -1329,8 +1329,8 @@ final class _DurabilityCheckpoint {
   });
 
   factory _DurabilityCheckpoint.fromJson({
-    required final String namespace,
-    required final Map<String, dynamic> json,
+    required String namespace,
+    required Map<String, dynamic> json,
   }) {
     final rawApplied = json['applied_operation_ids'];
     final applied = <String>{};
@@ -1357,9 +1357,9 @@ final class _DurabilityCheckpoint {
   final Set<String> appliedOperationIds;
 
   _DurabilityCheckpoint markApplied({
-    required final String operationId,
-    required final int sequence,
-    required final int retainedOperationIds,
+    required String operationId,
+    required int sequence,
+    required int retainedOperationIds,
   }) {
     final nextApplied = appliedOperationIds.toList(growable: true)
       ..add(operationId);

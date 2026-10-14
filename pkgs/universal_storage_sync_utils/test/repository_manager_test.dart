@@ -83,8 +83,8 @@ final class _FakeVersionControlService implements VersionControlService {
 
   @override
   Future<void> cloneRepository(
-    final VcRepository repository,
-    final String localPath,
+    VcRepository repository,
+    String localPath,
   ) async {
     cloneCallCount++;
     lastClonePath = localPath;
@@ -92,7 +92,7 @@ final class _FakeVersionControlService implements VersionControlService {
 
   @override
   Future<VcRepository> createRepository(
-    final VcCreateRepositoryRequest details,
+    VcCreateRepositoryRequest details,
   ) async => const VcRepository(id: '1', name: 'repo');
 
   @override
@@ -106,7 +106,7 @@ final class _FakeVersionControlService implements VersionControlService {
   Future<List<VcRepository>> listRepositories() async => const <VcRepository>[];
 
   @override
-  Future<void> setRepository(final VcRepositoryName repositoryId) async {}
+  Future<void> setRepository(VcRepositoryName repositoryId) async {}
 }
 
 final class _FakeRepositorySelectionUiDelegate
@@ -117,7 +117,7 @@ final class _FakeRepositorySelectionUiDelegate
 
   @override
   Future<VcCreateRepositoryRequest?> getRepositoryCreationDetails(
-    final RepositorySelectionConfig config,
+    RepositorySelectionConfig config,
   ) async => null;
 
   @override
@@ -127,17 +127,17 @@ final class _FakeRepositorySelectionUiDelegate
 
   @override
   Future<VcRepository?> selectRepository(
-    final List<VcRepository> repositories, {
-    final String? suggestedName,
+    List<VcRepository> repositories, {
+    String? suggestedName,
   }) async => null;
 
   @override
-  Future<void> showError(final String title, final String message) async {
+  Future<void> showError(String title, String message) async {
     errorTitles.add(title);
   }
 
   @override
-  Future<void> showProgress(final String message) async {
+  Future<void> showProgress(String message) async {
     showProgressCalls++;
   }
 }

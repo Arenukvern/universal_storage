@@ -15,13 +15,13 @@ class TodoListPage extends StatelessWidget {
   const TodoListPage({super.key});
 
   @override
-  Widget build(final BuildContext context) => Scaffold(
+  Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
       title: const Text('Todo App'),
       actions: [
         // Refresh button
         Consumer<AppState>(
-          builder: (final context, final appState, final child) => IconButton(
+          builder: (context, appState, child) => IconButton(
             onPressed: appState.busy ? null : appState.loadTodos,
             icon: const Icon(Icons.refresh),
             tooltip: 'Refresh todos',
@@ -30,12 +30,12 @@ class TodoListPage extends StatelessWidget {
 
         // Settings/workspace button
         PopupMenuButton<String>(
-          onSelected: (final value) {
+          onSelected: (value) {
             if (value == 'change_workspace') {
               _showChangeWorkspaceDialog(context);
             }
           },
-          itemBuilder: (final context) => [
+          itemBuilder: (context) => [
             const PopupMenuItem(
               value: 'change_workspace',
               child: Row(
@@ -59,7 +59,7 @@ class TodoListPage extends StatelessWidget {
         // Todo list
         Expanded(
           child: Consumer<AppState>(
-            builder: (final context, final appState, final child) {
+            builder: (context, appState, child) {
               if (appState.busy) {
                 return const Center(
                   child: Column(
@@ -120,7 +120,7 @@ class TodoListPage extends StatelessWidget {
               return ListView.builder(
                 padding: const EdgeInsets.all(16),
                 itemCount: appState.todos.length,
-                itemBuilder: (final context, final index) {
+                itemBuilder: (context, index) {
                   final todo = appState.todos[index];
                   return _TodoListItem(todo: todo);
                 },
@@ -131,7 +131,7 @@ class TodoListPage extends StatelessWidget {
       ],
     ),
     floatingActionButton: Consumer<AppState>(
-      builder: (final context, final appState, final child) =>
+      builder: (context, appState, child) =>
           FloatingActionButton(
             onPressed: appState.busy ? null : () => _showAddTodoDialog(context),
             child: const Icon(Icons.add),
@@ -139,16 +139,16 @@ class TodoListPage extends StatelessWidget {
     ),
   );
 
-  void _showAddTodoDialog(final BuildContext context) => showDialog<void>(
+  void _showAddTodoDialog(BuildContext context) => showDialog<void>(
     context: context,
-    builder: (final context) => const TodoEditorDialog(),
+    builder: (context) => const TodoEditorDialog(),
   );
 
   void _showChangeWorkspaceDialog(
-    final BuildContext context,
+    BuildContext context,
   ) => showDialog<void>(
     context: context,
-    builder: (final context) => AlertDialog(
+    builder: (context) => AlertDialog(
       title: const Text('Change Workspace'),
       content: const Text(
         'Are you sure you want to change the workspace folder? '
@@ -178,12 +178,12 @@ class _TodoListItem extends StatelessWidget {
   final Todo todo;
 
   @override
-  Widget build(final BuildContext context) => Card(
+  Widget build(BuildContext context) => Card(
     margin: const EdgeInsets.only(bottom: 8),
     child: ListTile(
       leading: Checkbox(
         value: todo.isCompleted,
-        onChanged: (final value) =>
+        onChanged: (value) =>
             context.read<AppState>().toggleTodoCompletion(todo.id),
       ),
       title: Text(
@@ -206,7 +206,7 @@ class _TodoListItem extends StatelessWidget {
             )
           : null,
       trailing: PopupMenuButton<String>(
-        onSelected: (final value) {
+        onSelected: (value) {
           switch (value) {
             case 'edit':
               _showEditDialog(context);
@@ -214,7 +214,7 @@ class _TodoListItem extends StatelessWidget {
               _showDeleteDialog(context);
           }
         },
-        itemBuilder: (final context) => [
+        itemBuilder: (context) => [
           const PopupMenuItem(
             value: 'edit',
             child: Row(
@@ -236,14 +236,14 @@ class _TodoListItem extends StatelessWidget {
     ),
   );
 
-  void _showEditDialog(final BuildContext context) => showDialog<void>(
+  void _showEditDialog(BuildContext context) => showDialog<void>(
     context: context,
-    builder: (final context) => TodoEditorDialog(todo: todo),
+    builder: (context) => TodoEditorDialog(todo: todo),
   );
 
-  void _showDeleteDialog(final BuildContext context) => showDialog<void>(
+  void _showDeleteDialog(BuildContext context) => showDialog<void>(
     context: context,
-    builder: (final context) => AlertDialog(
+    builder: (context) => AlertDialog(
       title: const Text('Delete Todo'),
       content: Text('Are you sure you want to delete "${todo.title}"?'),
       actions: [

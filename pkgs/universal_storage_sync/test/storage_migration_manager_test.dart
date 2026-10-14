@@ -36,7 +36,7 @@ class _MigrationFakeStorageProvider extends StorageProvider {
   }
 
   @override
-  Future<void> initWithConfig(final StorageConfig config) async {
+  Future<void> initWithConfig(StorageConfig config) async {
     _initialized = true;
   }
 
@@ -51,9 +51,9 @@ class _MigrationFakeStorageProvider extends StorageProvider {
 
   @override
   Future<FileOperationResult> createFile(
-    final String path,
-    final String content, {
-    final String? commitMessage,
+    String path,
+    String content, {
+    String? commitMessage,
   }) async {
     _ensureInitialized();
     if (beforeCreate != null) {
@@ -68,7 +68,7 @@ class _MigrationFakeStorageProvider extends StorageProvider {
   }
 
   @override
-  Future<String?> getFile(final String path) async {
+  Future<String?> getFile(String path) async {
     _ensureInitialized();
     if (beforeRead != null) {
       await beforeRead!(path);
@@ -79,9 +79,9 @@ class _MigrationFakeStorageProvider extends StorageProvider {
 
   @override
   Future<FileOperationResult> updateFile(
-    final String path,
-    final String content, {
-    final String? commitMessage,
+    String path,
+    String content, {
+    String? commitMessage,
   }) async {
     _ensureInitialized();
     if (beforeUpdate != null) {
@@ -97,8 +97,8 @@ class _MigrationFakeStorageProvider extends StorageProvider {
 
   @override
   Future<FileOperationResult> deleteFile(
-    final String path, {
-    final String? commitMessage,
+    String path, {
+    String? commitMessage,
   }) async {
     _ensureInitialized();
     if (beforeDelete != null) {
@@ -113,7 +113,7 @@ class _MigrationFakeStorageProvider extends StorageProvider {
   }
 
   @override
-  Future<List<FileEntry>> listDirectory(final String path) async {
+  Future<List<FileEntry>> listDirectory(String path) async {
     _ensureInitialized();
     if (beforeList != null) {
       await beforeList!(path);
@@ -155,7 +155,7 @@ class _MigrationFakeStorageProvider extends StorageProvider {
   }
 
   @override
-  Future<void> restore(final String path, {final String? versionId}) async {
+  Future<void> restore(String path, {String? versionId}) async {
     _ensureInitialized();
   }
 
@@ -164,8 +164,8 @@ class _MigrationFakeStorageProvider extends StorageProvider {
 
   @override
   Future<void> sync({
-    final String? pullMergeStrategy,
-    final String? pushConflictStrategy,
+    String? pullMergeStrategy,
+    String? pushConflictStrategy,
   }) async {}
 
   @override
@@ -185,9 +185,9 @@ Future<FileSystemConfig> _createConfig() async {
 }
 
 StorageKernel _buildKernel({
-  required final StorageProfile profile,
-  required final _MigrationFakeStorageProvider settingsProvider,
-  required final _MigrationFakeStorageProvider projectsProvider,
+  required StorageProfile profile,
+  required _MigrationFakeStorageProvider settingsProvider,
+  required _MigrationFakeStorageProvider projectsProvider,
 }) {
   final settingsService = StorageService(settingsProvider);
   final projectsService = StorageService(projectsProvider);
@@ -204,12 +204,12 @@ StorageKernel _buildKernel({
 }
 
 Future<void> _writeManifest({
-  required final StorageService service,
-  required final String planId,
-  required final MigrationStatus status,
-  required final DateTime updatedAt,
-  final DateTime? lockAcquiredAt,
-  final String lockOwner = 'test_lock',
+  required StorageService service,
+  required String planId,
+  required MigrationStatus status,
+  required DateTime updatedAt,
+  DateTime? lockAcquiredAt,
+  String lockOwner = 'test_lock',
 }) async {
   final lockData = lockAcquiredAt == null
       ? null
@@ -235,38 +235,38 @@ Future<void> _writeManifest({
   );
 }
 
-Map<String, dynamic> _decodeJsonMap(final Object? value) =>
+Map<String, dynamic> _decodeJsonMap(Object? value) =>
     jsonDecodeMap(value).whenEmptyUse(const <String, dynamic>{});
 
-List<Map<String, dynamic>> _decodeJsonMapList(final Object? value) {
+List<Map<String, dynamic>> _decodeJsonMapList(Object? value) {
   final decoded = jsonDecodeListAs<Object?>(value)
       .map(_decodeJsonMap)
-      .where((final item) => item.isNotEmpty)
+      .where((item) => item.isNotEmpty)
       .toList(growable: false);
   return decoded.whenEmptyUse(const <Map<String, dynamic>>[]);
 }
 
-List<String> _decodeJsonStringList(final Object? value) {
+List<String> _decodeJsonStringList(Object? value) {
   final decoded = jsonDecodeListAs<Object?>(value)
       .map(jsonDecodeString)
-      .where((final item) => item.isNotEmpty)
+      .where((item) => item.isNotEmpty)
       .toList(growable: false);
   return decoded.whenEmptyUse(const <String>[]);
 }
 
 Map<String, dynamic> _decodeJsonMapField(
-  final Map<String, dynamic> source,
-  final String key,
+  Map<String, dynamic> source,
+  String key,
 ) => _decodeJsonMap(source[key]);
 
 List<Map<String, dynamic>> _decodeJsonMapListField(
-  final Map<String, dynamic> source,
-  final String key,
+  Map<String, dynamic> source,
+  String key,
 ) => _decodeJsonMapList(source[key]);
 
 String _decodeJsonStringField(
-  final Map<String, dynamic> source,
-  final String key,
+  Map<String, dynamic> source,
+  String key,
 ) => jsonDecodeString(source[key]);
 
 void main() {
@@ -857,7 +857,7 @@ void main() {
         );
         final preview = _decodeJsonMapListField(metadata, 'preflight_preview');
         final previewItem = preview.singleWhere(
-          (final item) =>
+          (item) =>
               _decodeJsonStringField(item, 'source_path') == 'notes/old.txt',
           orElse: () => fail('Expected preview item not found.'),
         );
@@ -1198,7 +1198,7 @@ void main() {
         expect(pending.length, 2);
 
         final overwriteEntry = pending.firstWhere(
-          (final item) =>
+          (item) =>
               _decodeJsonStringField(item, 'source_path') ==
               'notes/overwrite.txt',
         );
@@ -1207,7 +1207,7 @@ void main() {
               MigrationDecisionAction.overwrite,
         };
         final skipEntry = pending.firstWhere(
-          (final item) =>
+          (item) =>
               _decodeJsonStringField(item, 'source_path') == 'notes/skip.txt',
         );
         final skipDecision = <String, MigrationDecisionAction>{
@@ -1373,7 +1373,7 @@ void main() {
       );
       final targetSettings = _MigrationFakeStorageProvider(
         delay: const Duration(milliseconds: 50),
-        beforeCreate: (final path) async {
+        beforeCreate: (path) async {
           if (!path.startsWith('.us/migrations/')) {
             if (!writeStarted.isCompleted) {
               writeStarted.complete();
@@ -1381,7 +1381,7 @@ void main() {
             await writeGate.future;
           }
         },
-        beforeUpdate: (final path) async {
+        beforeUpdate: (path) async {
           if (!path.startsWith('.us/migrations/')) {
             if (!writeStarted.isCompleted) {
               writeStarted.complete();

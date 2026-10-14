@@ -22,7 +22,7 @@ final class OpRecord {
     this.ttl,
   }) : assert(docId != '');
 
-  factory OpRecord.fromJson(final Map<String, dynamic> json) => OpRecord(
+  factory OpRecord.fromJson(Map<String, dynamic> json) => OpRecord(
     docId: json['doc_id'] as String,
     hlc: hlcFromJson(json['hlc']),
     payload: Map<String, dynamic>.from(json['payload'] as Map<dynamic, dynamic>),
@@ -45,7 +45,7 @@ final class OpRecord {
   String get actorId => hlc.actorId;
 
   /// True when this op's TTL has elapsed relative to [now].
-  bool isExpiredAt(final DateTime now) =>
+  bool isExpiredAt(DateTime now) =>
       ttl != null &&
       now.isAfter(
         DateTime.fromMillisecondsSinceEpoch(hlc.wallMillis).add(ttl!),

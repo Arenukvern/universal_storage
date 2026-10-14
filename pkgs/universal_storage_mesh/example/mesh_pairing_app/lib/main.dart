@@ -104,7 +104,7 @@ class MeshPairingApp extends StatelessWidget {
   ];
 
   @override
-  Widget build(final BuildContext context) {
+  Widget build(BuildContext context) {
     for (final entry in _automationEntries) {
       MCPToolkitBinding.instance.addEntries(entries: {entry});
     }

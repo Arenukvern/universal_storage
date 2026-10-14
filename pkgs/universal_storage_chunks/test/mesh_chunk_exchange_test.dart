@@ -9,7 +9,7 @@ import 'package:universal_storage_mesh_transport/universal_storage_mesh_transpor
 /// The fake pair's close does not propagate a done event to the peer's
 /// inbound stream (by design — sessions die independently), so absorption
 /// is observed through the store, never through serve() returning.
-Future<void> _until(final Future<bool> Function() probe) async {
+Future<void> _until(Future<bool> Function() probe) async {
   for (var i = 0; i < 500; i++) {
     if (await probe()) return;
     await Future<void>.delayed(const Duration(milliseconds: 10));
@@ -32,7 +32,7 @@ void main() {
     final clientSession = await pair.a.connect(
       const MeshPeerRecord(peerId: 'device-b', displayName: 'B'),
     );
-    pair.b.incoming.listen((final session) {
+    pair.b.incoming.listen((session) {
       unawaited(MeshChunkExchange.serve(session: session, store: serverStore));
     });
 
@@ -70,7 +70,7 @@ void main() {
     final clientSession = await pair.a.connect(
       const MeshPeerRecord(peerId: 'device-b', displayName: 'B'),
     );
-    pair.b.incoming.listen((final session) {
+    pair.b.incoming.listen((session) {
       unawaited(MeshChunkExchange.serve(session: session, store: lying));
     });
 
@@ -98,7 +98,7 @@ void main() {
 
     final pair = FakeMeshPair.paired();
     final receiverStore = MemoryChunkStore();
-    pair.b.incoming.listen((final session) {
+    pair.b.incoming.listen((session) {
       unawaited(
         MeshChunkExchange.serve(session: session, store: receiverStore),
       );
@@ -134,7 +134,7 @@ void main() {
 
     final pair = FakeMeshPair.paired();
     final receiverStore = MemoryChunkStore();
-    pair.b.incoming.listen((final session) {
+    pair.b.incoming.listen((session) {
       unawaited(
         MeshChunkExchange.serve(session: session, store: receiverStore),
       );
@@ -182,14 +182,14 @@ final class _LyingStore implements ChunkStore {
   final List<int> _lie;
 
   @override
-  Future<void> put(final List<int> bytes, {required final String address}) =>
+  Future<void> put(List<int> bytes, {required String address}) =>
       _inner.put(bytes, address: address);
 
   @override
-  Future<bool> has(final String address) => _inner.has(address);
+  Future<bool> has(String address) => _inner.has(address);
 
   @override
-  Future<Uint8List?> get(final String address) async {
+  Future<Uint8List?> get(String address) async {
     if (address == _victimAddress) return Uint8List.fromList(_lie);
     return _inner.get(address);
   }

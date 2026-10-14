@@ -32,7 +32,7 @@ void main() {
 
   setUp(() => tick = 0);
 
-  ConvergenceDoc compositeDoc(final String actorId) => ConvergenceDoc(
+  ConvergenceDoc compositeDoc(String actorId) => ConvergenceDoc(
     docId: 'doc-1',
     actorId: actorId,
     strategy: CompositeMergeStrategy(lanes),
@@ -100,7 +100,7 @@ void main() {
         () => doc.applyRemote([op]),
         throwsA(
           isA<CompositeLaneMismatchError>().having(
-            (final e) => e.toString(),
+            (e) => e.toString(),
             'toString',
             contains('unknown/namespace/key'),
           ),
@@ -138,7 +138,7 @@ void main() {
         () => ConvergenceDoc.strategyFor('composite:a/=>does_not_exist'),
         throwsA(
           isA<ArgumentError>().having(
-            (final e) => e.toString(),
+            (e) => e.toString(),
             'toString',
             contains('does_not_exist'),
           ),
@@ -195,17 +195,17 @@ void main() {
       return docs;
     }
 
-    List<OpRecord> allOps(final List<ConvergenceDoc> docs) => [
+    List<OpRecord> allOps(List<ConvergenceDoc> docs) => [
       for (final doc in docs) ...doc.pendingOps,
     ];
 
     /// Delivers [ops] to [doc] in seeded-shuffled [batchSize]-sized chunks
     /// with duplicate redelivery inside each batch.
     void deliverShuffled(
-      final ConvergenceDoc doc,
-      final List<OpRecord> ops,
-      final int seed, {
-      final int batchSize = 3,
+      ConvergenceDoc doc,
+      List<OpRecord> ops,
+      int seed, {
+      int batchSize = 3,
     }) {
       final shuffled = [...ops]..shuffle(Random(seed));
       for (var i = 0; i < shuffled.length; i += batchSize) {
@@ -237,7 +237,7 @@ void main() {
       deliverShuffled(docs[0], ops, 55);
       deliverShuffled(docs[1], ops, 66, batchSize: 5);
       deliverShuffled(docs[2], ops, 77, batchSize: 4);
-      seen.addAll(docs.map((final d) => d.state));
+      seen.addAll(docs.map((d) => d.state));
 
       for (final state in seen) {
         expect(state, seen.first, reason: 'states diverged: $state');
@@ -277,7 +277,7 @@ void main() {
           doc,
           ops
               .where(
-                (final op) =>
+                (op) =>
                     op.payload['k'] is String &&
                     (op.payload['k']! as String).startsWith(prefix),
               )
@@ -301,7 +301,7 @@ void main() {
       expect(doc.vv.actors, ['a']);
       // The ONE log carries all lanes' ops.
       expect(doc.pendingOps, hasLength(3));
-      expect(doc.pendingOps.map((final op) => op.payload['k']), containsAll([
+      expect(doc.pendingOps.map((op) => op.payload['k']), containsAll([
         'node/f',
         'text/b',
         'order/p/c',

@@ -8,7 +8,7 @@ class _LoaderFakeStorageProvider extends StorageProvider {
   var _initialized = false;
 
   @override
-  Future<void> initWithConfig(final StorageConfig config) async {
+  Future<void> initWithConfig(StorageConfig config) async {
     _initialized = true;
   }
 
@@ -17,22 +17,22 @@ class _LoaderFakeStorageProvider extends StorageProvider {
 
   @override
   Future<FileOperationResult> createFile(
-    final String path,
-    final String content, {
-    final String? commitMessage,
+    String path,
+    String content, {
+    String? commitMessage,
   }) async {
     files[path] = content;
     return FileOperationResult.created(path: path);
   }
 
   @override
-  Future<String?> getFile(final String path) async => files[path];
+  Future<String?> getFile(String path) async => files[path];
 
   @override
   Future<FileOperationResult> updateFile(
-    final String path,
-    final String content, {
-    final String? commitMessage,
+    String path,
+    String content, {
+    String? commitMessage,
   }) async {
     files[path] = content;
     return FileOperationResult.updated(path: path);
@@ -40,18 +40,18 @@ class _LoaderFakeStorageProvider extends StorageProvider {
 
   @override
   Future<FileOperationResult> deleteFile(
-    final String path, {
-    final String? commitMessage,
+    String path, {
+    String? commitMessage,
   }) async {
     files.remove(path);
     return FileOperationResult.deleted(path: path);
   }
 
   @override
-  Future<List<FileEntry>> listDirectory(final String directoryPath) async =>
+  Future<List<FileEntry>> listDirectory(String directoryPath) async =>
       files.keys
           .map(
-            (final path) => FileEntry(
+            (path) => FileEntry(
               name: path,
               isDirectory: false,
               size: files[path]!.length,
@@ -61,7 +61,7 @@ class _LoaderFakeStorageProvider extends StorageProvider {
           .toList(growable: false);
 
   @override
-  Future<void> restore(final String path, {final String? versionId}) async {}
+  Future<void> restore(String path, {String? versionId}) async {}
 
   @override
   Future<void> dispose() async {}
@@ -80,7 +80,7 @@ Future<FileSystemConfig> _createConfig() async {
 }
 
 Future<StorageService> _createService(
-  final _LoaderFakeStorageProvider provider,
+  _LoaderFakeStorageProvider provider,
 ) async {
   final service = StorageService(provider);
   await service.initializeWithConfig(await _createConfig());
@@ -115,7 +115,7 @@ void main() {
             },
           ],
         },
-        serviceFactory: (final namespaceProfile) async {
+        serviceFactory: (namespaceProfile) async {
           if (namespaceProfile.namespace == StorageNamespace.settings) {
             return settingsService;
           }
@@ -161,7 +161,7 @@ void main() {
       await expectLater(
         () => loader.load(
           profile: profile,
-          serviceFactory: (final _) async => service,
+          serviceFactory: (_) async => service,
         ),
         throwsA(isA<ConfigurationException>()),
       );
@@ -187,7 +187,7 @@ void main() {
 
       final result = await loader.load(
         profile: profile,
-        serviceFactory: (final _) async => service,
+        serviceFactory: (_) async => service,
       );
 
       expect(result.warnings, isNotEmpty);
@@ -200,7 +200,7 @@ void main() {
       await expectLater(
         () => loader.loadFromJson(
           jsonSource: '[]',
-          serviceFactory: (final _) async {
+          serviceFactory: (_) async {
             throw const ConfigurationException('Should not be called');
           },
         ),

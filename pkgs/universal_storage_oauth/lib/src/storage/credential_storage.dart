@@ -14,7 +14,7 @@ extension type const OAuthAccessToken(String value) {
   /// Parameters:
   /// - [value]: The JSON data to decode, typically a string or dynamic value.
   // ignore: avoid_annotating_with_dynamic
-  factory OAuthAccessToken.fromJson(final dynamic value) =>
+  factory OAuthAccessToken.fromJson(dynamic value) =>
       OAuthAccessToken(jsonDecodeString(value));
 
   /// Converts the OAuth access token to JSON format.
@@ -41,7 +41,7 @@ extension type const OAuthAccessToken(String value) {
   /// empty.
   ///
   /// [other]: The fallback OAuth access token to use if this one is empty.
-  OAuthAccessToken whenEmptyUse(final OAuthAccessToken other) =>
+  OAuthAccessToken whenEmptyUse(OAuthAccessToken other) =>
       isEmpty ? other : this;
 
   /// An empty OAuth access token instance.
@@ -62,7 +62,7 @@ extension type const OAuthRefreshToken(String value) {
   /// Parameters:
   /// - [value]: The JSON data to decode, typically a string or dynamic value.
   // ignore: avoid_annotating_with_dynamic
-  factory OAuthRefreshToken.fromJson(final dynamic value) =>
+  factory OAuthRefreshToken.fromJson(dynamic value) =>
       OAuthRefreshToken(jsonDecodeString(value));
 
   /// Converts the OAuth refresh token to JSON format.
@@ -84,7 +84,7 @@ extension type const OAuthRefreshToken(String value) {
   /// empty.
   ///
   /// [other]: The fallback OAuth refresh token to use if this one is empty.
-  OAuthRefreshToken whenEmptyUse(final OAuthRefreshToken other) =>
+  OAuthRefreshToken whenEmptyUse(OAuthRefreshToken other) =>
       isEmpty ? other : this;
 
   /// An empty OAuth refresh token instance.
@@ -108,17 +108,17 @@ extension type const StoredCredentials(Map<String, dynamic> value) {
   /// Parameters:
   /// - [jsonData]: The JSON data to decode, typically a map or dynamic value.
   // ignore: avoid_annotating_with_dynamic
-  factory StoredCredentials.fromJson(final dynamic jsonData) {
+  factory StoredCredentials.fromJson(dynamic jsonData) {
     final map = jsonDecodeMap(jsonData);
     return StoredCredentials(map);
   }
 
   /// Create stored credentials with required fields
   factory StoredCredentials.create({
-    required final OAuthAccessToken accessToken,
-    final OAuthRefreshToken? refreshToken,
-    final DateTime? expiresAt,
-    final List<String>? scopes,
+    required OAuthAccessToken accessToken,
+    OAuthRefreshToken? refreshToken,
+    DateTime? expiresAt,
+    List<String>? scopes,
   }) => StoredCredentials({
     'access_token': accessToken.value,
     'refresh_token': refreshToken?.value,
@@ -172,7 +172,7 @@ extension type const StoredCredentials(Map<String, dynamic> value) {
   int get scopeCount => scopes?.length ?? 0;
 
   /// Check if a specific scope is included
-  bool containsScope(final String scope) => scopes?.contains(scope) ?? false;
+  bool containsScope(String scope) => scopes?.contains(scope) ?? false;
 
   /// Converts the stored credentials to JSON format.
   ///
@@ -189,19 +189,19 @@ extension type const StoredCredentials(Map<String, dynamic> value) {
 abstract class CredentialStorage {
   /// Store credentials for a platform
   Future<void> storeCredentials(
-    final GitPlatform platform,
-    final StoredCredentials credentials,
+    GitPlatform platform,
+    StoredCredentials credentials,
   );
 
   /// Retrieve credentials for a platform
-  Future<StoredCredentials?> getCredentials(final GitPlatform platform);
+  Future<StoredCredentials?> getCredentials(GitPlatform platform);
 
   /// Clear credentials for a platform
-  Future<void> clearCredentials(final GitPlatform platform);
+  Future<void> clearCredentials(GitPlatform platform);
 
   /// Clear all stored credentials
   Future<void> clearAllCredentials();
 
   /// Check if credentials exist for a platform
-  Future<bool> hasCredentials(final GitPlatform platform);
+  Future<bool> hasCredentials(GitPlatform platform);
 }

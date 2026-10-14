@@ -15,8 +15,8 @@ class _FaultProvider extends MemoryStorageProvider {
 
   @override
   Future<FileOperationResult> deleteFile(
-    final String path, {
-    final String? commitMessage,
+    String path, {
+    String? commitMessage,
   }) async {
     if (ignoreDelete) return FileOperationResult(path: path);
     return super.deleteFile(path);
@@ -24,9 +24,9 @@ class _FaultProvider extends MemoryStorageProvider {
 
   @override
   Future<FileOperationResult> updateFile(
-    final String path,
-    final String content, {
-    final String? commitMessage,
+    String path,
+    String content, {
+    String? commitMessage,
   }) {
     if (failUpdate) {
       return Future<FileOperationResult>.error(StateError('before effect'));

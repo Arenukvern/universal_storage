@@ -18,7 +18,7 @@ final class MigrationCoordinator {
   /// Runs migration preflight, either via the configured endpoint or
   /// local plan validation when no endpoint exists.
   Future<MigrationPreparationResult> prepare({
-    required final MigrationPlan plan,
+    required MigrationPlan plan,
   }) async {
     MigrationPreparationResult result;
     if (_endpoint != null) {
@@ -56,7 +56,7 @@ final class MigrationCoordinator {
 
   /// Executes a migration plan via the configured endpoint.
   Future<MigrationExecutionResult> execute({
-    required final MigrationPlan plan,
+    required MigrationPlan plan,
   }) async {
     if (_endpoint != null) {
       final decisionStates = await _decisionStore.loadAllStates();
@@ -101,7 +101,7 @@ final class MigrationCoordinator {
 
   /// Rolls back a previously executed migration.
   Future<MigrationExecutionResult> rollback({
-    required final MigrationPlan plan,
+    required MigrationPlan plan,
   }) async {
     if (_endpoint == null) {
       return _emitFailedExecution(
@@ -117,8 +117,8 @@ final class MigrationCoordinator {
   }
 
   void _emitPrepared({
-    required final MigrationPlan plan,
-    required final MigrationPreparationResult result,
+    required MigrationPlan plan,
+    required MigrationPreparationResult result,
   }) {
     _observations.emit(
       type: StorageObservationType.migrationPrepared,
@@ -135,8 +135,8 @@ final class MigrationCoordinator {
   }
 
   MigrationExecutionResult _emitFailedExecution({
-    required final String message,
-    final Map<String, dynamic> metadata = const <String, dynamic>{},
+    required String message,
+    Map<String, dynamic> metadata = const <String, dynamic>{},
   }) {
     final executionResult = MigrationExecutionResult(
       ok: false,
@@ -148,7 +148,7 @@ final class MigrationCoordinator {
     return executionResult;
   }
 
-  void _emitExecuted(final MigrationExecutionResult executionResult) {
+  void _emitExecuted(MigrationExecutionResult executionResult) {
     _observations.emit(
       type: StorageObservationType.migrationExecuted,
       namespace: StorageNamespace.settings,
@@ -164,15 +164,15 @@ final class MigrationCoordinator {
   }
 }
 
-bool _migrationPlanInteractionLevel(final Map<String, dynamic> metadata) {
+bool _migrationPlanInteractionLevel(Map<String, dynamic> metadata) {
   final rawLevel = metadata['migration_interaction_level'];
   return rawLevel is String &&
       rawLevel.trim().toLowerCase() == SyncInteractionLevel.complex.name;
 }
 
 bool? _migrationPlanBool(
-  final Map<String, dynamic> metadata,
-  final String key,
+  Map<String, dynamic> metadata,
+  String key,
 ) {
   final raw = metadata[key];
   if (raw == null) {
@@ -204,7 +204,7 @@ bool? _migrationPlanBool(
 }
 
 /// Human-readable summary for a preparation result.
-String preparationMessage(final MigrationPreparationResult result) {
+String preparationMessage(MigrationPreparationResult result) {
   if (result.ok) {
     if (result.warnings.isNotEmpty) {
       return 'Migration prepared with warnings.';

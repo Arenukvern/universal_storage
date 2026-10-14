@@ -22,7 +22,7 @@ extension type const RepositoryId(String value) {
   /// [value] - The JSON value to decode, typically a string or number
   /// Returns a new RepositoryId instance
   // ignore: avoid_annotating_with_dynamic
-  factory RepositoryId.fromJson(final dynamic value) =>
+  factory RepositoryId.fromJson(dynamic value) =>
       RepositoryId(jsonDecodeString(value));
 
   /// Converts the RepositoryId back to JSON format.
@@ -58,7 +58,7 @@ extension type const RepositoryId(String value) {
   ///
   /// [other] - The fallback repository ID to use if this one is empty
   /// Returns this repository ID if not empty, otherwise returns [other]
-  RepositoryId whenEmptyUse(final RepositoryId other) => isEmpty ? other : this;
+  RepositoryId whenEmptyUse(RepositoryId other) => isEmpty ? other : this;
 
   /// An empty repository ID instance.
   ///
@@ -82,9 +82,9 @@ enum RepositoryOwnerType {
 
   const RepositoryOwnerType(this.value);
 
-  factory RepositoryOwnerType.fromJson(final String value) =>
+  factory RepositoryOwnerType.fromJson(String value) =>
       RepositoryOwnerType.values.firstWhere(
-        (final type) => type.value == value,
+        (type) => type.value == value,
         orElse: () => unknown,
       );
 
@@ -117,18 +117,18 @@ extension type const RepositoryOwner(Map<String, dynamic> value) {
   /// Parameters:
   /// - [jsonData]: The JSON data to decode, typically a map or dynamic value.
   // ignore: avoid_annotating_with_dynamic
-  factory RepositoryOwner.fromJson(final dynamic jsonData) {
+  factory RepositoryOwner.fromJson(dynamic jsonData) {
     final map = jsonDecodeMap(jsonData);
     return RepositoryOwner(map);
   }
 
   /// Creates a repository owner with required fields.
   factory RepositoryOwner.create({
-    required final String id,
-    required final String login,
-    required final RepositoryOwnerType type,
-    final String? avatarUrl,
-    final String? htmlUrl,
+    required String id,
+    required String login,
+    required RepositoryOwnerType type,
+    String? avatarUrl,
+    String? htmlUrl,
   }) => RepositoryOwner({
     'id': id,
     'login': login,
@@ -182,16 +182,16 @@ extension type const RepositoryPermissions(Map<String, dynamic> value) {
   /// Parameters:
   /// - [jsonData]: The JSON data to decode, typically a map or dynamic value.
   // ignore: avoid_annotating_with_dynamic
-  factory RepositoryPermissions.fromJson(final dynamic jsonData) {
+  factory RepositoryPermissions.fromJson(dynamic jsonData) {
     final map = jsonDecodeMap(jsonData);
     return RepositoryPermissions(map);
   }
 
   /// Create repository permissions with specific flags
   factory RepositoryPermissions.create({
-    required final bool admin,
-    required final bool push,
-    required final bool pull,
+    required bool admin,
+    required bool push,
+    required bool pull,
   }) => RepositoryPermissions({'admin': admin, 'push': push, 'pull': pull});
 
   /// Whether user has admin permissions
@@ -252,30 +252,30 @@ extension type const RepositoryInfo(Map<String, dynamic> value) {
   /// Parameters:
   /// - [jsonData]: The JSON data to decode, typically a map or dynamic value.
   // ignore: avoid_annotating_with_dynamic
-  factory RepositoryInfo.fromJson(final dynamic jsonData) {
+  factory RepositoryInfo.fromJson(dynamic jsonData) {
     final map = jsonDecodeMap(jsonData);
     return RepositoryInfo(map);
   }
 
   /// Create repository info with required fields
   factory RepositoryInfo.create({
-    required final String id,
-    required final String name,
-    required final String fullName,
-    required final RepositoryOwner owner,
-    final String? description,
-    final bool isPrivate = false,
-    final String? defaultBranch,
-    final String? cloneUrl,
-    final String? sshUrl,
-    final String? htmlUrl,
-    final DateTime? createdAt,
-    final DateTime? updatedAt,
-    final RepositoryPermissions? permissions,
-    final String? language,
-    final int starCount = 0,
-    final int forkCount = 0,
-    final int size = 0,
+    required String id,
+    required String name,
+    required String fullName,
+    required RepositoryOwner owner,
+    String? description,
+    bool isPrivate = false,
+    String? defaultBranch,
+    String? cloneUrl,
+    String? sshUrl,
+    String? htmlUrl,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    RepositoryPermissions? permissions,
+    String? language,
+    int starCount = 0,
+    int forkCount = 0,
+    int size = 0,
   }) => RepositoryInfo({
     'id': id,
     'name': name,

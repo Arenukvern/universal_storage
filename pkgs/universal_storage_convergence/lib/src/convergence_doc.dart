@@ -19,7 +19,7 @@ final class Snapshot {
     required this.createdAt,
   });
 
-  factory Snapshot.fromJson(final Map<String, dynamic> json) => Snapshot(
+  factory Snapshot.fromJson(Map<String, dynamic> json) => Snapshot(
     docId: json['doc_id'] as String,
     baseVv: VersionVector.fromJson(
       Map<String, dynamic>.from(json['base_vv'] as Map<dynamic, dynamic>),
@@ -58,7 +58,7 @@ final class ConvergenceDoc {
   }) : _state = strategy.initialState(),
        _ephemeralState = strategy.initialState();
 
-  factory ConvergenceDoc.fromJson(final Map<String, dynamic> json) {
+  factory ConvergenceDoc.fromJson(Map<String, dynamic> json) {
     final doc = ConvergenceDoc._(
       json['doc_id'] as String,
       json['actor_id'] as String,
@@ -69,7 +69,7 @@ final class ConvergenceDoc {
       ),
       (json['log'] as List<dynamic>? ?? const <dynamic>[])
           .whereType<Map<dynamic, dynamic>>()
-          .map((final e) => OpRecord.fromJson(Map<String, dynamic>.from(e)))
+          .map((e) => OpRecord.fromJson(Map<String, dynamic>.from(e)))
           .toList(),
     );
     doc._seenOpIds.addAll(
@@ -82,7 +82,7 @@ final class ConvergenceDoc {
     doc._ephemeralLog =
         (json['ephemeral_log'] as List<dynamic>? ?? const <dynamic>[])
             .whereType<Map<dynamic, dynamic>>()
-            .map((final e) => OpRecord.fromJson(Map<String, dynamic>.from(e)))
+            .map((e) => OpRecord.fromJson(Map<String, dynamic>.from(e)))
             .toList();
     doc._ephemeralState = Map<String, Object?>.from(
       json['ephemeral_state'] as Map<dynamic, dynamic>? ?? const {},
@@ -111,7 +111,7 @@ final class ConvergenceDoc {
   /// strategy across replicas is a protocol-breaking change (ADR 0011).
   /// Composite strategies restore their full lane map from the wire-stable
   /// `composite:<lane-spec-id>` name — no parent-side re-routing (ADR 0030 §1).
-  static MergeStrategy strategyFor(final String name) {
+  static MergeStrategy strategyFor(String name) {
     if (name == 'lww_map') return const LwwMapStrategy();
     if (name == 'rga_text') return const RgaTextStrategy();
     if (name.startsWith(CompositeMergeStrategy.specPrefix)) {
@@ -171,10 +171,10 @@ final class ConvergenceDoc {
   /// Drops expired ephemeral ops from the fold and the delta log; returns
   /// how many were dropped. Expiry is commutative and idempotent: any
   /// replica applying the same (expired) op set converges identically.
-  int sweepEphemeral(final DateTime now) {
+  int sweepEphemeral(DateTime now) {
     final live =
-        _ephemeralLog.where((final op) => !op.isExpiredAt(now)).toList()
-          ..sort((final a, final b) => a.hlc.compareTo(b.hlc));
+        _ephemeralLog.where((op) => !op.isExpiredAt(now)).toList()
+          ..sort((a, b) => a.hlc.compareTo(b.hlc));
     final dropped = _ephemeralLog.length - live.length;
     if (dropped == 0) return 0;
     _ephemeralState = strategy.initialState();
@@ -185,12 +185,12 @@ final class ConvergenceDoc {
     return dropped;
   }
 
-  void _observeIssued(final Hlc hlc) {
+  void _observeIssued(Hlc hlc) {
     final current = _lastIssued;
     if (current == null || hlc > current) _lastIssued = hlc;
   }
 
-  static Hlc? _maxIssued(final Iterable<Hlc?> candidates) {
+  static Hlc? _maxIssued(Iterable<Hlc?> candidates) {
     Hlc? max;
     for (final candidate in candidates) {
       if (candidate != null && (max == null || candidate > max)) {
@@ -210,8 +210,8 @@ final class ConvergenceDoc {
   /// it for durable append by the caller. [lastIssued] (a restored
   /// watermark) participates in the monotonicity guard.
   OpRecord applyLocal(
-    final Map<String, Object?> payload,
-    final DateTime now, {
+    Map<String, Object?> payload,
+    DateTime now, {
     Hlc? lastIssued,
   }) {
     final previous =
@@ -231,9 +231,9 @@ final class ConvergenceDoc {
   /// [ephemeralState], never into durable state or the durable version
   /// vector. Rides the same dedupe and ordering as durable ops.
   OpRecord applyLocalEphemeral(
-    final Map<String, Object?> payload,
-    final DateTime now, {
-    required final Duration ttl,
+    Map<String, Object?> payload,
+    DateTime now, {
+    required Duration ttl,
   }) {
     final previous =
         _maxIssued([_vv[actorId], _lastIssued]) ?? Hlc.zero(actorId);
@@ -251,7 +251,7 @@ final class ConvergenceDoc {
   /// ephemeral ops fold into [ephemeralState] and are DROPPED when expired
   /// relative to [now] (expired ops stay deduped — expiry is monotonic in
   /// real time). Returns how many ops were newly applied.
-  int applyRemote(final Iterable<OpRecord> ops, {final DateTime? now}) {
+  int applyRemote(Iterable<OpRecord> ops, {DateTime? now}) {
     // Dedupe WITHOUT committing yet: an op is marked seen only after its
     // fold succeeded (or it was deliberately dropped as expired), so a
     // fold error — e.g. a composite lane mismatch (ADR 0030 §1) — leaves
@@ -263,7 +263,7 @@ final class ConvergenceDoc {
       freshById.putIfAbsent(op.opId, () => op);
     }
     final fresh = freshById.values.toList()
-      ..sort((final a, final b) => a.hlc.compareTo(b.hlc));
+      ..sort((a, b) => a.hlc.compareTo(b.hlc));
     var applied = 0;
     final durable = <OpRecord>[];
     for (final op in fresh) {
@@ -289,21 +289,21 @@ final class ConvergenceDoc {
     if (durable.isNotEmpty) {
       applied += durable.length;
       _log = [..._log, ...durable]
-        ..sort((final a, final b) => a.hlc.compareTo(b.hlc));
+        ..sort((a, b) => a.hlc.compareTo(b.hlc));
     }
     return applied;
   }
 
   /// Ops this replica holds that [remoteVv] has not observed.
-  List<OpRecord> opsSince(final VersionVector remoteVv) =>
-      _log.where((final op) => !remoteVv.contains(op.hlc)).toList();
+  List<OpRecord> opsSince(VersionVector remoteVv) =>
+      _log.where((op) => !remoteVv.contains(op.hlc)).toList();
 
   /// True when [remoteVv] is fully covered but the peer still needs content
   /// (our log was compacted) — caller should ship a [snapshotFor] instead.
-  bool needsSnapshotFor(final VersionVector remoteVv) =>
+  bool needsSnapshotFor(VersionVector remoteVv) =>
       opsSince(remoteVv).isEmpty && !_coveredBy(remoteVv);
 
-  bool _coveredBy(final VersionVector remoteVv) {
+  bool _coveredBy(VersionVector remoteVv) {
     for (final actor in _vv.actors) {
       final ours = _vv[actor]!;
       final theirs = remoteVv[actor];
@@ -322,7 +322,7 @@ final class ConvergenceDoc {
 
   /// Adopts [snapshot] only when it carries events we have not seen.
   /// Returns true when adopted.
-  bool adoptSnapshot(final Snapshot snapshot) {
+  bool adoptSnapshot(Snapshot snapshot) {
     if (snapshot.docId != docId) return false;
     var newer = false;
     for (final actor in snapshot.baseVv.actors) {
@@ -334,12 +334,12 @@ final class ConvergenceDoc {
     // Adopt wholesale: snapshot state is authoritative for everything up to
     // its base vector. Local pending ops beyond it are re-applied.
     final localPending =
-        _log.where((final op) => !snapshot.baseVv.contains(op.hlc)).toList()
-          ..sort((final a, final b) => a.hlc.compareTo(b.hlc));
+        _log.where((op) => !snapshot.baseVv.contains(op.hlc)).toList()
+          ..sort((a, b) => a.hlc.compareTo(b.hlc));
     _state = strategy.initialState();
     // Seed fold with snapshot entries as pseudo-wins by merging vectors:
     // fold each snapshot key through the strategy so entry metadata survives.
-    snapshot.state.forEach((final key, final value) {
+    snapshot.state.forEach((key, value) {
       _state[key] = value;
     });
     _vv = snapshot.baseVv;
@@ -377,9 +377,9 @@ final class ConvergenceDoc {
     'strategy': strategy.name,
     'state': _state,
     'vv': _vv.toJson(),
-    'log': _log.map((final op) => op.toJson()).toList(),
+    'log': _log.map((op) => op.toJson()).toList(),
     'seen_op_ids': _seenOpIds.toList(),
     'ephemeral_state': _ephemeralState,
-    'ephemeral_log': _ephemeralLog.map((final op) => op.toJson()).toList(),
+    'ephemeral_log': _ephemeralLog.map((op) => op.toJson()).toList(),
   };
 }

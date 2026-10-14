@@ -18,7 +18,7 @@ abstract final class RealtimeTypes {
   static const reserved = <String>{heartbeat, heartbeatAck, releaseAll};
 
   /// Whether [type] is link control (never surfaced, never authoritative).
-  static bool isReserved(final String type) => reserved.contains(type);
+  static bool isReserved(String type) => reserved.contains(type);
 }
 
 /// One realtime frame (ADR 0050 §2): a named app event with a delivery
@@ -69,7 +69,7 @@ final class RealtimeEnvelope {
   };
 
   /// Strict decode: null unless the bytes carry the realtime marker.
-  static RealtimeEnvelope? tryDecode(final Uint8List bytes) {
+  static RealtimeEnvelope? tryDecode(Uint8List bytes) {
     try {
       final decoded = jsonDecode(utf8.decode(bytes));
       if (decoded is! Map || decoded['rt'] != 1) return null;
@@ -97,7 +97,7 @@ final class RealtimeEnvelope {
 
 /// Byte-level plane classifier (ADR 0047 "one server, two planes"):
 /// whether a first inbound frame declares the REALTIME plane.
-bool looksLikeRealtimeFrame(final Uint8List frame) {
+bool looksLikeRealtimeFrame(Uint8List frame) {
   try {
     final decoded = jsonDecode(utf8.decode(frame));
     return decoded is Map && decoded['rt'] == 1;

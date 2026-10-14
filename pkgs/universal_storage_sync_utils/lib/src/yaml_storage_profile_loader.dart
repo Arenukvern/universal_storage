@@ -22,10 +22,10 @@ final class YamlStorageProfileLoader {
   ///
   /// Validation warnings are appended to kernel load warnings.
   Future<StorageProfileLoadResult> load({
-    required final String yamlSource,
-    required final NamespaceServiceFactory serviceFactory,
-    final NamespaceCapabilitiesFactory? capabilitiesFactory,
-    final bool strict = true,
+    required String yamlSource,
+    required NamespaceServiceFactory serviceFactory,
+    NamespaceCapabilitiesFactory? capabilitiesFactory,
+    bool strict = true,
   }) {
     final validation = validator.validateYaml(yamlSource);
     if (!validation.isValid) {
@@ -36,7 +36,7 @@ final class YamlStorageProfileLoader {
 
     final profile = StorageProfile.fromJson(validation.normalizedMap);
     final validationWarnings = validation.warnings
-        .map((final issue) => '${issue.path}: ${issue.message}')
+        .map((issue) => '${issue.path}: ${issue.message}')
         .toList(growable: false);
 
     return loader.load(
@@ -49,6 +49,6 @@ final class YamlStorageProfileLoader {
   }
 
   /// Returns validation diagnostics without building kernel.
-  StorageProfileValidationResult validate(final String yamlSource) =>
+  StorageProfileValidationResult validate(String yamlSource) =>
       validator.validateYaml(yamlSource);
 }

@@ -34,10 +34,10 @@ typedef ProviderFactory = Future<StorageProvider> Function();
 /// run the same suite in their respective test environments; the suite
 /// itself contains no platform-conditional logic.
 void storageProviderConformanceTests(
-  final String backendName, {
-  required final ProviderFactory create,
-  final bool supportsSync = false,
-  final bool supportsRestore = true,
+  String backendName, {
+  required ProviderFactory create,
+  bool supportsSync = false,
+  bool supportsRestore = true,
 }) {
   group('$backendName conformance', () {
     late StorageProvider provider;
@@ -86,7 +86,7 @@ void storageProviderConformanceTests(
       await provider.createFile('conf/list/b.json', '2');
 
       final entries = await provider.listDirectory('conf/list');
-      final names = entries.map((final e) => e.name.split('/').last).toSet();
+      final names = entries.map((e) => e.name.split('/').last).toSet();
       expect(names, containsAll(<String>['a.json', 'b.json']));
     });
 

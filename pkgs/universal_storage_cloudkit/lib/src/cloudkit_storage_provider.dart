@@ -10,8 +10,8 @@ import 'cloudkit_payload_too_large_exception.dart';
 /// CloudKit-backed storage provider for Universal Storage.
 class CloudKitStorageProvider extends StorageProvider implements RemoteEngine {
   CloudKitStorageProvider({
-    final CloudKitBridge? bridge,
-    final _LocalMirrorStore Function()? localMirrorFactory,
+    CloudKitBridge? bridge,
+    _LocalMirrorStore Function()? localMirrorFactory,
     this._fallbackResolver,
   }) : _bridge = bridge ?? CloudKitBridgePlatform.instance,
        _localMirrorFactory = localMirrorFactory ?? _defaultLocalMirrorFactory;
@@ -43,7 +43,7 @@ class CloudKitStorageProvider extends StorageProvider implements RemoteEngine {
       declaredCapabilities;
 
   @override
-  Future<void> initWithConfig(final StorageConfig config) async {
+  Future<void> initWithConfig(StorageConfig config) async {
     if (config is! CloudKitConfig) {
       throw ArgumentError('Expected CloudKitConfig, got ${config.runtimeType}');
     }
@@ -91,9 +91,9 @@ class CloudKitStorageProvider extends StorageProvider implements RemoteEngine {
 
   @override
   Future<FileOperationResult> createFile(
-    final String filePath,
-    final String content, {
-    final String? commitMessage,
+    String filePath,
+    String content, {
+    String? commitMessage,
   }) {
     if (_delegatingToFallback) {
       return _fallback!.createFile(
@@ -112,7 +112,7 @@ class CloudKitStorageProvider extends StorageProvider implements RemoteEngine {
   }
 
   @override
-  Future<String?> getFile(final String filePath) async {
+  Future<String?> getFile(String filePath) async {
     if (_delegatingToFallback) {
       return _fallback!.getFile(filePath);
     }
@@ -129,9 +129,9 @@ class CloudKitStorageProvider extends StorageProvider implements RemoteEngine {
 
   @override
   Future<FileOperationResult> updateFile(
-    final String filePath,
-    final String content, {
-    final String? commitMessage,
+    String filePath,
+    String content, {
+    String? commitMessage,
   }) {
     if (_delegatingToFallback) {
       return _fallback!.updateFile(
@@ -151,8 +151,8 @@ class CloudKitStorageProvider extends StorageProvider implements RemoteEngine {
 
   @override
   Future<FileOperationResult> deleteFile(
-    final String filePath, {
-    final String? commitMessage,
+    String filePath, {
+    String? commitMessage,
   }) {
     if (_delegatingToFallback) {
       return _fallback!.deleteFile(filePath, commitMessage: commitMessage);
@@ -167,7 +167,7 @@ class CloudKitStorageProvider extends StorageProvider implements RemoteEngine {
   }
 
   @override
-  Future<List<FileEntry>> listDirectory(final String directoryPath) async {
+  Future<List<FileEntry>> listDirectory(String directoryPath) async {
     if (_delegatingToFallback) {
       return _fallback!.listDirectory(directoryPath);
     }
@@ -186,7 +186,7 @@ class CloudKitStorageProvider extends StorageProvider implements RemoteEngine {
   }
 
   @override
-  Future<void> restore(final String filePath, {final String? versionId}) async {
+  Future<void> restore(String filePath, {String? versionId}) async {
     if (_delegatingToFallback) {
       await _fallback!.restore(filePath, versionId: versionId);
       return;
@@ -199,8 +199,8 @@ class CloudKitStorageProvider extends StorageProvider implements RemoteEngine {
 
   @override
   Future<void> sync({
-    final String? pullMergeStrategy,
-    final String? pushConflictStrategy,
+    String? pullMergeStrategy,
+    String? pushConflictStrategy,
   }) async {
     if (_delegatingToFallback) {
       if (!(_fallback?.supportsSync ?? false)) {
@@ -284,7 +284,7 @@ class CloudKitStorageProvider extends StorageProvider implements RemoteEngine {
     _delegatingToFallback = false;
   }
 
-  Future<void> _initializeLocalMirror(final CloudKitConfig config) async {
+  Future<void> _initializeLocalMirror(CloudKitConfig config) async {
     final localConfig = config.localMirrorConfig;
     if (localConfig == null || localConfig.isEmpty) {
       throw const ConfigurationException(
@@ -299,8 +299,8 @@ class CloudKitStorageProvider extends StorageProvider implements RemoteEngine {
   }
 
   Future<void> _activateFallbackOrThrow({
-    required final String reason,
-    final bool isUnsupported = false,
+    required String reason,
+    bool isUnsupported = false,
   }) async {
     final config = _config;
     if (config == null) {
@@ -330,8 +330,8 @@ class CloudKitStorageProvider extends StorageProvider implements RemoteEngine {
   }
 
   FileOperationResult _resultFromRecord(
-    final CloudKitRecord record, {
-    required final bool created,
+    CloudKitRecord record, {
+    required bool created,
   }) {
     final metadata = <String, dynamic>{
       'provider': 'cloudkit',
@@ -355,8 +355,8 @@ class CloudKitStorageProvider extends StorageProvider implements RemoteEngine {
   }
 
   Future<FileOperationResult> _createRemote(
-    final String filePath,
-    final String content,
+    String filePath,
+    String content,
   ) async {
     final normalizedPath = _normalizePath(filePath);
     final existing = await _fetchRemoteRecordByPath(normalizedPath);
@@ -372,8 +372,8 @@ class CloudKitStorageProvider extends StorageProvider implements RemoteEngine {
   }
 
   Future<FileOperationResult> _updateRemote(
-    final String filePath,
-    final String content,
+    String filePath,
+    String content,
   ) async {
     final normalizedPath = _normalizePath(filePath);
     final existing = await _fetchRemoteRecordByPath(normalizedPath);
@@ -390,7 +390,7 @@ class CloudKitStorageProvider extends StorageProvider implements RemoteEngine {
     return _resultFromRecord(record, created: false);
   }
 
-  Future<FileOperationResult> _deleteRemote(final String filePath) async {
+  Future<FileOperationResult> _deleteRemote(String filePath) async {
     final normalizedPath = _normalizePath(filePath);
     final existing = await _fetchRemoteRecordByPath(normalizedPath);
     if (existing == null) {
@@ -417,9 +417,9 @@ class CloudKitStorageProvider extends StorageProvider implements RemoteEngine {
   }
 
   Future<FileOperationResult> _createLocal(
-    final String filePath,
-    final String content, {
-    required final String? commitMessage,
+    String filePath,
+    String content, {
+    required String? commitMessage,
   }) async {
     final result = await _localMirror!.createFile(
       filePath,
@@ -439,9 +439,9 @@ class CloudKitStorageProvider extends StorageProvider implements RemoteEngine {
   }
 
   Future<FileOperationResult> _updateLocal(
-    final String filePath,
-    final String content, {
-    required final String? commitMessage,
+    String filePath,
+    String content, {
+    required String? commitMessage,
   }) async {
     final result = await _localMirror!.updateFile(
       filePath,
@@ -461,8 +461,8 @@ class CloudKitStorageProvider extends StorageProvider implements RemoteEngine {
   }
 
   Future<FileOperationResult> _deleteLocal(
-    final String filePath, {
-    required final String? commitMessage,
+    String filePath, {
+    required String? commitMessage,
   }) async {
     final normalizedPath = _normalizePath(filePath);
     final result = await _localMirror!.deleteFile(
@@ -474,7 +474,7 @@ class CloudKitStorageProvider extends StorageProvider implements RemoteEngine {
     return result;
   }
 
-  Future<CloudKitRecord?> _fetchRemoteRecordByPath(final String path) async {
+  Future<CloudKitRecord?> _fetchRemoteRecordByPath(String path) async {
     try {
       return await _bridge.fetchRecordByPath(path);
     } on CloudKitBridgeException catch (error) {
@@ -485,7 +485,7 @@ class CloudKitStorageProvider extends StorageProvider implements RemoteEngine {
     }
   }
 
-  Future<void> _saveRemoteRecord(final CloudKitRecord record) async {
+  Future<void> _saveRemoteRecord(CloudKitRecord record) async {
     try {
       await _bridge.saveRecord(record);
     } on CloudKitBridgeException catch (error) {
@@ -496,7 +496,7 @@ class CloudKitStorageProvider extends StorageProvider implements RemoteEngine {
     }
   }
 
-  Future<List<CloudKitRecord>> _queryRemotePrefix(final String prefix) async {
+  Future<List<CloudKitRecord>> _queryRemotePrefix(String prefix) async {
     try {
       return await _bridge.queryByPathPrefix(prefix);
     } on CloudKitBridgeException catch (error) {
@@ -508,7 +508,7 @@ class CloudKitStorageProvider extends StorageProvider implements RemoteEngine {
   }
 
   Future<CloudKitDelta> _fetchRemoteChanges({
-    required final String? serverChangeToken,
+    required String? serverChangeToken,
   }) async {
     try {
       return await _bridge.fetchChanges(serverChangeToken: serverChangeToken);
@@ -521,8 +521,8 @@ class CloudKitStorageProvider extends StorageProvider implements RemoteEngine {
   }
 
   StorageException _mapBridgeException(
-    final CloudKitBridgeException error, {
-    required final String defaultMessage,
+    CloudKitBridgeException error, {
+    required String defaultMessage,
   }) {
     final message = error.message.trim().isEmpty
         ? defaultMessage
@@ -547,9 +547,9 @@ class CloudKitStorageProvider extends StorageProvider implements RemoteEngine {
   }
 
   CloudKitRecord _buildRecord(
-    final String normalizedPath,
-    final String content, {
-    final String? changeTag,
+    String normalizedPath,
+    String content, {
+    String? changeTag,
   }) {
     final payloadBytes = utf8.encode(content).length;
     if (payloadBytes > _config!.maxInlineBytes) {
@@ -574,8 +574,8 @@ class CloudKitStorageProvider extends StorageProvider implements RemoteEngine {
   }
 
   Future<String?> _applyRemoteUpdate(
-    final CloudKitRecord record,
-    final ConflictResolutionStrategy strategy,
+    CloudKitRecord record,
+    ConflictResolutionStrategy strategy,
   ) async {
     final localContent = await _localMirror!.getFile(record.path);
     if (localContent == null) {
@@ -649,8 +649,8 @@ class CloudKitStorageProvider extends StorageProvider implements RemoteEngine {
   }
 
   Future<String?> _applyRemoteDeletion(
-    final String remotePath,
-    final ConflictResolutionStrategy strategy,
+    String remotePath,
+    ConflictResolutionStrategy strategy,
   ) async {
     final localContent = await _localMirror!.getFile(remotePath);
     if (localContent == null) {
@@ -692,13 +692,13 @@ class CloudKitStorageProvider extends StorageProvider implements RemoteEngine {
   }
 
   Future<List<String>> _pushLocalDiff(
-    final ConflictResolutionStrategy strategy,
+    ConflictResolutionStrategy strategy,
   ) async {
     final localFiles = await _readLocalMirrorFiles();
     final conflicts = <String>[];
 
     final deletedPaths = _mirrorState.manifest.keys
-        .where((final key) => !localFiles.containsKey(key))
+        .where((key) => !localFiles.containsKey(key))
         .toList(growable: false);
 
     for (final entry in localFiles.entries) {
@@ -765,8 +765,8 @@ class CloudKitStorageProvider extends StorageProvider implements RemoteEngine {
   }
 
   List<FileEntry> _immediateChildrenFromRecords({
-    required final String normalizedPrefix,
-    required final List<CloudKitRecord> records,
+    required String normalizedPrefix,
+    required List<CloudKitRecord> records,
   }) {
     final entries = <String, FileEntry>{};
     final directoryPrefix = normalizedPrefix.isEmpty
@@ -793,7 +793,7 @@ class CloudKitStorageProvider extends StorageProvider implements RemoteEngine {
 
       final segments = relative
           .split('/')
-          .where((final e) => e.isNotEmpty)
+          .where((e) => e.isNotEmpty)
           .toList();
       if (segments.isEmpty) {
         continue;
@@ -820,7 +820,7 @@ class CloudKitStorageProvider extends StorageProvider implements RemoteEngine {
     }
 
     final values = entries.values.toList()
-      ..sort((final a, final b) => a.name.compareTo(b.name));
+      ..sort((a, b) => a.name.compareTo(b.name));
     return values;
   }
 
@@ -967,7 +967,7 @@ class CloudKitStorageProvider extends StorageProvider implements RemoteEngine {
     }
   }
 
-  String _normalizePath(final String filePath) {
+  String _normalizePath(String filePath) {
     final normalized = filePath
         .replaceAll(r'\', '/')
         .replaceAll(RegExp('/+'), '/')
@@ -980,7 +980,7 @@ class CloudKitStorageProvider extends StorageProvider implements RemoteEngine {
     return normalized;
   }
 
-  String _normalizePrefix(final String directoryPath) {
+  String _normalizePrefix(String directoryPath) {
     final trimmed = directoryPath.trim();
     if (trimmed.isEmpty || trimmed == '.') {
       return '';
@@ -992,13 +992,13 @@ class CloudKitStorageProvider extends StorageProvider implements RemoteEngine {
         .replaceAll(RegExp(r'/+$'), '');
   }
 
-  ConflictResolutionStrategy _parseStrategy(final String? raw) {
+  ConflictResolutionStrategy _parseStrategy(String? raw) {
     if (raw == null || raw.trim().isEmpty) {
       return ConflictResolutionStrategy.clientAlwaysRight;
     }
 
     return ConflictResolutionStrategy.values.firstWhere(
-      (final strategy) => strategy.name == raw,
+      (strategy) => strategy.name == raw,
       orElse: () => ConflictResolutionStrategy.clientAlwaysRight,
     );
   }
@@ -1036,7 +1036,7 @@ class _LocalMirrorStore {
   late FileSystemConfig _config;
   var _initialized = false;
 
-  Future<void> init(final FileSystemConfig config) async {
+  Future<void> init(FileSystemConfig config) async {
     _config = config;
     final root = Directory(_config.basePath);
     if (!root.existsSync()) {
@@ -1046,9 +1046,9 @@ class _LocalMirrorStore {
   }
 
   Future<FileOperationResult> createFile(
-    final String filePath,
-    final String content, {
-    final String? commitMessage,
+    String filePath,
+    String content, {
+    String? commitMessage,
   }) async {
     _ensureInitialized();
     final normalizedPath = _normalizePath(filePath);
@@ -1065,9 +1065,9 @@ class _LocalMirrorStore {
   }
 
   Future<FileOperationResult> updateFile(
-    final String filePath,
-    final String content, {
-    final String? commitMessage,
+    String filePath,
+    String content, {
+    String? commitMessage,
   }) async {
     _ensureInitialized();
     final normalizedPath = _normalizePath(filePath);
@@ -1080,8 +1080,8 @@ class _LocalMirrorStore {
   }
 
   Future<FileOperationResult> deleteFile(
-    final String filePath, {
-    final String? commitMessage,
+    String filePath, {
+    String? commitMessage,
   }) async {
     _ensureInitialized();
     final normalizedPath = _normalizePath(filePath);
@@ -1093,7 +1093,7 @@ class _LocalMirrorStore {
     return FileOperationResult.deleted(path: normalizedPath);
   }
 
-  Future<String?> getFile(final String filePath) async {
+  Future<String?> getFile(String filePath) async {
     _ensureInitialized();
     final normalizedPath = _normalizePath(filePath);
     final file = _resolveFile(normalizedPath);
@@ -1103,7 +1103,7 @@ class _LocalMirrorStore {
     return file.readAsString();
   }
 
-  Future<List<FileEntry>> listDirectory(final String directoryPath) async {
+  Future<List<FileEntry>> listDirectory(String directoryPath) async {
     _ensureInitialized();
     final normalizedPath = _normalizeDirectory(directoryPath);
     final directory = normalizedPath.isEmpty
@@ -1126,7 +1126,7 @@ class _LocalMirrorStore {
         ),
       );
     }
-    entries.sort((final a, final b) => a.name.compareTo(b.name));
+    entries.sort((a, b) => a.name.compareTo(b.name));
     return entries;
   }
 
@@ -1134,7 +1134,7 @@ class _LocalMirrorStore {
     _initialized = false;
   }
 
-  File _resolveFile(final String normalizedPath) =>
+  File _resolveFile(String normalizedPath) =>
       File(path.join(_config.basePath, normalizedPath));
 
   void _ensureInitialized() {
@@ -1145,7 +1145,7 @@ class _LocalMirrorStore {
     }
   }
 
-  String _normalizePath(final String filePath) {
+  String _normalizePath(String filePath) {
     final normalized = filePath
         .replaceAll(r'\', '/')
         .replaceAll(RegExp('/+'), '/')
@@ -1158,7 +1158,7 @@ class _LocalMirrorStore {
     return normalized;
   }
 
-  String _normalizeDirectory(final String directoryPath) {
+  String _normalizeDirectory(String directoryPath) {
     final trimmed = directoryPath.trim();
     if (trimmed.isEmpty || trimmed == '.') {
       return '';
@@ -1181,23 +1181,23 @@ class _MirrorState {
   final Map<String, _ManifestEntry> manifest;
 
   _MirrorState copyWith({
-    final String? serverChangeToken,
-    final Map<String, _ManifestEntry>? manifest,
+    String? serverChangeToken,
+    Map<String, _ManifestEntry>? manifest,
   }) => _MirrorState(
     serverChangeToken: serverChangeToken ?? this.serverChangeToken,
     manifest: manifest ?? this.manifest,
   );
 
   _MirrorState withManifestEntry(
-    final String path,
-    final _ManifestEntry entry,
+    String path,
+    _ManifestEntry entry,
   ) {
     final next = Map<String, _ManifestEntry>.from(manifest);
     next[path] = entry;
     return copyWith(manifest: next);
   }
 
-  _MirrorState withoutManifestEntry(final String path) {
+  _MirrorState withoutManifestEntry(String path) {
     final next = Map<String, _ManifestEntry>.from(manifest);
     next.remove(path);
     return copyWith(manifest: next);

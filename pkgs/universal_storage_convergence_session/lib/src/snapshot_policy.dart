@@ -34,11 +34,11 @@ const Duration defaultMinInterval = Duration(minutes: 5);
 /// [maxLogOps] / [minInterval] default to the shared 512-ops / 5-minutes
 /// defaults; `null` disables that trigger entirely.
 bool shouldCompact({
-  required final int logLength,
-  required final DateTime now,
-  final DateTime? lastCompactionAt,
-  final int? maxLogOps = defaultMaxLogOps,
-  final Duration? minInterval = defaultMinInterval,
+  required int logLength,
+  required DateTime now,
+  DateTime? lastCompactionAt,
+  int? maxLogOps = defaultMaxLogOps,
+  Duration? minInterval = defaultMinInterval,
 }) {
   if (maxLogOps != null && logLength > maxLogOps) return true;
   if (logLength == 0) return false;

@@ -46,34 +46,34 @@ class _FakeAppleApiClient implements CloudKitAppleApiClient {
       <String, CloudKitAppleRecordData>{};
 
   @override
-  Future<void> initialize(final CloudKitAppleConfigData config) async {
+  Future<void> initialize(CloudKitAppleConfigData config) async {
     initialized = true;
   }
 
   @override
-  Future<CloudKitAppleRecordData?> fetchRecordByPath(final String path) async =>
+  Future<CloudKitAppleRecordData?> fetchRecordByPath(String path) async =>
       recordsByPath[path];
 
   @override
-  Future<void> saveRecord(final CloudKitAppleRecordData record) async {
+  Future<void> saveRecord(CloudKitAppleRecordData record) async {
     recordsByPath[record.path] = record;
   }
 
   @override
-  Future<void> deleteRecord(final String recordName) async {
+  Future<void> deleteRecord(String recordName) async {
     recordsByPath.removeWhere(
-      (final _, final record) => record.recordName == recordName,
+      (_, record) => record.recordName == recordName,
     );
   }
 
   @override
   Future<List<CloudKitAppleRecordData>> queryByPathPrefix(
-    final String pathPrefix,
+    String pathPrefix,
   ) async => recordsByPath.values.toList(growable: false);
 
   @override
   Future<CloudKitAppleDeltaData> fetchChanges(
-    final String? serverChangeToken,
+    String? serverChangeToken,
   ) async => CloudKitAppleDeltaData(nextServerChangeToken: 'next-token');
 
   @override

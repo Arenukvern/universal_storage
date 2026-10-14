@@ -8,7 +8,7 @@ library;
 import 'mesh_kv_store.dart';
 
 /// Always throws: no persistence backing is available on this platform.
-MeshKeyValueStore createMeshKvStore(final String root) =>
+MeshKeyValueStore createMeshKvStore(String root) =>
     throw UnsupportedError(
       'Mesh replica persistence is not supported on this platform '
       '(no file or web backing available).',

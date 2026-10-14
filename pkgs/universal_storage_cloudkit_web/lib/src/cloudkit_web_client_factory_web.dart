@@ -31,7 +31,7 @@ class CloudKitJsInteropClient implements CloudKitWebClient {
   JSObject? _database;
 
   @override
-  Future<void> initialize(final CloudKitBridgeConfig config) async {
+  Future<void> initialize(CloudKitBridgeConfig config) async {
     final cloudKit = _resolveCloudKitGlobal();
     _cloudKit = cloudKit;
     _config = config;
@@ -49,7 +49,7 @@ class CloudKitJsInteropClient implements CloudKitWebClient {
   }
 
   @override
-  Future<CloudKitRecord?> fetchRecordByPath(final String path) async {
+  Future<CloudKitRecord?> fetchRecordByPath(String path) async {
     _ensureInitialized();
     if (_mode == _CloudKitClientMode.adapter) {
       final response = await _invokeAdapter(
@@ -70,7 +70,7 @@ class CloudKitJsInteropClient implements CloudKitWebClient {
   }
 
   @override
-  Future<void> saveRecord(final CloudKitRecord record) async {
+  Future<void> saveRecord(CloudKitRecord record) async {
     _ensureInitialized();
     if (_mode == _CloudKitClientMode.adapter) {
       await _invokeAdapter('saveRecord', record.toMap());
@@ -86,7 +86,7 @@ class CloudKitJsInteropClient implements CloudKitWebClient {
   }
 
   @override
-  Future<void> deleteRecord(final String recordName) async {
+  Future<void> deleteRecord(String recordName) async {
     _ensureInitialized();
     if (_mode == _CloudKitClientMode.adapter) {
       await _invokeAdapter('deleteRecord', <String, Object?>{
@@ -119,7 +119,7 @@ class CloudKitJsInteropClient implements CloudKitWebClient {
 
   @override
   Future<List<CloudKitRecord>> queryByPathPrefix(
-    final String pathPrefix,
+    String pathPrefix,
   ) async {
     _ensureInitialized();
     if (_mode == _CloudKitClientMode.adapter) {
@@ -133,19 +133,19 @@ class CloudKitJsInteropClient implements CloudKitWebClient {
       return response
           .whereType<Map>()
           .map(
-            (final item) => _toCloudKitRecord(Map<String, Object?>.from(item)),
+            (item) => _toCloudKitRecord(Map<String, Object?>.from(item)),
           )
           .toList(growable: false);
     }
 
     final records = await _queryNative(path: pathPrefix, exactMatch: false);
     final output = records.map(_toCloudKitRecord).toList(growable: false)
-      ..sort((final a, final b) => a.path.compareTo(b.path));
+      ..sort((a, b) => a.path.compareTo(b.path));
     return output;
   }
 
   @override
-  Future<CloudKitDelta> fetchChanges({final String? serverChangeToken}) async {
+  Future<CloudKitDelta> fetchChanges({String? serverChangeToken}) async {
     _ensureInitialized();
     if (_mode == _CloudKitClientMode.adapter) {
       final response = await _invokeAdapter('fetchChanges', <String, Object?>{
@@ -200,7 +200,7 @@ class CloudKitJsInteropClient implements CloudKitWebClient {
     _pathByRecordName.clear();
   }
 
-  Future<void> _initializeNative(final CloudKitBridgeConfig config) async {
+  Future<void> _initializeNative(CloudKitBridgeConfig config) async {
     final cloudKit = _cloudKit;
     if (cloudKit == null) {
       throw const CloudKitBridgeException(
@@ -288,9 +288,9 @@ class CloudKitJsInteropClient implements CloudKitWebClient {
   }
 
   Future<List<Map<String, Object?>>> _queryNative({
-    required final String path,
-    required final bool exactMatch,
-    final int? limit,
+    required String path,
+    required bool exactMatch,
+    int? limit,
   }) async {
     final comparators = exactMatch
         ? const <String>['EQUALS', 'EQUAL']
@@ -336,7 +336,7 @@ class CloudKitJsInteropClient implements CloudKitWebClient {
     return const <Map<String, Object?>>[];
   }
 
-  List<Map<String, Object?>> _extractRecordMaps(final Object? response) {
+  List<Map<String, Object?>> _extractRecordMaps(Object? response) {
     if (response is List) {
       return response
           .whereType<Map>()
@@ -358,8 +358,8 @@ class CloudKitJsInteropClient implements CloudKitWebClient {
   }
 
   CloudKitDelta _toCloudKitDelta(
-    final Object? response, {
-    required final String? fallbackToken,
+    Object? response, {
+    required String? fallbackToken,
   }) {
     if (response is! Map) {
       return CloudKitDelta(nextServerChangeToken: fallbackToken);
@@ -401,7 +401,7 @@ class CloudKitJsInteropClient implements CloudKitWebClient {
     );
   }
 
-  String? _pathFromDeletion(final Object? entry) {
+  String? _pathFromDeletion(Object? entry) {
     if (entry is String) {
       if (entry.contains('/')) {
         return entry;
@@ -425,7 +425,7 @@ class CloudKitJsInteropClient implements CloudKitWebClient {
     return null;
   }
 
-  CloudKitRecord _toCloudKitRecord(final Map<String, Object?> recordMap) {
+  CloudKitRecord _toCloudKitRecord(Map<String, Object?> recordMap) {
     final fields = _mapOrEmpty(recordMap['fields']);
     final recordName =
         _stringOrNull(recordMap['recordName']) ??
@@ -468,7 +468,7 @@ class CloudKitJsInteropClient implements CloudKitWebClient {
     );
   }
 
-  Map<String, Object?> _toNativeRecordPayload(final CloudKitRecord record) =>
+  Map<String, Object?> _toNativeRecordPayload(CloudKitRecord record) =>
       <String, Object?>{
         'recordName': record.recordName,
         'recordType': _config!.recordType,
@@ -487,7 +487,7 @@ class CloudKitJsInteropClient implements CloudKitWebClient {
       };
 
   Map<String, Object?> _nativeConfigurePayload(
-    final CloudKitBridgeConfig config,
+    CloudKitBridgeConfig config,
   ) {
     final environment = config.environment.name;
     return <String, Object?>{
@@ -510,7 +510,7 @@ class CloudKitJsInteropClient implements CloudKitWebClient {
     'zoneName': _config!.zoneName,
   };
 
-  void _throwIfAuthSetupFailed(final Object? response) {
+  void _throwIfAuthSetupFailed(Object? response) {
     if (response is! Map) {
       return;
     }
@@ -539,7 +539,7 @@ class CloudKitJsInteropClient implements CloudKitWebClient {
     }
   }
 
-  bool _hasAdapterSurface(final JSObject cloudKit) =>
+  bool _hasAdapterSurface(JSObject cloudKit) =>
       _hasMethod(cloudKit, 'initialize') &&
       _hasMethod(cloudKit, 'fetchRecordByPath') &&
       _hasMethod(cloudKit, 'saveRecord') &&
@@ -547,10 +547,10 @@ class CloudKitJsInteropClient implements CloudKitWebClient {
       _hasMethod(cloudKit, 'queryByPathPrefix') &&
       _hasMethod(cloudKit, 'fetchChanges');
 
-  bool _hasDatabaseMethod(final String method) =>
+  bool _hasDatabaseMethod(String method) =>
       _database != null && _hasMethod(_database!, method);
 
-  bool _hasMethod(final JSObject target, final String method) =>
+  bool _hasMethod(JSObject target, String method) =>
       target.has(method);
 
   JSObject _resolveCloudKitGlobal() {
@@ -572,8 +572,8 @@ class CloudKitJsInteropClient implements CloudKitWebClient {
   }
 
   Future<Object?> _invokeAdapter(
-    final String method, [
-    final Object? args,
+    String method, [
+    Object? args,
   ]) async {
     final cloudKit = _cloudKit;
     if (cloudKit == null) {
@@ -586,8 +586,8 @@ class CloudKitJsInteropClient implements CloudKitWebClient {
   }
 
   Future<Object?> _invokeNativeDatabase(
-    final String method, [
-    final Object? args,
+    String method, [
+    Object? args,
   ]) async {
     final database = _database;
     if (database == null) {
@@ -611,10 +611,10 @@ class CloudKitJsInteropClient implements CloudKitWebClient {
   }
 
   Future<Object?> _invokeTarget(
-    final JSObject target,
-    final String method, {
-    final Object? args,
-    final bool dartifyResult = true,
+    JSObject target,
+    String method, {
+    Object? args,
+    bool dartifyResult = true,
   }) async {
     if (!_hasMethod(target, method)) {
       throw CloudKitBridgeException(
@@ -640,9 +640,9 @@ class CloudKitJsInteropClient implements CloudKitWebClient {
   }
 
   JSAny? _callJsMethod(
-    final JSObject target,
-    final String method,
-    final Object? args,
+    JSObject target,
+    String method,
+    Object? args,
   ) {
     try {
       return args == null
@@ -655,7 +655,7 @@ class CloudKitJsInteropClient implements CloudKitWebClient {
     }
   }
 
-  bool _isThenable(final JSAny? value) {
+  bool _isThenable(JSAny? value) {
     if (value == null) {
       return false;
     }
@@ -666,7 +666,7 @@ class CloudKitJsInteropClient implements CloudKitWebClient {
     }
   }
 
-  Object? _normalizeResult(final Object? result) {
+  Object? _normalizeResult(Object? result) {
     if (result == null || result is num || result is bool || result is String) {
       return result;
     }
@@ -681,8 +681,8 @@ class CloudKitJsInteropClient implements CloudKitWebClient {
   }
 
   CloudKitBridgeException _mapWebError({
-    required final String method,
-    required final Object error,
+    required String method,
+    required Object error,
   }) {
     if (error is CloudKitBridgeException) {
       return error;
@@ -736,11 +736,11 @@ class CloudKitJsInteropClient implements CloudKitWebClient {
     );
   }
 
-  static Map<String, Object?> _mapOrEmpty(final Object? value) => value is Map
+  static Map<String, Object?> _mapOrEmpty(Object? value) => value is Map
       ? Map<String, Object?>.from(value)
       : const <String, Object?>{};
 
-  static Object? _fieldValue(final Object? raw) {
+  static Object? _fieldValue(Object? raw) {
     if (raw is Map) {
       final map = Map<String, Object?>.from(raw);
       if (map.containsKey('value')) {
@@ -750,7 +750,7 @@ class CloudKitJsInteropClient implements CloudKitWebClient {
     return raw;
   }
 
-  static String? _stringOrNull(final Object? value) {
+  static String? _stringOrNull(Object? value) {
     if (value == null) {
       return null;
     }
@@ -758,7 +758,7 @@ class CloudKitJsInteropClient implements CloudKitWebClient {
     return text.isEmpty ? null : text;
   }
 
-  static int _intOrZero(final Object? value) {
+  static int _intOrZero(Object? value) {
     if (value is int) {
       return value;
     }
@@ -771,7 +771,7 @@ class CloudKitJsInteropClient implements CloudKitWebClient {
     return 0;
   }
 
-  static DateTime _parseDate(final Object? value) {
+  static DateTime _parseDate(Object? value) {
     if (value is DateTime) {
       return value.toUtc();
     }

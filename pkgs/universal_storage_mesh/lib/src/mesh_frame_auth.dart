@@ -41,7 +41,7 @@ final class MeshFrameSigner
   static final _ed25519 = Ed25519();
 
   @override
-  Future<Uint8List> sign(final MeshEphemeralFrame frame) async {
+  Future<Uint8List> sign(MeshEphemeralFrame frame) async {
     final signature = await _ed25519.sign(
       frame.signingInput(),
       keyPair: identityKeyPair,
@@ -54,7 +54,7 @@ final class MeshFrameSigner
     if (!publishIdentityKey) return Future<List<int>?>.value();
     // Race-safe: concurrent callers share one extraction future.
     return _identityKeyFuture ??= identityKeyPair.extractPublicKey().then(
-      (final key) => key.bytes,
+      (key) => key.bytes,
     );
   }
 }
@@ -113,7 +113,7 @@ final class MeshFrameSigner
 /// band, retiring TOFU for pre-shared peers entirely.
 final class MeshFrameAuthenticator implements EphemeralFrameAuthenticator {
   MeshFrameAuthenticator({
-    final Map<String, List<int>> identityKeys = const {},
+    Map<String, List<int>> identityKeys = const {},
     this.trustOnFirstUse = true,
     this.peerRegistry,
   }) : _identityKeys = {...identityKeys};
@@ -146,14 +146,14 @@ final class MeshFrameAuthenticator implements EphemeralFrameAuthenticator {
   /// are the one exception, see the class trust model; they only ever
   /// fill a MISSING pin, never overwrite one).
   void registerIdentityKey({
-    required final String peerId,
-    required final List<int> identityKey,
+    required String peerId,
+    required List<int> identityKey,
   }) {
     _identityKeys[peerId] = List<int>.of(identityKey);
   }
 
   @override
-  Future<bool> verify(final MeshEphemeralFrame frame) async {
+  Future<bool> verify(MeshEphemeralFrame frame) async {
     final signature = frame.signature;
     if (signature == null) return false;
     // Shape guards before handing anything to the primitive: the Ed25519
@@ -182,7 +182,7 @@ final class MeshFrameAuthenticator implements EphemeralFrameAuthenticator {
   /// payload ride-along; `null` when absent or malformed. Opaque
   /// ride-along data — verification against it is the only thing that
   /// makes it meaningful.
-  static List<int>? _claimedIdentityKey(final MeshEphemeralFrame frame) {
+  static List<int>? _claimedIdentityKey(MeshEphemeralFrame frame) {
     final claimed = frame.payload[kIdentityKeyPayloadKey];
     if (claimed is! String || claimed.isEmpty) return null;
     try {
@@ -196,9 +196,9 @@ final class MeshFrameAuthenticator implements EphemeralFrameAuthenticator {
   /// primitive (malformed point material in an attacker-controlled
   /// claimed key, say) mean "not authentic", never "abort".
   Future<bool> _verifyWithKey(
-    final MeshEphemeralFrame frame,
-    final List<int> signature,
-    final List<int> identityKey,
+    MeshEphemeralFrame frame,
+    List<int> signature,
+    List<int> identityKey,
   ) async {
     try {
       return await _ed25519.verify(
@@ -226,7 +226,7 @@ final class MeshFrameAuthenticator implements EphemeralFrameAuthenticator {
   /// (v1 trust model). Fills a MISSING pin only — [verify] routes
   /// already-pinned peers through the pinned path, so a bind can never
   /// overwrite one.
-  Future<void> _bind(final String peerId, final List<int> identityKey) async {
+  Future<void> _bind(String peerId, List<int> identityKey) async {
     _identityKeys[peerId] = List<int>.of(identityKey);
     final registry = peerRegistry;
     if (registry == null) return;

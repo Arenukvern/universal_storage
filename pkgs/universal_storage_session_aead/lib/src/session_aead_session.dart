@@ -57,12 +57,12 @@ final class SessionAeadSession implements MeshSession {
   /// authenticated; the raw session is left for the caller to close (see
   /// [SessionAeadTransport.onHandshakeFailure] for the wrapper that does).
   static Future<SessionAeadSession> start({
-    required final MeshSession raw,
-    required final SimpleKeyPair identityKeyPair,
-    required final String selfId,
-    required final String remotePeerId,
-    final List<int>? expectedPeerIdentityKey,
-    final bool trustOnFirstUse = false,
+    required MeshSession raw,
+    required SimpleKeyPair identityKeyPair,
+    required String selfId,
+    required String remotePeerId,
+    List<int>? expectedPeerIdentityKey,
+    bool trustOnFirstUse = false,
   }) async {
     final wire = _Wire(raw);
     try {
@@ -141,11 +141,11 @@ final class SessionAeadSession implements MeshSession {
   /// claimed peer id comes off the wire; the caller's registry decides
   /// whether it is known.
   static Future<SessionAeadSession> accept({
-    required final MeshSession raw,
-    required final SimpleKeyPair identityKeyPair,
-    required final String selfId,
-    final Map<String, List<int>> pinnedIdentityKeys = const {},
-    final bool trustOnFirstUse = false,
+    required MeshSession raw,
+    required SimpleKeyPair identityKeyPair,
+    required String selfId,
+    Map<String, List<int>> pinnedIdentityKeys = const {},
+    bool trustOnFirstUse = false,
   }) async {
     final wire = _Wire(raw);
     try {
@@ -235,19 +235,19 @@ final class SessionAeadSession implements MeshSession {
     }
   }
 
-  static String _hex4(final List<int> bytes) => bytes
+  static String _hex4(List<int> bytes) => bytes
       .take(4)
-      .map((final b) => b.toRadixString(16).padLeft(2, '0'))
+      .map((b) => b.toRadixString(16).padLeft(2, '0'))
       .join();
 
   static Future<SessionCipher> _deriveCipher({
-    required final SimpleKeyPair ephemeral,
-    required final String selfId,
-    required final bool initiator,
-    required final String peerId,
-    required final Uint8List peerEphemeralKey,
-    required final Uint8List helloBody,
-    required final Uint8List replyBody,
+    required SimpleKeyPair ephemeral,
+    required String selfId,
+    required bool initiator,
+    required String peerId,
+    required Uint8List peerEphemeralKey,
+    required Uint8List helloBody,
+    required Uint8List replyBody,
   }) async {
     final shared = await SessionHandshakeCodec.sharedSecret(
       ownEphemeralKeyPair: ephemeral,
@@ -292,7 +292,7 @@ final class SessionAeadSession implements MeshSession {
   Stream<Uint8List> get inbound => _wire.tail;
 
   @override
-  Future<void> send(final Uint8List payload) =>
+  Future<void> send(Uint8List payload) =>
       _raw.send(_cipher.seal(payload));
 
   @override
@@ -307,9 +307,9 @@ final class SessionAeadSession implements MeshSession {
 /// messages to [receive]; afterwards it decrypts into the tail stream the
 /// consumer of [SessionAeadSession.inbound] reads.
 final class _Wire {
-  _Wire(final MeshSession raw) {
+  _Wire(MeshSession raw) {
     _subscription = raw.inbound.listen(
-      (final bytes) {
+      (bytes) {
         final cipher = _cipher;
         if (cipher == null) {
           final waiting = _waiting;
@@ -338,7 +338,7 @@ final class _Wire {
         );
         if (!_tail.isClosed) unawaited(_tail.close());
       },
-      onError: (final Object error) {
+      onError: (Object error) {
         final waiting = _waiting;
         _waiting = null;
         waiting?.completeError(error);
@@ -390,7 +390,7 @@ final class _Wire {
 
   /// Switches the wire from handshake routing to decryption, replaying
   /// any frames that arrived before the cipher existed.
-  void attach(final SessionCipher cipher) {
+  void attach(SessionCipher cipher) {
     _cipher = cipher;
     for (final bytes in List.of(_pending)) {
       _openInto(cipher, bytes);
@@ -398,7 +398,7 @@ final class _Wire {
     _pending.clear();
   }
 
-  void _openInto(final SessionCipher cipher, final Uint8List bytes) {
+  void _openInto(SessionCipher cipher, Uint8List bytes) {
     final opened = cipher.open(bytes);
     if (opened == null) {
       _dropped++;

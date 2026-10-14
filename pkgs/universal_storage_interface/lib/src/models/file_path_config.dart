@@ -12,7 +12,7 @@ extension type const FilePath(String path) {
   /// Creates a [FilePath] from JSON data.
   ///
   /// Expects the JSON data to be a string representing the file path.
-  factory FilePath.fromJson(final dynamic jsonData) {
+  factory FilePath.fromJson(dynamic jsonData) {
     final str = jsonDecodeString(jsonData);
     return FilePath(str);
   }
@@ -33,7 +33,7 @@ extension type const FilePathConfig(Map<String, dynamic> value) {
   ///
   /// Expects the JSON data to be a map containing 'path' and
   /// 'macOSBookmarkData' keys.
-  factory FilePathConfig.fromJson(final dynamic jsonData) {
+  factory FilePathConfig.fromJson(dynamic jsonData) {
     final map = jsonDecodeMap(jsonData);
     return FilePathConfig(map);
   }
@@ -43,8 +43,8 @@ extension type const FilePathConfig(Map<String, dynamic> value) {
   /// [path] is the file system path to the directory.
   /// [macOSBookmarkData] is the security-scoped bookmark for macOS persistence.
   factory FilePathConfig.create({
-    required final String path,
-    required final MacOSBookmark macOSBookmarkData,
+    required String path,
+    required MacOSBookmark macOSBookmarkData,
   }) => FilePathConfig({'path': path, 'macOSBookmarkData': macOSBookmarkData});
 
   /// Gets the file system path from the configuration.

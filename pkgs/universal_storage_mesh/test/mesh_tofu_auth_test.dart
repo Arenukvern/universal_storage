@@ -26,12 +26,12 @@ void main() {
   /// exactly what [MeshPresenceSession] sends when its signer is a
   /// [MeshFrameSigner].
   Future<MeshEphemeralFrame> signedFrame({
-    required final MeshPresenceTracker tracker,
-    required final SimpleKeyPair keyPair,
-    final MeshEphemeralEvent event = MeshEphemeralEvent.join,
-    final DateTime? now,
-    final bool rideAlong = true,
-    final Map<String, Object?>? extraPayload,
+    required MeshPresenceTracker tracker,
+    required SimpleKeyPair keyPair,
+    MeshEphemeralEvent event = MeshEphemeralEvent.join,
+    DateTime? now,
+    bool rideAlong = true,
+    Map<String, Object?>? extraPayload,
   }) async {
     final publicKey = await keyPair.extractPublicKey();
     final base = tracker.announce(
@@ -411,12 +411,12 @@ final class _FakeEndpoint implements EphemeralFrameTransport {
   Stream<MeshEphemeralFrame> get frames => _frames.stream;
 
   @override
-  Future<void> send(final MeshEphemeralFrame frame) async {
+  Future<void> send(MeshEphemeralFrame frame) async {
     sent.add(frame);
     _hub._deliverFrom(peerId, frame);
   }
 
-  void _receive(final MeshEphemeralFrame frame) {
+  void _receive(MeshEphemeralFrame frame) {
     _frames.add(frame);
   }
 
@@ -430,10 +430,10 @@ final class _FakeEndpoint implements EphemeralFrameTransport {
 final class _FakeHub {
   final Map<String, _FakeEndpoint> _endpoints = {};
 
-  _FakeEndpoint endpoint(final String peerId) =>
+  _FakeEndpoint endpoint(String peerId) =>
       _endpoints.putIfAbsent(peerId, () => _FakeEndpoint(peerId, this));
 
-  void _deliverFrom(final String from, final MeshEphemeralFrame frame) {
+  void _deliverFrom(String from, MeshEphemeralFrame frame) {
     for (final endpoint in _endpoints.values) {
       if (endpoint.peerId != from) endpoint._receive(frame);
     }

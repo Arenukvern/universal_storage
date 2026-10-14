@@ -11,9 +11,9 @@ final class StorageServiceKernelAdapter {
   final StorageNamespace namespace;
 
   Future<FileOperationResult> saveFile(
-    final String path,
-    final String content, {
-    final String? message,
+    String path,
+    String content, {
+    String? message,
   }) => kernel.write(
     namespace: namespace,
     path: path,
@@ -21,18 +21,18 @@ final class StorageServiceKernelAdapter {
     message: message,
   );
 
-  Future<String?> readFile(final String path) =>
+  Future<String?> readFile(String path) =>
       kernel.read(namespace: namespace, path: path);
 
   Future<FileOperationResult> removeFile(
-    final String path, {
-    final String? message,
+    String path, {
+    String? message,
   }) => kernel.delete(namespace: namespace, path: path, message: message);
 
-  Future<List<FileEntry>> listDirectory(final String path) =>
+  Future<List<FileEntry>> listDirectory(String path) =>
       kernel.list(namespace: namespace, directoryPath: path);
 
-  Stream<StorageObservationEvent> observeChanges({final String? pathPrefix}) =>
+  Stream<StorageObservationEvent> observeChanges({String? pathPrefix}) =>
       kernel.observe(namespace: namespace, pathPrefix: pathPrefix);
 
   Future<void> syncRemote() => kernel.sync(namespace: namespace);

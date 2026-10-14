@@ -5,7 +5,7 @@ import 'cloudkit_storage_provider.dart';
 import 'platform_bridge_registration.dart';
 
 /// Registers CloudKit provider in the universal storage registry.
-void registerUniversalStorageCloudKit({final CloudKitBridge? bridge}) {
+void registerUniversalStorageCloudKit({CloudKitBridge? bridge}) {
   if (bridge != null) {
     CloudKitBridgePlatform.instance = bridge;
   } else if (CloudKitBridgePlatform.instance is UnsupportedCloudKitBridge) {

@@ -13,12 +13,12 @@ final class ObservationHub {
 
   /// Emits one observation event, assigning a correlation id when missing.
   void emit({
-    required final StorageObservationType type,
-    required final StorageNamespace namespace,
-    required final String path,
-    final StorageOperationOrigin origin = StorageOperationOrigin.system,
-    final StorageOperationResult? result,
-    final Map<String, dynamic> metadata = const <String, dynamic>{},
+    required StorageObservationType type,
+    required StorageNamespace namespace,
+    required String path,
+    StorageOperationOrigin origin = StorageOperationOrigin.system,
+    StorageOperationResult? result,
+    Map<String, dynamic> metadata = const <String, dynamic>{},
   }) {
     if (_controller.isClosed) {
       return;
@@ -49,12 +49,12 @@ final class ObservationHub {
 
   /// Returns a filtered stream of observation events.
   Stream<StorageObservationEvent> observe({
-    final StorageNamespace? namespace,
-    final String? pathPrefix,
+    StorageNamespace? namespace,
+    String? pathPrefix,
   }) {
     final normalizedPrefix = (pathPrefix ?? '').trim();
 
-    return _controller.stream.where((final event) {
+    return _controller.stream.where((event) {
       if (namespace != null && event.namespace != namespace) {
         return false;
       }
@@ -70,8 +70,8 @@ final class ObservationHub {
   Future<void> close() => _controller.close();
 
   String _nextCorrelationId({
-    required final StorageObservationType type,
-    required final StorageNamespace namespace,
+    required StorageObservationType type,
+    required StorageNamespace namespace,
   }) {
     _sequence++;
     return '${type.name}_${namespace.value}_'

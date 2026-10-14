@@ -71,7 +71,7 @@ final class SessionCipher {
   int get receivedCount => _receiveSequence + 1;
 
   /// Seals [plaintext] into one wire record.
-  Uint8List seal(final List<int> plaintext) {
+  Uint8List seal(List<int> plaintext) {
     // Read-and-increment BEFORE any await-able work: callers may fire and
     // forget; the sequence must still be unique per record.
     final sequence = _sendSequence++;
@@ -90,7 +90,7 @@ final class SessionCipher {
   }
 
   /// Opens a sealed record; `null` when it is not authentic or not fresh.
-  Uint8List? open(final Uint8List record) {
+  Uint8List? open(Uint8List record) {
     if (record.length <
         SessionAeadProtocol.headerLength + SessionAeadProtocol.tagLength) {
       return null;
@@ -134,7 +134,7 @@ final class SessionCipher {
     }
   }
 
-  static Uint8List _recordHeader(final int sequence) {
+  static Uint8List _recordHeader(int sequence) {
     final header = Uint8List(SessionAeadProtocol.headerLength);
     header[0] = SessionAeadProtocol.recordVersion;
     ByteData.view(header.buffer).setUint64(1, sequence, Endian.little);
@@ -143,7 +143,7 @@ final class SessionCipher {
 
   /// 96-bit nonce `0x00000000 || sequence (u64 LE)` — unique per direction
   /// under the freshly derived session key.
-  static Uint8List _nonce(final int sequence) {
+  static Uint8List _nonce(int sequence) {
     final nonce = Uint8List(SessionAeadProtocol.nonceLength);
     ByteData.view(nonce.buffer).setUint64(4, sequence, Endian.little);
     return nonce;

@@ -12,7 +12,7 @@ class _AdapterFakeStorageProvider extends StorageProvider {
   var _initialized = false;
 
   @override
-  Future<void> initWithConfig(final StorageConfig config) async {
+  Future<void> initWithConfig(StorageConfig config) async {
     _initialized = true;
   }
 
@@ -27,9 +27,9 @@ class _AdapterFakeStorageProvider extends StorageProvider {
 
   @override
   Future<FileOperationResult> createFile(
-    final String path,
-    final String content, {
-    final String? commitMessage,
+    String path,
+    String content, {
+    String? commitMessage,
   }) async {
     _ensureInitialized();
     files[path] = content;
@@ -37,16 +37,16 @@ class _AdapterFakeStorageProvider extends StorageProvider {
   }
 
   @override
-  Future<String?> getFile(final String path) async {
+  Future<String?> getFile(String path) async {
     _ensureInitialized();
     return files[path];
   }
 
   @override
   Future<FileOperationResult> updateFile(
-    final String path,
-    final String content, {
-    final String? commitMessage,
+    String path,
+    String content, {
+    String? commitMessage,
   }) async {
     _ensureInitialized();
     files[path] = content;
@@ -55,8 +55,8 @@ class _AdapterFakeStorageProvider extends StorageProvider {
 
   @override
   Future<FileOperationResult> deleteFile(
-    final String path, {
-    final String? commitMessage,
+    String path, {
+    String? commitMessage,
   }) async {
     _ensureInitialized();
     files.remove(path);
@@ -64,7 +64,7 @@ class _AdapterFakeStorageProvider extends StorageProvider {
   }
 
   @override
-  Future<List<FileEntry>> listDirectory(final String directoryPath) async {
+  Future<List<FileEntry>> listDirectory(String directoryPath) async {
     _ensureInitialized();
     final normalizedPath = directoryPath == '.'
         ? ''
@@ -86,7 +86,7 @@ class _AdapterFakeStorageProvider extends StorageProvider {
   }
 
   @override
-  Future<void> restore(final String path, {final String? versionId}) async {
+  Future<void> restore(String path, {String? versionId}) async {
     _ensureInitialized();
   }
 
@@ -95,8 +95,8 @@ class _AdapterFakeStorageProvider extends StorageProvider {
 
   @override
   Future<void> sync({
-    final String? pullMergeStrategy,
-    final String? pushConflictStrategy,
+    String? pullMergeStrategy,
+    String? pushConflictStrategy,
   }) async {
     _ensureInitialized();
     if (syncEnabled) {
@@ -156,7 +156,7 @@ void main() {
         await adapter.removeFile('todos/a.yaml');
 
         expect(content, 'title: Updated');
-        expect(listed.any((final item) => item.name == 'todos/a.yaml'), isTrue);
+        expect(listed.any((item) => item.name == 'todos/a.yaml'), isTrue);
         expect(provider.files.containsKey('todos/a.yaml'), isFalse);
       },
     );

@@ -65,32 +65,32 @@ abstract class RepositoryService {
 
   /// Get list of organization repositories
   Future<List<RepositoryInfo>> getOrganizationRepositories(
-    final String orgName,
+    String orgName,
   );
 
   /// Create a new repository
   Future<RepositoryInfo> createRepository(
-    final CreateRepositoryRequest request,
+    CreateRepositoryRequest request,
   );
 
   /// Get repository by name
-  Future<RepositoryInfo?> getRepository(final String owner, final String name);
+  Future<RepositoryInfo?> getRepository(String owner, String name);
 
   /// Search repositories
   Future<List<RepositoryInfo>> searchRepositories(
-    final String query, {
-    final int? limit,
+    String query, {
+    int? limit,
   });
 
   /// Delete a repository (if permissions allow)
-  Future<void> deleteRepository(final String owner, final String name);
+  Future<void> deleteRepository(String owner, String name);
 
   /// Get repository branches
   Future<List<String>> getRepositoryBranches(
-    final String owner,
-    final String name,
+    String owner,
+    String name,
   );
 
   /// Get repository tags
-  Future<List<String>> getRepositoryTags(final String owner, final String name);
+  Future<List<String>> getRepositoryTags(String owner, String name);
 }

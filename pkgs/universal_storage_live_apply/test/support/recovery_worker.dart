@@ -6,7 +6,7 @@ import 'package:universal_storage_interface/universal_storage_interface.dart';
 import 'package:universal_storage_live_apply/universal_storage_live_apply.dart';
 
 /// Parent kills this process after a known durable/effect boundary.
-Future<void> main(final List<String> args) async {
+Future<void> main(List<String> args) async {
   final fs = FileSystemStorageProvider();
   await fs.initWithConfig(
     FileSystemConfig(filePathConfig: FilePathConfig({'path': args[1]})),
@@ -18,10 +18,10 @@ Future<void> main(final List<String> args) async {
     await stdout.flush();
     return;
   }
-  Future<Never> pause(final String runId) async {
+  Future<Never> pause(String runId) async {
     stdout.writeln(runId);
     await stdout.flush();
-    Timer.periodic(const Duration(seconds: 1), (final _) {});
+    Timer.periodic(const Duration(seconds: 1), (_) {});
     return Completer<Never>().future;
   }
 
@@ -59,22 +59,22 @@ class _InverseProvider extends FileSystemStorageProvider {
   final Future<Never> Function() after;
 
   @override
-  Future<String?> getFile(final String path) => inner.getFile(path);
+  Future<String?> getFile(String path) => inner.getFile(path);
 
   @override
-  Future<StorageFileState> readFileState(final String path) =>
+  Future<StorageFileState> readFileState(String path) =>
       inner.readFileState(path);
 
   @override
   StorageFileState intendedFileState(
-    final StorageFileState before,
-    final String? content,
+    StorageFileState before,
+    String? content,
   ) => inner.intendedFileState(before, content);
 
   @override
   Future<FileOperationResult> restoreFileState(
-    final String path,
-    final StorageFileState state,
+    String path,
+    StorageFileState state,
   ) async {
     await inner.restoreFileState(path, state);
     return after();
@@ -82,9 +82,9 @@ class _InverseProvider extends FileSystemStorageProvider {
 
   @override
   Future<FileOperationResult> updateFile(
-    final String path,
-    final String content, {
-    final String? commitMessage,
+    String path,
+    String content, {
+    String? commitMessage,
   }) async {
     await inner.updateFile(path, content);
     return after();

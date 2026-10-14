@@ -11,7 +11,7 @@ class MacOSBookmarkManager {
   final _secureBookmarks = SecureBookmarks();
 
   /// Creates a security-scoped bookmark for the given [path].
-  Future<MacOSBookmark?> createBookmark(final String path) async {
+  Future<MacOSBookmark?> createBookmark(String path) async {
     final entity = FileSystemEntity.isDirectorySync(path)
         ? Directory(path)
         : File(path);
@@ -30,7 +30,7 @@ class MacOSBookmarkManager {
 
   /// Resolves a security-scoped bookmark and starts access to the resource.
   Future<FileSystemEntity?> resolveBookmark(
-    final MacOSBookmark bookmark,
+    MacOSBookmark bookmark,
   ) async {
     try {
       final resolvedEntity = await _secureBookmarks.resolveBookmark(
@@ -54,7 +54,7 @@ class MacOSBookmarkManager {
 
   /// Stops accessing a resource that was previously accessed via
   /// [resolveBookmark].
-  Future<void> stopAccessing(final FileSystemEntity entity) async {
+  Future<void> stopAccessing(FileSystemEntity entity) async {
     try {
       await _secureBookmarks.stopAccessingSecurityScopedResource(entity);
     } catch (e, stackTrace) {

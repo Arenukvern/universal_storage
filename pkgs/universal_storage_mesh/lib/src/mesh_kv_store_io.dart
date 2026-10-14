@@ -18,24 +18,24 @@ final class FileMeshKvStore implements MeshKeyValueStore {
   /// Absolute or relative directory this replica persists under.
   final String root;
 
-  String _pathOf(final String key) => '$root/$key';
+  String _pathOf(String key) => '$root/$key';
 
   @override
-  Future<String?> read(final String key) async {
+  Future<String?> read(String key) async {
     final file = File(_pathOf(key));
     if (!file.existsSync()) return null;
     return file.readAsString();
   }
 
   @override
-  Future<void> write(final String key, final String value) async {
+  Future<void> write(String key, String value) async {
     final file = File(_pathOf(key));
     await file.parent.create(recursive: true);
     await file.writeAsString(value);
   }
 
   @override
-  Future<List<String>> list(final String prefix) async {
+  Future<List<String>> list(String prefix) async {
     final directory = Directory('$root/$prefix');
     if (!directory.existsSync()) return const [];
     final keys = <String>[];
@@ -49,4 +49,4 @@ final class FileMeshKvStore implements MeshKeyValueStore {
 
 /// File-backed selection for the conditional import in
 /// `mesh_storage_provider.dart` / `mesh_peer_registry.dart`.
-MeshKeyValueStore createMeshKvStore(final String root) => FileMeshKvStore(root);
+MeshKeyValueStore createMeshKvStore(String root) => FileMeshKvStore(root);

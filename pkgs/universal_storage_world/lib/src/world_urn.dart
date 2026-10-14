@@ -15,7 +15,7 @@ final class WorldUrn {
 
   /// Parses `world://<worldId>/<memberPath>`. Throws [FormatException] on
   /// any other scheme or an empty component.
-  factory WorldUrn.parse(final String raw) {
+  factory WorldUrn.parse(String raw) {
     final prefix = '$scheme://';
     if (!raw.startsWith(prefix)) {
       throw FormatException('WorldUrn must start with "$prefix": $raw');
@@ -36,7 +36,7 @@ final class WorldUrn {
   }
 
   /// Static factory avoiding the exception path for untrusted input.
-  static WorldUrn? tryParse(final String raw) {
+  static WorldUrn? tryParse(String raw) {
     try {
       return WorldUrn.parse(raw);
     } on FormatException {
@@ -57,18 +57,18 @@ final class WorldUrn {
   String get value => '$scheme://$worldId/$memberPath';
 
   /// Child member under this urn's path prefix.
-  WorldUrn child(final String relativePath) =>
+  WorldUrn child(String relativePath) =>
       WorldUrn(worldId: worldId, memberPath: '$memberPath/$relativePath');
 
   Map<String, Object?> toJson() => {'world': worldId, 'path': memberPath};
 
-  static WorldUrn fromJson(final Map<String, Object?> json) => WorldUrn(
+  static WorldUrn fromJson(Map<String, Object?> json) => WorldUrn(
     worldId: json['world']! as String,
     memberPath: json['path']! as String,
   );
 
   @override
-  bool operator ==(final Object other) =>
+  bool operator ==(Object other) =>
       other is WorldUrn &&
       other.worldId == worldId &&
       other.memberPath == memberPath;

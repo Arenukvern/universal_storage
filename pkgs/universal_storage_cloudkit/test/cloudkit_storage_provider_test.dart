@@ -26,7 +26,7 @@ void main() {
       expect(await provider.getFile('docs/readme.md'), equals('hello'));
 
       final list = await provider.listDirectory('docs');
-      expect(list.map((final e) => e.name), contains('readme.md'));
+      expect(list.map((e) => e.name), contains('readme.md'));
 
       await provider.updateFile('docs/readme.md', 'updated');
       expect(await provider.getFile('docs/readme.md'), equals('updated'));
@@ -270,7 +270,7 @@ void main() {
 
         final provider = CloudKitStorageProvider(
           bridge: bridge,
-          fallbackResolver: (final config) {
+          fallbackResolver: (config) {
             if (config is FileSystemConfig) {
               return FileSystemStorageProvider();
             }
@@ -342,7 +342,7 @@ class FakeCloudKitBridge implements CloudKitBridge {
   bool throwOnInitialize = false;
 
   @override
-  Future<void> initialize(final CloudKitBridgeConfig config) async {
+  Future<void> initialize(CloudKitBridgeConfig config) async {
     callLog.add('initialize');
     if (throwOnInitialize) {
       throw const CloudKitBridgeException(
@@ -353,13 +353,13 @@ class FakeCloudKitBridge implements CloudKitBridge {
   }
 
   @override
-  Future<CloudKitRecord?> fetchRecordByPath(final String path) async {
+  Future<CloudKitRecord?> fetchRecordByPath(String path) async {
     callLog.add('fetchRecordByPath:$path');
     return recordsByPath[path];
   }
 
   @override
-  Future<void> saveRecord(final CloudKitRecord record) async {
+  Future<void> saveRecord(CloudKitRecord record) async {
     callLog.add('saveRecord:${record.path}');
     if (conflictOnNextSavePaths.remove(record.path)) {
       throw const CloudKitBridgeException(
@@ -371,11 +371,11 @@ class FakeCloudKitBridge implements CloudKitBridge {
   }
 
   @override
-  Future<void> deleteRecord(final String recordName) async {
+  Future<void> deleteRecord(String recordName) async {
     callLog.add('deleteRecord:$recordName');
     final toDelete = recordsByPath.entries
-        .where((final entry) => entry.value.recordName == recordName)
-        .map((final entry) => entry.key)
+        .where((entry) => entry.value.recordName == recordName)
+        .map((entry) => entry.key)
         .toList(growable: false);
     for (final path in toDelete) {
       recordsByPath.remove(path);
@@ -384,7 +384,7 @@ class FakeCloudKitBridge implements CloudKitBridge {
 
   @override
   Future<List<CloudKitRecord>> queryByPathPrefix(
-    final String pathPrefix,
+    String pathPrefix,
   ) async {
     callLog.add('queryByPathPrefix:$pathPrefix');
     if (pathPrefix.isEmpty) {
@@ -394,14 +394,14 @@ class FakeCloudKitBridge implements CloudKitBridge {
     final prefix = '$pathPrefix/';
     return recordsByPath.values
         .where(
-          (final record) =>
+          (record) =>
               record.path == pathPrefix || record.path.startsWith(prefix),
         )
         .toList(growable: false);
   }
 
   @override
-  Future<CloudKitDelta> fetchChanges({final String? serverChangeToken}) async {
+  Future<CloudKitDelta> fetchChanges({String? serverChangeToken}) async {
     callLog.add('fetchChanges');
     fetchChangesCalls += 1;
     return nextDelta;
@@ -414,10 +414,10 @@ class FakeCloudKitBridge implements CloudKitBridge {
 }
 
 CloudKitRecord _fakeRecord({
-  required final String path,
-  required final String content,
-  final DateTime? updatedAt,
-  final String? changeTag,
+  required String path,
+  required String content,
+  DateTime? updatedAt,
+  String? changeTag,
 }) => CloudKitRecord(
   recordName: sha256Hex(path),
   path: path,

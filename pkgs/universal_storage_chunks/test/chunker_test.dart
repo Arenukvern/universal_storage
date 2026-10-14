@@ -7,7 +7,7 @@ import 'package:universal_storage_chunks/universal_storage_chunks.dart';
 void main() {
   const chunker = ContentDefinedChunker();
 
-  Uint8List payload(final int size, {final int seed = 7}) {
+  Uint8List payload(int size, {int seed = 7}) {
     final random = Random(seed);
     return Uint8List.fromList(
       List<int>.generate(size, (_) => random.nextInt(256)),
@@ -33,11 +33,11 @@ void main() {
       // boundary must re-appear identically.
       final original = payload(400 * 1024);
       final shifted = [...payload(64 * 1024, seed: 99), ...original];
-      final originalSlices = chunker.chunk(original).map((final s) {
+      final originalSlices = chunker.chunk(original).map((s) {
         // Boundaries by content digest of the region instead of offsets.
         return chunkAddress(original.sublist(s.start, s.end));
       }).toSet();
-      final shiftedSlices = chunker.chunk(shifted).map((final s) {
+      final shiftedSlices = chunker.chunk(shifted).map((s) {
         return chunkAddress(shifted.sublist(s.start, s.end));
       }).toSet();
       // The shared content must dominate: most original chunk addresses
@@ -50,9 +50,9 @@ void main() {
       final original = payload(300 * 1024);
       final edited = Uint8List.fromList(original);
       edited[edited.length ~/ 2] ^= 0xFF;
-      Set<String> addresses(final Uint8List data) => chunker
+      Set<String> addresses(Uint8List data) => chunker
           .chunk(data)
-          .map((final s) => chunkAddress(data.sublist(s.start, s.end)))
+          .map((s) => chunkAddress(data.sublist(s.start, s.end)))
           .toSet();
       final before = addresses(original);
       final after = addresses(edited);

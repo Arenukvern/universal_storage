@@ -73,11 +73,11 @@ final class PairingService {
   /// endpoint) embedded in the signed body so scanners can reach this
   /// device without manual endpoint entry.
   static Future<Uint8List> buildQrPayload({
-    required final SimpleKeyPair identityKeyPair,
-    required final SimpleKeyPair ephemeralKeyPair,
-    required final String peerId,
-    final String? transportHint,
-    final Map<String, Object?>? applicationData,
+    required SimpleKeyPair identityKeyPair,
+    required SimpleKeyPair ephemeralKeyPair,
+    required String peerId,
+    String? transportHint,
+    Map<String, Object?>? applicationData,
   }) async {
     final ephPub = await ephemeralKeyPair.extractPublicKey();
     final identityPub = await identityKeyPair.extractPublicKey();
@@ -111,10 +111,10 @@ final class PairingService {
   /// [ourPeerId] is announced back to the peer inside the encrypted channel
   /// (not part of the QR itself).
   static Future<PairingResult> acceptQrPayload({
-    required final Uint8List qrPayload,
-    required final Uint8List peerIdentityKey,
-    required final SimpleKeyPair ownEphemeralKeyPair,
-    required final String ourPeerId,
+    required Uint8List qrPayload,
+    required Uint8List peerIdentityKey,
+    required SimpleKeyPair ownEphemeralKeyPair,
+    required String ourPeerId,
   }) async {
     final parsed = _parsePayload(qrPayload);
     if (!await _verifySignature(
@@ -174,11 +174,11 @@ final class PairingService {
   /// public key arrives back over the session. Mirrors [acceptQrPayload]
   /// with roles swapped so both sides compute identical directional keys.
   static Future<PairingResult> deriveInitiatorKeys({
-    required final SimpleKeyPair identityKeyPair,
-    required final SimpleKeyPair ownEphemeralKeyPair,
-    required final Uint8List peerEphemeralPublic,
-    required final String ourPeerId,
-    required final String peerId,
+    required SimpleKeyPair identityKeyPair,
+    required SimpleKeyPair ownEphemeralKeyPair,
+    required Uint8List peerEphemeralPublic,
+    required String ourPeerId,
+    required String peerId,
   }) async {
     final shared = await _x25519.sharedSecretKey(
       keyPair: ownEphemeralKeyPair,
@@ -208,13 +208,13 @@ final class PairingService {
   /// Canonical HKDF info string. Both sides must derive the SAME key
   /// material, so the two peer ids are sorted lexicographically — the
   /// result is identical regardless of which side computes it.
-  static List<int> _kdfInfo(final String a, final String b) {
+  static List<int> _kdfInfo(String a, String b) {
     final ids = [a, b]..sort();
     return utf8.encode('$_protocolName|${ids[0]}|${ids[1]}');
   }
 
   static ({List<int> body, List<int> signature}) _parsePayload(
-    final Uint8List raw,
+    Uint8List raw,
   ) {
     final prefix = utf8.encode('$_protocolName\n');
     if (raw.length < prefix.length + 2) {
@@ -237,9 +237,9 @@ final class PairingService {
   }
 
   static Future<bool> _verifySignature(
-    final List<int> body,
-    final List<int> signature,
-    final Uint8List identityKey,
+    List<int> body,
+    List<int> signature,
+    Uint8List identityKey,
   ) async {
     try {
       return await _ed25519.verify(
@@ -259,7 +259,7 @@ final class PairingService {
   /// The signature is verified against this key before any pairing result
   /// is returned. Hosts should additionally compare it with identity data
   /// shown in the human-readable QR confirmation when available.
-  static Uint8List extractIdentityKey(final Uint8List raw) {
+  static Uint8List extractIdentityKey(Uint8List raw) {
     final parsed = _parsePayload(raw);
     try {
       final envelope =

@@ -45,12 +45,12 @@ void main() {
       await provider.createFile('logs/c.txt', 'C');
 
       final rootEntries = await provider.listDirectory('.');
-      final rootNames = rootEntries.map((final e) => e.name).toList();
+      final rootNames = rootEntries.map((e) => e.name).toList();
       expect(rootNames, contains('logs'));
       expect(rootNames, contains('notes'));
 
       final notesEntries = await provider.listDirectory('notes');
-      final notesNames = notesEntries.map((final e) => e.name).toList();
+      final notesNames = notesEntries.map((e) => e.name).toList();
       expect(notesNames, contains('a.txt'));
       expect(notesNames, contains('sub'));
     });
@@ -110,7 +110,7 @@ void main() {
   });
 }
 
-FileSystemConfig _configForPrefix(final String prefix) => FileSystemConfig(
+FileSystemConfig _configForPrefix(String prefix) => FileSystemConfig(
   filePathConfig: FilePathConfig.create(
     path: '/$prefix',
     macOSBookmarkData: MacOSBookmark.empty,
@@ -139,7 +139,7 @@ final class InMemoryLocalDb implements LocalDbI {
   }
 
   @override
-  Future<void> clearKey({required final String key}) async {
+  Future<void> clearKey({required String key}) async {
     _bools.remove(key);
     _ints.remove(key);
     _strings.remove(key);
@@ -149,31 +149,31 @@ final class InMemoryLocalDb implements LocalDbI {
 
   @override
   Future<bool> getBool({
-    required final String key,
-    final bool defaultValue = false,
+    required String key,
+    bool defaultValue = false,
   }) async => _bools[key] ?? defaultValue;
 
   @override
   Future<int> getInt({
-    required final String key,
-    final int defaultValue = 0,
+    required String key,
+    int defaultValue = 0,
   }) async => _ints[key] ?? defaultValue;
 
   @override
-  Future<Map<String, dynamic>> getMap(final String key) async =>
+  Future<Map<String, dynamic>> getMap(String key) async =>
       Map<String, dynamic>.from(_maps[key] ?? const <String, dynamic>{});
 
   @override
   Future<Iterable<Map<String, dynamic>>> getMapIterable({
-    required final String key,
-    final List<Map<String, dynamic>> defaultValue = const [],
+    required String key,
+    List<Map<String, dynamic>> defaultValue = const [],
   }) async {
     final values = _stringLists[key];
     if (values == null) {
       return defaultValue;
     }
     return values
-        .map((final item) => _maps[item])
+        .map((item) => _maps[item])
         .whereType<Map<String, dynamic>>()
         .map(Map<String, dynamic>.from)
         .toList(growable: false);
@@ -181,28 +181,28 @@ final class InMemoryLocalDb implements LocalDbI {
 
   @override
   Future<String> getString({
-    required final String key,
-    final String defaultValue = '',
+    required String key,
+    String defaultValue = '',
   }) async => _strings[key] ?? defaultValue;
 
   @override
   Future<Iterable<String>> getStringsIterable({
-    required final String key,
-    final List<String> defaultValue = const [],
+    required String key,
+    List<String> defaultValue = const [],
   }) async => List<String>.from(_stringLists[key] ?? defaultValue);
 
   @override
   Future<T> getItem<T>({
-    required final String key,
-    required final T? Function(Map<String, dynamic> p1) fromJson,
-    required final T defaultValue,
+    required String key,
+    required T? Function(Map<String, dynamic> p1) fromJson,
+    required T defaultValue,
   }) async => fromJson(await getMap(key)) ?? defaultValue;
 
   @override
   Future<Iterable<T>> getItemsIterable<T>({
-    required final String key,
-    required final T Function(Map<String, dynamic> p1) fromJson,
-    final List<T> defaultValue = const [],
+    required String key,
+    required T Function(Map<String, dynamic> p1) fromJson,
+    List<T> defaultValue = const [],
   }) async {
     final values = await getMapIterable(key: key);
     if (values.isEmpty) {
@@ -213,29 +213,29 @@ final class InMemoryLocalDb implements LocalDbI {
 
   @override
   Future<void> setBool({
-    required final String key,
-    required final bool value,
+    required String key,
+    required bool value,
   }) async {
     _bools[key] = value;
   }
 
   @override
-  Future<void> setInt({required final String key, final int value = 0}) async {
+  Future<void> setInt({required String key, int value = 0}) async {
     _ints[key] = value;
   }
 
   @override
   Future<void> setMap({
-    required final String key,
-    required final Map<String, dynamic> value,
+    required String key,
+    required Map<String, dynamic> value,
   }) async {
     _maps[key] = Map<String, dynamic>.from(value);
   }
 
   @override
   Future<void> setMapList({
-    required final String key,
-    required final List<Map<String, dynamic>> value,
+    required String key,
+    required List<Map<String, dynamic>> value,
   }) async {
     final ids = <String>[];
     for (var index = 0; index < value.length; index++) {
@@ -248,34 +248,34 @@ final class InMemoryLocalDb implements LocalDbI {
 
   @override
   Future<void> setString({
-    required final String key,
-    required final String value,
+    required String key,
+    required String value,
   }) async {
     _strings[key] = value;
   }
 
   @override
   Future<void> setStringList({
-    required final String key,
-    required final List<String> value,
+    required String key,
+    required List<String> value,
   }) async {
     _stringLists[key] = List<String>.from(value);
   }
 
   @override
   Future<void> setItem<T>({
-    required final String key,
-    required final T value,
-    required final Map<String, dynamic> Function(T p1) toJson,
+    required String key,
+    required T value,
+    required Map<String, dynamic> Function(T p1) toJson,
   }) async {
     await setMap(key: key, value: toJson(value));
   }
 
   @override
   Future<void> setItemsList<T>({
-    required final String key,
-    required final List<T> value,
-    required final Map<String, dynamic> Function(T p1) toJson,
+    required String key,
+    required List<T> value,
+    required Map<String, dynamic> Function(T p1) toJson,
   }) async {
     await setMapList(
       key: key,

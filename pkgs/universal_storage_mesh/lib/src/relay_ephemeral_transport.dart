@@ -55,7 +55,7 @@ final class AddressedRelayEphemeralTransport
   Stream<EphemeralLinkState> get connectionChanges => _changes.stream;
 
   @override
-  Future<void> send(final MeshEphemeralFrame frame) =>
+  Future<void> send(MeshEphemeralFrame frame) =>
       _client.sendEphemeral(toPeerId: '', payload: frame.encode());
 
   /// Stops consuming the client and closes the adapter's streams. The

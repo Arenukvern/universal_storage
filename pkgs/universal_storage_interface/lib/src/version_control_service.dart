@@ -7,13 +7,13 @@ abstract interface class VersionControlService {
 
   Future<List<VcRepository>> listRepositories();
   Future<VcRepository> createRepository(
-    final VcCreateRepositoryRequest details,
+    VcCreateRepositoryRequest details,
   );
   Future<VcRepository> getRepositoryInfo();
   Future<List<VcBranch>> listBranches();
-  Future<void> setRepository(final VcRepositoryName repositoryId);
+  Future<void> setRepository(VcRepositoryName repositoryId);
   Future<void> cloneRepository(
-    final VcRepository repository,
-    final String localPath,
+    VcRepository repository,
+    String localPath,
   );
 }

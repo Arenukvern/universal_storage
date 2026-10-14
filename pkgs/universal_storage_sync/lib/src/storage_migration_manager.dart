@@ -10,11 +10,11 @@ import 'storage_kernel.dart';
 /// Adapter that exposes migration management as a `MigrationEndpoint`.
 final class StorageProfileMigrationEndpoint implements MigrationEndpoint {
   StorageProfileMigrationEndpoint({
-    required final StorageKernel sourceKernel,
-    required final StorageKernel targetKernel,
-    final String manifestDirectory = '.us/migrations',
-    final StorageNamespace? manifestNamespace,
-    final Set<String> sourcePathExcludePrefixes = const <String>{
+    required StorageKernel sourceKernel,
+    required StorageKernel targetKernel,
+    String manifestDirectory = '.us/migrations',
+    StorageNamespace? manifestNamespace,
+    Set<String> sourcePathExcludePrefixes = const <String>{
       '.us/migrations',
     },
   }) : _manager = StorageProfileMigrationManager(
@@ -29,27 +29,27 @@ final class StorageProfileMigrationEndpoint implements MigrationEndpoint {
 
   @override
   Future<MigrationPreparationResult> prepareMigration({
-    required final MigrationPlan plan,
+    required MigrationPlan plan,
   }) => _manager.prepareMigration(plan: plan);
 
   @override
   Future<MigrationExecutionResult> executeMigration({
-    required final MigrationPlan plan,
+    required MigrationPlan plan,
   }) => _manager.executeMigration(plan: plan);
 
   /// Executes migration with explicit options.
   @override
   Future<MigrationExecutionResult> executeMigrationWithOptions({
-    required final MigrationPlan plan,
-    final bool overwrite = true,
-    final bool dryRun = false,
-    final bool collectDiffs = false,
-    final bool pauseForDecisions = false,
-    final Map<String, MigrationDecisionAction> decisionActions =
+    required MigrationPlan plan,
+    bool overwrite = true,
+    bool dryRun = false,
+    bool collectDiffs = false,
+    bool pauseForDecisions = false,
+    Map<String, MigrationDecisionAction> decisionActions =
         const <String, MigrationDecisionAction>{},
     // Legacy alias kept for backward compatibility with migration managers that
     // still pass DecisionState values directly.
-    final Map<String, DecisionState> decisionStates =
+    Map<String, DecisionState> decisionStates =
         const <String, DecisionState>{},
   }) => _manager.executeMigrationWithOptions(
     plan: plan,
@@ -63,7 +63,7 @@ final class StorageProfileMigrationEndpoint implements MigrationEndpoint {
 
   @override
   Future<MigrationExecutionResult> rollbackMigration({
-    required final MigrationPlan plan,
+    required MigrationPlan plan,
   }) => _manager.rollbackMigration(plan: plan);
 }
 
@@ -102,7 +102,7 @@ final class StorageProfileMigrationManager implements MigrationEndpoint {
   /// Creates a migration plan manifest and performs preflight checks.
   @override
   Future<MigrationPreparationResult> prepareMigration({
-    required final MigrationPlan plan,
+    required MigrationPlan plan,
   }) async {
     final issues = <String>[];
     final warnings = <String>[];
@@ -128,10 +128,10 @@ final class StorageProfileMigrationManager implements MigrationEndpoint {
 
     final mappings = _resolveNamespaceMappings(plan);
     final sourceNamespaces = _sourceKernel.profile.namespaces
-        .map((final nsProfile) => nsProfile.namespace.value)
+        .map((nsProfile) => nsProfile.namespace.value)
         .toSet();
     final targetNamespaces = _targetKernel.profile.namespaces
-        .map((final nsProfile) => nsProfile.namespace.value)
+        .map((nsProfile) => nsProfile.namespace.value)
         .toSet();
 
     if (mappings.isEmpty) {
@@ -162,7 +162,7 @@ final class StorageProfileMigrationManager implements MigrationEndpoint {
     final existingManifest = await _loadManifest(plan.id);
     if (existingManifest != null) {
       final status = MigrationStatus.values.firstWhere(
-        (final value) => value.name == (existingManifest['status'] ?? ''),
+        (value) => value.name == (existingManifest['status'] ?? ''),
         orElse: () => MigrationStatus.draft,
       );
       if (status == MigrationStatus.completed) {
@@ -194,7 +194,7 @@ final class StorageProfileMigrationManager implements MigrationEndpoint {
         'source_profile': _sourceKernel.profile.name,
         'target_profile': _targetKernel.profile.name,
         'namespace_mappings': mappings.map(
-          (final key, final value) => MapEntry(key.value, value.value),
+          (key, value) => MapEntry(key.value, value.value),
         ),
       },
     );
@@ -203,7 +203,7 @@ final class StorageProfileMigrationManager implements MigrationEndpoint {
   /// Executes migration with resume support.
   @override
   Future<MigrationExecutionResult> executeMigration({
-    required final MigrationPlan plan,
+    required MigrationPlan plan,
   }) async => executeMigrationWithOptions(plan: plan);
 
   /// Executes migration with optional overwrite and dry-run strategy.
@@ -214,14 +214,14 @@ final class StorageProfileMigrationManager implements MigrationEndpoint {
   /// is honored regardless of entry point.
   @override
   Future<MigrationExecutionResult> executeMigrationWithOptions({
-    required final MigrationPlan plan,
-    final bool? overwrite,
-    final bool? dryRun,
-    final bool? collectDiffs,
-    final bool? pauseForDecisions,
-    final Map<String, MigrationDecisionAction> decisionActions =
+    required MigrationPlan plan,
+    bool? overwrite,
+    bool? dryRun,
+    bool? collectDiffs,
+    bool? pauseForDecisions,
+    Map<String, MigrationDecisionAction> decisionActions =
         const <String, MigrationDecisionAction>{},
-    final Map<String, DecisionState> decisionStates =
+    Map<String, DecisionState> decisionStates =
         const <String, DecisionState>{},
   }) async {
     final resolvedOverwrite =
@@ -315,7 +315,7 @@ final class StorageProfileMigrationManager implements MigrationEndpoint {
         }
       }
       operations.sort(
-        (final left, final right) => left.key.compareTo(right.key),
+        (left, right) => left.key.compareTo(right.key),
       );
 
       final completed = <String>{
@@ -968,7 +968,7 @@ final class StorageProfileMigrationManager implements MigrationEndpoint {
   /// Rolls back files created by a previously executed migration plan.
   @override
   Future<MigrationExecutionResult> rollbackMigration({
-    required final MigrationPlan plan,
+    required MigrationPlan plan,
   }) async => rollbackMigrationById(
     planId: plan.id,
     rollbackToCheckpointId: plan.metadata['rollback_to_checkpoint_id']
@@ -977,8 +977,8 @@ final class StorageProfileMigrationManager implements MigrationEndpoint {
 
   /// Rolls back files created by a previously executed migration plan.
   Future<MigrationExecutionResult> rollbackMigrationById({
-    required final String planId,
-    final String? rollbackToCheckpointId,
+    required String planId,
+    String? rollbackToCheckpointId,
   }) async {
     final lockAcquired = await _acquirePlanLock(planId);
     if (!lockAcquired) {
@@ -1052,18 +1052,18 @@ final class StorageProfileMigrationManager implements MigrationEndpoint {
         await _deleteManifest(planId);
       } else {
         final checkpointIndex = checkpoints.indexWhere(
-          (final item) => item.id == rollbackToCheckpointId,
+          (item) => item.id == rollbackToCheckpointId,
         );
         final retainedCheckpoints = checkpoints
             .take(checkpointIndex + 1)
             .toList(growable: false);
         final retainedOperationIds = retainedCheckpoints
-            .map((final item) => item.operationId)
+            .map((item) => item.operationId)
             .toSet();
 
         final retainedRecords = writtenRecords
             .where(
-              (final record) =>
+              (record) =>
                   record.operationId != null &&
                   retainedOperationIds.contains(record.operationId),
             )
@@ -1117,9 +1117,9 @@ final class StorageProfileMigrationManager implements MigrationEndpoint {
     }
   }
 
-  void _releasePlanLock(final String planId) => _activePlanLocks.remove(planId);
+  void _releasePlanLock(String planId) => _activePlanLocks.remove(planId);
 
-  Future<bool> _acquirePlanLock(final String planId) async {
+  Future<bool> _acquirePlanLock(String planId) async {
     if (_activePlanLocks.contains(planId)) {
       return false;
     }
@@ -1141,7 +1141,7 @@ final class StorageProfileMigrationManager implements MigrationEndpoint {
     return true;
   }
 
-  bool _isPlanLockStale(final DateTime? acquiredAt) {
+  bool _isPlanLockStale(DateTime? acquiredAt) {
     if (acquiredAt == null) {
       return true;
     }
@@ -1150,14 +1150,14 @@ final class StorageProfileMigrationManager implements MigrationEndpoint {
   }
 
   MigrationStatus _migrationStatusFromManifest(
-    final Map<String, dynamic> manifest,
+    Map<String, dynamic> manifest,
   ) => MigrationStatus.values.firstWhere(
-    (final value) => value.name == (manifest['status'] ?? ''),
+    (value) => value.name == (manifest['status'] ?? ''),
     orElse: () => MigrationStatus.draft,
   );
 
   _MigrationLockInfo? _manifestLockFromManifest(
-    final Map<String, dynamic> manifest,
+    Map<String, dynamic> manifest,
   ) {
     final rawLock = manifest['migration_lock'];
     if (rawLock is! Map) {
@@ -1170,7 +1170,7 @@ final class StorageProfileMigrationManager implements MigrationEndpoint {
     );
   }
 
-  DateTime? _parseDateTime(final Object? value) {
+  DateTime? _parseDateTime(Object? value) {
     if (value is! String || value.isEmpty) {
       return null;
     }
@@ -1178,8 +1178,8 @@ final class StorageProfileMigrationManager implements MigrationEndpoint {
   }
 
   Future<List<String>> _collectSourceFiles({
-    required final StorageNamespace namespace,
-    required final String directoryPath,
+    required StorageNamespace namespace,
+    required String directoryPath,
   }) async {
     final normalizedDirectory = _normalizePath(directoryPath);
     final entries = await _sourceKernel.list(
@@ -1206,7 +1206,7 @@ final class StorageProfileMigrationManager implements MigrationEndpoint {
   }
 
   Map<StorageNamespace, StorageNamespace> _resolveNamespaceMappings(
-    final MigrationPlan plan,
+    MigrationPlan plan,
   ) {
     final mappings = <StorageNamespace, StorageNamespace>{};
     final sourceNamespaces = <String, StorageNamespace>{
@@ -1239,7 +1239,7 @@ final class StorageProfileMigrationManager implements MigrationEndpoint {
     return mappings;
   }
 
-  bool _shouldSkipPath(final String path) {
+  bool _shouldSkipPath(String path) {
     final normalizedPath = _normalizePath(path);
     for (final excludedRaw in sourcePathExcludePrefixes) {
       final excluded = _normalizePath(excludedRaw);
@@ -1257,16 +1257,16 @@ final class StorageProfileMigrationManager implements MigrationEndpoint {
   StorageNamespace _manifestNamespace() =>
       manifestNamespace ??
       _targetKernel.profile.namespaces
-          .map((final namespaceProfile) => namespaceProfile.namespace)
+          .map((namespaceProfile) => namespaceProfile.namespace)
           .firstWhere(
-            (final namespace) => namespace == StorageNamespace.settings,
+            (namespace) => namespace == StorageNamespace.settings,
             orElse: () => _targetKernel.profile.namespaces.first.namespace,
           );
 
-  String _manifestPath(final String planId) =>
+  String _manifestPath(String planId) =>
       '$manifestDirectory/${_sanitizeManifestFileName(planId)}.json';
 
-  Future<Map<String, dynamic>?> _loadManifest(final String planId) async {
+  Future<Map<String, dynamic>?> _loadManifest(String planId) async {
     final raw = await _targetKernel.read(
       namespace: _manifestNamespace(),
       path: _manifestPath(planId),
@@ -1287,8 +1287,8 @@ final class StorageProfileMigrationManager implements MigrationEndpoint {
   }
 
   List<_MigrationRecord> _manifestRecords({
-    required final Map<String, dynamic>? manifest,
-    required final Map<StorageNamespace, StorageNamespace> mappings,
+    required Map<String, dynamic>? manifest,
+    required Map<StorageNamespace, StorageNamespace> mappings,
   }) {
     final rawWritten = manifest?['written'];
     if (rawWritten is! List) {
@@ -1328,7 +1328,7 @@ final class StorageProfileMigrationManager implements MigrationEndpoint {
   }
 
   List<_MigrationCheckpoint> _manifestCheckpoints(
-    final Map<String, dynamic>? manifest,
+    Map<String, dynamic>? manifest,
   ) {
     final rawCheckpoints = manifest?['checkpoints'];
     if (rawCheckpoints is! List) {
@@ -1348,7 +1348,7 @@ final class StorageProfileMigrationManager implements MigrationEndpoint {
       }
     }
     checkpoints.sort(
-      (final left, final right) =>
+      (left, right) =>
           '${left.sourceNamespace.value}:${left.sourcePath}'.compareTo(
             '${right.sourceNamespace.value}:${right.sourcePath}',
           ),
@@ -1357,11 +1357,11 @@ final class StorageProfileMigrationManager implements MigrationEndpoint {
   }
 
   List<_MigrationCheckpoint> _checkpointMapToSortedList(
-    final Map<String, _MigrationCheckpoint> checkpointsByOperationId,
+    Map<String, _MigrationCheckpoint> checkpointsByOperationId,
   ) {
     final checkpoints = checkpointsByOperationId.values.toList(growable: false);
     checkpoints.sort(
-      (final left, final right) =>
+      (left, right) =>
           '${left.sourceNamespace.value}:${left.sourcePath}'.compareTo(
             '${right.sourceNamespace.value}:${right.sourcePath}',
           ),
@@ -1370,9 +1370,9 @@ final class StorageProfileMigrationManager implements MigrationEndpoint {
   }
 
   Map<String, dynamic> _buildParitySummary({
-    required final int totalOperations,
-    required final Iterable<_MigrationCheckpoint> checkpoints,
-    required final List<String> issues,
+    required int totalOperations,
+    required Iterable<_MigrationCheckpoint> checkpoints,
+    required List<String> issues,
   }) {
     var applied = 0;
     var unchanged = 0;
@@ -1455,30 +1455,30 @@ final class StorageProfileMigrationManager implements MigrationEndpoint {
   }
 
   List<_MigrationRecord>? _recordsForRollback({
-    required final List<_MigrationRecord> records,
-    required final List<_MigrationCheckpoint> checkpoints,
-    required final String? rollbackToCheckpointId,
+    required List<_MigrationRecord> records,
+    required List<_MigrationCheckpoint> checkpoints,
+    required String? rollbackToCheckpointId,
   }) {
     if (rollbackToCheckpointId == null) {
       return null;
     }
     final checkpointIndex = checkpoints.indexWhere(
-      (final item) => item.id == rollbackToCheckpointId,
+      (item) => item.id == rollbackToCheckpointId,
     );
     if (checkpointIndex < 0) {
       return null;
     }
-    if (records.any((final record) => record.operationId == null)) {
+    if (records.any((record) => record.operationId == null)) {
       return null;
     }
 
     final retainedOperationIds = checkpoints
         .take(checkpointIndex + 1)
-        .map((final item) => item.operationId)
+        .map((item) => item.operationId)
         .toSet();
     return records
         .where(
-          (final record) =>
+          (record) =>
               record.operationId != null &&
               !retainedOperationIds.contains(record.operationId),
         )
@@ -1486,7 +1486,7 @@ final class StorageProfileMigrationManager implements MigrationEndpoint {
   }
 
   Map<String, MigrationDecisionAction> _manifestDecisionActions({
-    required final Map<String, dynamic>? manifest,
+    required Map<String, dynamic>? manifest,
   }) {
     final rawDecisionStates = manifest?['decision_states'];
     final rawDecisionActions = manifest?['decision_actions'];
@@ -1504,7 +1504,7 @@ final class StorageProfileMigrationManager implements MigrationEndpoint {
           continue;
         }
         final legacyState = DecisionState.values.firstWhere(
-          (final item) => item.name == stateName,
+          (item) => item.name == stateName,
           orElse: () => DecisionState.autoResolved,
         );
         final action = _migrationDecisionFromLegacyState(legacyState);
@@ -1527,7 +1527,7 @@ final class StorageProfileMigrationManager implements MigrationEndpoint {
   }
 
   Map<String, MigrationDecisionAction> _legacyDecisionStatesToAction(
-    final Map<String, DecisionState> states,
+    Map<String, DecisionState> states,
   ) => <String, MigrationDecisionAction>{
     for (final entry in states.entries)
       if (_migrationDecisionFromLegacyState(entry.value) != null)
@@ -1535,7 +1535,7 @@ final class StorageProfileMigrationManager implements MigrationEndpoint {
   };
 
   MigrationDecisionAction? _migrationDecisionFromLegacyState(
-    final DecisionState state,
+    DecisionState state,
   ) => switch (state) {
     DecisionState.autoResolved => MigrationDecisionAction.overwrite,
     DecisionState.blocked => MigrationDecisionAction.skip,
@@ -1543,7 +1543,7 @@ final class StorageProfileMigrationManager implements MigrationEndpoint {
   };
 
   DecisionState _migrationDecisionStateFromAction(
-    final MigrationDecisionAction action,
+    MigrationDecisionAction action,
   ) => switch (action) {
     MigrationDecisionAction.overwrite => DecisionState.autoResolved,
     MigrationDecisionAction.skip => DecisionState.blocked,
@@ -1551,20 +1551,20 @@ final class StorageProfileMigrationManager implements MigrationEndpoint {
   };
 
   Future<void> _persistManifest({
-    required final String planId,
-    required final String sourceProfileHash,
-    required final String targetProfileHash,
-    required final MigrationStatus status,
-    required final Map<StorageNamespace, StorageNamespace> mappings,
-    required final List<_MigrationRecord> records,
-    final int totalOperations = 0,
-    final String? lockOwner,
-    final DateTime? lockAcquiredAt,
-    final Map<String, MigrationDecisionAction>? decisionActions,
-    final List<_MigrationCheckpoint>? checkpoints,
-    final Map<String, dynamic>? paritySummary,
-    final Map<String, dynamic>? transformConfig,
-    final List<String>? issueDetails,
+    required String planId,
+    required String sourceProfileHash,
+    required String targetProfileHash,
+    required MigrationStatus status,
+    required Map<StorageNamespace, StorageNamespace> mappings,
+    required List<_MigrationRecord> records,
+    int totalOperations = 0,
+    String? lockOwner,
+    DateTime? lockAcquiredAt,
+    Map<String, MigrationDecisionAction>? decisionActions,
+    List<_MigrationCheckpoint>? checkpoints,
+    Map<String, dynamic>? paritySummary,
+    Map<String, dynamic>? transformConfig,
+    List<String>? issueDetails,
   }) async {
     final payload = <String, dynamic>{
       'schema_version': _manifestSchemaVersion,
@@ -1614,7 +1614,7 @@ final class StorageProfileMigrationManager implements MigrationEndpoint {
     );
   }
 
-  Future<void> _deleteManifest(final String planId) async {
+  Future<void> _deleteManifest(String planId) async {
     try {
       await _targetKernel.delete(
         namespace: _manifestNamespace(),
@@ -1625,13 +1625,13 @@ final class StorageProfileMigrationManager implements MigrationEndpoint {
     }
   }
 
-  String _normalizePath(final String path) => path
+  String _normalizePath(String path) => path
       .replaceAll(r'\', '/')
       .replaceAll(RegExp('/+'), '/')
       .replaceAll(RegExp('^/+'), '')
       .replaceAll(RegExp(r'/+$'), '');
 
-  String _joinPath(final String base, final String segment) {
+  String _joinPath(String base, String segment) {
     final normalizedBase = _normalizePath(base);
     if (normalizedBase.isEmpty || normalizedBase == '.') {
       return _normalizePath(segment);
@@ -1639,15 +1639,15 @@ final class StorageProfileMigrationManager implements MigrationEndpoint {
     return _normalizePath('$normalizedBase/$segment');
   }
 
-  String _sanitizeManifestFileName(final String value) => value
+  String _sanitizeManifestFileName(String value) => value
       .replaceAll(RegExp(r'[/\\]'), '_')
       .replaceAll(RegExp('[^A-Za-z0-9._-]'), '_');
 
   String _migrationOperationId({
-    required final StorageNamespace sourceNamespace,
-    required final String sourcePath,
-    required final StorageNamespace targetNamespace,
-    required final String targetPath,
+    required StorageNamespace sourceNamespace,
+    required String sourcePath,
+    required StorageNamespace targetNamespace,
+    required String targetPath,
   }) => base64Url.encode(
     utf8.encode(
       jsonEncode(<String, String>{
@@ -1716,7 +1716,7 @@ final class _MigrationOperationPreview {
   };
 }
 
-String _truncateContent(final String content) {
+String _truncateContent(String content) {
   const maxLength = 220;
   if (content.length <= maxLength) {
     return content;
@@ -1725,8 +1725,8 @@ String _truncateContent(final String content) {
 }
 
 String _buildDiffSummary({
-  required final String sourceContent,
-  required final String targetContent,
+  required String sourceContent,
+  required String targetContent,
 }) {
   if (targetContent.isEmpty) {
     return 'Target file missing.';
@@ -1747,7 +1747,7 @@ final class _MigrationRecord {
     this.operationId,
   });
 
-  static _MigrationRecord? fromJson(final Map<String, dynamic> json) {
+  static _MigrationRecord? fromJson(Map<String, dynamic> json) {
     final sourceNamespaceValue = json['source_namespace'];
     final targetNamespaceValue = json['target_namespace'];
     final sourcePath = json['source_path'];
@@ -1807,7 +1807,7 @@ final class _MigrationCheckpoint {
     this.errorMessage,
   });
 
-  static _MigrationCheckpoint? fromJson(final Map<String, dynamic> json) {
+  static _MigrationCheckpoint? fromJson(Map<String, dynamic> json) {
     final id = json['id']?.toString();
     final operationId = json['operation_id']?.toString();
     final sourceNamespace = json['source_namespace'];
@@ -1832,8 +1832,8 @@ final class _MigrationCheckpoint {
 
     final transformSteps = json['transform_steps'] is List
         ? (json['transform_steps'] as List<dynamic>)
-              .map((final item) => item.toString())
-              .where((final value) => value.isNotEmpty)
+              .map((item) => item.toString())
+              .where((value) => value.isNotEmpty)
               .toList(growable: false)
         : const <String>[];
 
@@ -1926,7 +1926,7 @@ final class _MigrationTransformConfig {
   });
 
   factory _MigrationTransformConfig.fromMetadata(
-    final Map<String, dynamic> metadata,
+    Map<String, dynamic> metadata,
   ) {
     final root = metadata['transform_config'] is Map
         ? <String, dynamic>{
@@ -1971,7 +1971,7 @@ final class _MigrationTransformConfig {
       }
     }
     remaps.sort(
-      (final left, final right) =>
+      (left, right) =>
           right.fromPrefix.length.compareTo(left.fromPrefix.length),
     );
 
@@ -2049,7 +2049,7 @@ final class _MigrationTransformConfig {
       globalProjection.hasRules ||
       namespaceProjections.isNotEmpty;
 
-  String transformPath(final String sourcePath) {
+  String transformPath(String sourcePath) {
     var path = _normalizePathValue(sourcePath);
     if (path.isEmpty) {
       return path;
@@ -2069,8 +2069,8 @@ final class _MigrationTransformConfig {
     if (idRemapTable.isNotEmpty) {
       final segments = path
           .split('/')
-          .where((final segment) => segment.isNotEmpty)
-          .map((final segment) => idRemapTable[segment] ?? segment)
+          .where((segment) => segment.isNotEmpty)
+          .map((segment) => idRemapTable[segment] ?? segment)
           .toList(growable: false);
       path = segments.join('/');
     }
@@ -2079,11 +2079,11 @@ final class _MigrationTransformConfig {
   }
 
   _MigrationTransformedContent transformContent({
-    required final StorageNamespace sourceNamespace,
-    required final StorageNamespace targetNamespace,
-    required final String sourcePath,
-    required final String targetPath,
-    required final String sourceContent,
+    required StorageNamespace sourceNamespace,
+    required StorageNamespace targetNamespace,
+    required String sourcePath,
+    required String targetPath,
+    required String sourceContent,
   }) {
     if (!hasTransforms) {
       return _MigrationTransformedContent(content: sourceContent);
@@ -2176,7 +2176,7 @@ final class _SchemaTransformRule {
   final String toVersion;
   final String? fromVersion;
 
-  bool apply(final Object? node) {
+  bool apply(Object? node) {
     if (node is! Map) {
       throw const FormatException(
         'Schema transform expects top-level JSON object.',
@@ -2206,7 +2206,7 @@ final class _FieldProjection {
     this.exclude = const <String>{},
   });
 
-  factory _FieldProjection.fromJson(final Map<String, dynamic> json) =>
+  factory _FieldProjection.fromJson(Map<String, dynamic> json) =>
       _FieldProjection(
         include: _stringSetFromValue(json['include']),
         exclude: _stringSetFromValue(json['exclude']),
@@ -2217,14 +2217,14 @@ final class _FieldProjection {
 
   bool get hasRules => include.isNotEmpty || exclude.isNotEmpty;
 
-  Object? apply(final Object? node) {
+  Object? apply(Object? node) {
     if (node is! Map) {
       throw const FormatException(
         'Field projection expects top-level JSON object.',
       );
     }
     final source = Map<String, dynamic>.from(
-      node.map((final key, final value) => MapEntry(key.toString(), value)),
+      node.map((key, value) => MapEntry(key.toString(), value)),
     );
 
     var result = <String, dynamic>{...source};
@@ -2235,7 +2235,7 @@ final class _FieldProjection {
       };
     }
     if (exclude.isNotEmpty) {
-      result.removeWhere((final key, final _) => exclude.contains(key));
+      result.removeWhere((key, _) => exclude.contains(key));
     }
     return result;
   }
@@ -2254,7 +2254,7 @@ final class _MigrationLockInfo {
   final DateTime? acquiredAt;
 }
 
-Object? _remapJsonIds(final Object? node, final Map<String, String> idRemap) {
+Object? _remapJsonIds(Object? node, Map<String, String> idRemap) {
   if (node is Map) {
     return <String, dynamic>{
       for (final entry in node.entries)
@@ -2262,7 +2262,7 @@ Object? _remapJsonIds(final Object? node, final Map<String, String> idRemap) {
     };
   }
   if (node is List) {
-    return node.map((final item) => _remapJsonIds(item, idRemap)).toList();
+    return node.map((item) => _remapJsonIds(item, idRemap)).toList();
   }
   if (node is String) {
     return idRemap[node] ?? node;
@@ -2270,31 +2270,31 @@ Object? _remapJsonIds(final Object? node, final Map<String, String> idRemap) {
   return node;
 }
 
-DateTime? _parseCheckpointDateTime(final Object? value) {
+DateTime? _parseCheckpointDateTime(Object? value) {
   if (value is! String || value.isEmpty) {
     return null;
   }
   return DateTime.tryParse(value)?.toUtc();
 }
 
-Set<String> _stringSetFromValue(final Object? value) {
+Set<String> _stringSetFromValue(Object? value) {
   if (value is! List) {
     return const <String>{};
   }
   return value
-      .map((final item) => item.toString())
-      .where((final item) => item.isNotEmpty)
+      .map((item) => item.toString())
+      .where((item) => item.isNotEmpty)
       .toSet();
 }
 
-String _normalizePathValue(final String path) => path
+String _normalizePathValue(String path) => path
     .replaceAll(r'\', '/')
     .replaceAll(RegExp('/+'), '/')
     .replaceAll(RegExp('^/+'), '')
     .replaceAll(RegExp(r'/+$'), '');
 
 /// Parses a plan metadata value as a tri-state bool.
-bool? _planBool(final Map<String, dynamic> metadata, final String key) {
+bool? _planBool(Map<String, dynamic> metadata, String key) {
   final raw = metadata[key];
   if (raw == null) {
     return null;
@@ -2325,7 +2325,7 @@ bool? _planBool(final Map<String, dynamic> metadata, final String key) {
 }
 
 /// Resolves `migration_interaction_level: complex` as pause-for-decisions.
-bool? _planInteractionLevel(final Map<String, dynamic> metadata) {
+bool? _planInteractionLevel(Map<String, dynamic> metadata) {
   final rawLevel = metadata['migration_interaction_level'];
   if (rawLevel is! String) {
     return null;

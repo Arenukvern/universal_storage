@@ -23,3 +23,4 @@ dev_dependencies:
   universal_storage_conformance:
     path: ../universal_storage_conformance
   xsoulspace_lints: ^0.1.2
+  universal_storage_filesystem: any
