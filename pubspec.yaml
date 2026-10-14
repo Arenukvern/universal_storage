@@ -17,7 +17,6 @@ workspace:
   - pkgs/universal_storage_convergence
   - pkgs/universal_storage_convergence_session
   - pkgs/universal_storage_db
-  - pkgs/universal_storage_docs
   - pkgs/universal_storage_filesystem
   - pkgs/universal_storage_git_offline
   - pkgs/universal_storage_github_api
