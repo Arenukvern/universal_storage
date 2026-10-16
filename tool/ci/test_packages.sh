@@ -31,7 +31,9 @@ for pkg_dir in pkgs/*/; do
     else
       (cd "$pkg_dir" && flutter test -r compact)
     fi
-  else
-    (cd "$pkg_dir" && dart test -r compact)
-  fi
+    elif [[ "$name" == "universal_storage_git_offline" ]]; then
+      (cd "$pkg_dir" && dart test --concurrency=1 -r compact)
+    else
+      (cd "$pkg_dir" && dart test -r compact)
+    fi
 done

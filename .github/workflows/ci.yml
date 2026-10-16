@@ -57,5 +57,4 @@ jobs:
       - name: dart pub get
         run: dart pub get
       - name: dart pub publish --dry-run
-        working-directory: pkgs/${{ matrix.package }}
-        run: dart pub publish --dry-run
+        run: bash tool/release/publish_pub_package.sh --package-dir pkgs/${{ matrix.package }}

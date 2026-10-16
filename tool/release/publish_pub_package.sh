@@ -43,6 +43,13 @@ dart pub get
       dart pub publish -f
     fi
   else
-    dart pub publish --dry-run
+    dart pub publish --dry-run || {
+      code=$?
+      # Pub uses exit 65 for validation warnings (e.g. changelog nits).
+      if [[ "$code" == "65" ]]; then
+        exit 0
+      fi
+      exit "$code"
+    }
   fi
 )
