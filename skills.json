@@ -1,4 +1,18 @@
 {
   "$schema": "https://unpkg.com/skillman/skills_schema.json",
-  "skills": []
+  "skills": [
+    {
+      "source": "arenukvern/skill_steward",
+      "commit": "016f1524387af23a6be6e9ad6e2c7767581a5630",
+      "skills": [
+        "repo-quality-system-lifecycle",
+        "repository-governance-lifecycle",
+        "release-changelog-harness",
+        "vision-alignment-foresight",
+        "skill-source-citations",
+        "mixture-of-experts",
+        "multi-agent-handoff"
+      ]
+    }
+  ]
 }

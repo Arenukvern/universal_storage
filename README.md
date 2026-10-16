@@ -1,20 +1,25 @@
 <div align="center">
 
+<img src="docs/assets/universal-storage-logo.svg" width="96" alt="Universal Storage logo" />
+
 # Universal Storage
 
-_Provider-agnostic Dart storage: one kernel, many backends — filesystem, git,
-GitHub API, CloudKit, peer mesh, and live-apply mutation windows._
+_Your data outlives your storage._ — provider-agnostic Dart storage: one kernel,
+many backends (filesystem, git, GitHub API, CloudKit, mesh, live apply).
 
 [![CI](https://github.com/Arenukvern/universal_storage/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Arenukvern/universal_storage/actions/workflows/ci.yml)
+[![Steward validate](https://github.com/Arenukvern/universal_storage/actions/workflows/steward.yml/badge.svg?branch=main)](https://github.com/Arenukvern/universal_storage/actions/workflows/steward.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Dart](https://img.shields.io/badge/Dart-%3E%3D3.13-blue.svg)](https://dart.dev)
+[![Principles](https://img.shields.io/badge/ethics-principles%20%26%20care-6b4fa0)](docs/PRINCIPLES.mdx)
 [![maintained with Skill Steward](https://raw.githubusercontent.com/Arenukvern/skill_steward/main/docs/brand/assets/svg/badge-light.svg)](https://github.com/Arenukvern/skill_steward)
+[![All Contributors](https://img.shields.io/github/all-contributors/Arenukvern/universal_storage?color=ee8449&style=flat-square)](#contributors)
 
 </div>
 
 - 📖 **Docs:** [docs.page/arenukvern/universal_storage](https://docs.page/arenukvern/universal_storage) (enable after public cut — see [docs.json](docs.json))
 - 🤝 **Contribute:** [CONTRIBUTING.md](CONTRIBUTING.md) · [code of conduct](CODE_OF_CONDUCT.md) · [security](SECURITY.md)
-- 🧭 **Charter:** [docs/NORTH_STAR.mdx](docs/NORTH_STAR.mdx) · **Agents:** [AGENTS.md](AGENTS.md)
+- 🧭 **Charter:** [docs/NORTH_STAR.mdx](docs/NORTH_STAR.mdx) · [principles](docs/PRINCIPLES.mdx) · **Agents:** [AGENTS.md](AGENTS.md)
 
 **Different product** from computer-use automation
 ([ai_computer_use_universal_automation](https://github.com/Arenukvern/ai_computer_use_universal_automation)).
@@ -124,6 +129,27 @@ same OSS shape as `mcp_flutter`.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md). Pull requests and issues:
 [GitHub](https://github.com/Arenukvern/universal_storage).
+
+## Contributors
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://xsoulspace.dev"><img src="https://avatars.githubusercontent.com/u/15068151?v=4?s=100" width="100px;" alt="Anton Malofeev"/><br /><sub><b>Anton Malofeev</b></sub></a><br /><a href="https://github.com/Arenukvern/universal_storage/commits?author=Arenukvern" title="Code">💻</a> <a href="https://github.com/Arenukvern/universal_storage/commits?author=Arenukvern" title="Documentation">📖</a> <a href="https://github.com/Arenukvern/universal_storage/commits?author=Arenukvern" title="Maintenance">🚧</a> <a href="#ideas-Arenukvern" title="Ideas, Planning, & Feedback">🤔</a></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+Credit via [all-contributors](https://allcontributors.org/) — update
+[`.all-contributorsrc`](.all-contributorsrc) and regenerate this table.
 
 ## License
 

@@ -5,6 +5,14 @@ also carry their own `CHANGELOG.md` under `pkgs/<name>/`.
 
 ## Unreleased
 
+### Repository (OSS follow-up)
+
+- release-please per-package config + manifest + GitHub Action.
+- Workflows: steward validate, pub.dev publish (OIDC-ready `pub.dev` environment).
+- all-contributors (`.all-contributorsrc`, README table), project logo SVG,
+  [docs/PRINCIPLES.mdx](docs/PRINCIPLES.mdx), rewritten [docs/NORTH_STAR.mdx](docs/NORTH_STAR.mdx).
+- `skills.json` pins Skill Steward governance / release skills.
+
 ### Repository
 
 - Prepare public open-source release: workspace `pubspec.yaml` lists all

@@ -27,6 +27,7 @@
       "pages": [
         { "title": "Overview", "href": "/" },
         { "title": "North Star", "href": "/NORTH_STAR" },
+        { "title": "Principles", "href": "/PRINCIPLES" },
         { "title": "DESIGN_FAQ", "href": "/DESIGN_FAQ" },
         { "title": "DX_FAQ", "href": "/DX_FAQ" },
         { "title": "Docs map", "href": "/start_here/docs_map" }
