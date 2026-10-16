@@ -1,0 +1,63 @@
+# DX_FAQ — how to work in this repo
+
+## Prerequisites
+
+- Dart **3.13+** (Flutter stable channel includes it).
+- `git` on PATH for `universal_storage_git_offline` tests.
+
+## Clone and validate
+
+```bash
+git clone https://github.com/Arenukvern/universal_storage.git
+cd universal_storage
+dart pub get
+dart analyze
+bash tool/ci/test_packages.sh
+```
+
+Optional Skill Steward desk:
+
+```bash
+steward doctor --json
+steward map
+```
+
+## Add a dependency in another repo
+
+During alpha, prefer pub.dev pre-releases when published; until then use a
+git dependency:
+
+```yaml
+dependencies:
+  universal_storage_sync:
+    git:
+      url: https://github.com/Arenukvern/universal_storage.git
+      path: pkgs/universal_storage_sync
+```
+
+## Run one package
+
+```bash
+cd pkgs/universal_storage_sync
+dart test   # or flutter test when the package pulls Flutter transitively
+```
+
+Git migration **benchmarks** (`migration_benchmarks_test.dart`) are tagged
+`benchmark` and excluded from CI; run locally when tuning performance.
+
+## Publish dry-run
+
+```bash
+cd pkgs/universal_storage_interface
+dart pub publish --dry-run
+```
+
+## Docs map
+
+See [start_here/docs_map.mdx](start_here/docs_map.mdx) before moving or
+duplicating documentation.
+
+## Report security issues
+
+Email **anton@xsoulspace.dev** — see [SECURITY.md](../SECURITY.md). Do not
+file public issues for unpatched vulnerabilities.

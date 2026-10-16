@@ -1,0 +1,58 @@
+name: Publish pub.dev packages
+
+on:
+  push:
+    tags:
+      - '*-v*.*'
+  workflow_dispatch:
+    inputs:
+      package_dir:
+        description: 'Package path (e.g. pkgs/universal_storage_interface)'
+        required: true
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: pub-dev-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: pub.dev
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+
+      - name: Resolve package directory
+        id: meta
+        run: |
+          set -euo pipefail
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "pkg_dir=${{ inputs.package_dir }}" >> "$GITHUB_OUTPUT"
+          else
+            pkg_dir="$(bash tool/release/parse_release_tag.sh "${GITHUB_REF_NAME}" | awk -F= '/^pkg_dir=/{print $2}')"
+            echo "pkg_dir=${pkg_dir}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: dart pub get
+        run: dart pub get
+
+      - name: Publish dry-run (dispatch only)
+        if: github.event_name == 'workflow_dispatch'
+        run: bash tool/release/publish_pub_package.sh --package-dir "${{ steps.meta.outputs.pkg_dir }}"
+
+      - name: Publish to pub.dev (tag push)
+        if: github.event_name == 'push'
+        run: bash tool/release/publish_pub_package.sh --execute --skip-existing --package-dir "${{ steps.meta.outputs.pkg_dir }}"

@@ -1,10 +1,11 @@
 name: universal_storage_sync_utils_flutter
 description: Flutter implementations for universal_storage_sync_utils path picking and macOS bookmark access.
 version: 0.1.0-dev.1
-homepage: https://github.com/xsoulspace/universal_storage_sync/tree/main/pkgs/universal_storage_sync_utils_flutter
-repository: https://github.com/xsoulspace/universal_storage_sync
-issue_tracker: https://github.com/xsoulspace/universal_storage_sync/issues
-documentation: https://github.com/xsoulspace/universal_storage_sync/tree/main/pkgs/universal_storage_sync_utils_flutter
+license: MIT
+homepage: https://github.com/Arenukvern/universal_storage/tree/main/pkgs/universal_storage_sync_utils_flutter
+repository: https://github.com/Arenukvern/universal_storage
+issue_tracker: https://github.com/Arenukvern/universal_storage/issues
+documentation: https://github.com/Arenukvern/universal_storage/tree/main/pkgs/universal_storage_sync_utils_flutter
 
 environment:
   sdk: ^3.13.0

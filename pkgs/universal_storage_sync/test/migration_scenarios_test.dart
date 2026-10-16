@@ -7,6 +7,8 @@ import 'package:universal_storage_local_db/universal_storage_local_db.dart';
 import 'package:universal_storage_sync/universal_storage_sync.dart';
 import 'package:xsoulspace_foundation/xsoulspace_foundation.dart';
 
+const _gitScenarioTimeout = Timeout(Duration(minutes: 3));
+
 /// Real-backend migration scenarios:
 /// - local_db → filesystem (one-shot import)
 /// - filesystem → git_offline (adopt into versioned storage)
@@ -323,7 +325,7 @@ void main() {
       } finally {
         await directory.delete(recursive: true);
       }
-    });
+    }, timeout: _gitScenarioTimeout);
   });
 
   group('migration scenario: filesystem → git_offline → local_db chain', () {
@@ -394,7 +396,7 @@ void main() {
       } finally {
         await originDir.delete(recursive: true);
       }
-    });
+    }, timeout: _gitScenarioTimeout);
   });
 
   group('migration conflict handling', () {

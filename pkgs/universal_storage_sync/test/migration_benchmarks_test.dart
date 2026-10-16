@@ -13,6 +13,7 @@ import 'package:xsoulspace_foundation/xsoulspace_foundation.dart';
 /// - migration throughput per backend pair (files/sec)
 /// - kernel write p50/p95 latency per local backend
 /// - outbox replay throughput
+@Tags(['benchmark'])
 void main() {
   const fileCounts = [10, 100];
 

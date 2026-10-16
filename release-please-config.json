@@ -1,0 +1,182 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "separate-pull-requests": true,
+  "group-pull-request-title-pattern": "chore: release ${version}",
+  "packages": {
+    "pkgs/universal_storage_chunks": {
+      "release-type": "dart",
+      "package-name": "universal_storage_chunks",
+      "component": "universal_storage_chunks",
+      "include-component-in-tag": true,
+      "changelog-path": "CHANGELOG.md"
+    },
+    "pkgs/universal_storage_cloudkit": {
+      "release-type": "dart",
+      "package-name": "universal_storage_cloudkit",
+      "component": "universal_storage_cloudkit",
+      "include-component-in-tag": true,
+      "changelog-path": "CHANGELOG.md"
+    },
+    "pkgs/universal_storage_cloudkit_apple": {
+      "release-type": "dart",
+      "package-name": "universal_storage_cloudkit_apple",
+      "component": "universal_storage_cloudkit_apple",
+      "include-component-in-tag": true,
+      "changelog-path": "CHANGELOG.md"
+    },
+    "pkgs/universal_storage_cloudkit_platform_interface": {
+      "release-type": "dart",
+      "package-name": "universal_storage_cloudkit_platform_interface",
+      "component": "universal_storage_cloudkit_platform_interface",
+      "include-component-in-tag": true,
+      "changelog-path": "CHANGELOG.md"
+    },
+    "pkgs/universal_storage_cloudkit_web": {
+      "release-type": "dart",
+      "package-name": "universal_storage_cloudkit_web",
+      "component": "universal_storage_cloudkit_web",
+      "include-component-in-tag": true,
+      "changelog-path": "CHANGELOG.md"
+    },
+    "pkgs/universal_storage_conformance": {
+      "release-type": "dart",
+      "package-name": "universal_storage_conformance",
+      "component": "universal_storage_conformance",
+      "include-component-in-tag": true,
+      "changelog-path": "CHANGELOG.md"
+    },
+    "pkgs/universal_storage_convergence": {
+      "release-type": "dart",
+      "package-name": "universal_storage_convergence",
+      "component": "universal_storage_convergence",
+      "include-component-in-tag": true,
+      "changelog-path": "CHANGELOG.md"
+    },
+    "pkgs/universal_storage_convergence_session": {
+      "release-type": "dart",
+      "package-name": "universal_storage_convergence_session",
+      "component": "universal_storage_convergence_session",
+      "include-component-in-tag": true,
+      "changelog-path": "CHANGELOG.md"
+    },
+    "pkgs/universal_storage_db": {
+      "release-type": "dart",
+      "package-name": "universal_storage_db",
+      "component": "universal_storage_db",
+      "include-component-in-tag": true,
+      "changelog-path": "CHANGELOG.md"
+    },
+    "pkgs/universal_storage_filesystem": {
+      "release-type": "dart",
+      "package-name": "universal_storage_filesystem",
+      "component": "universal_storage_filesystem",
+      "include-component-in-tag": true,
+      "changelog-path": "CHANGELOG.md"
+    },
+    "pkgs/universal_storage_git_offline": {
+      "release-type": "dart",
+      "package-name": "universal_storage_git_offline",
+      "component": "universal_storage_git_offline",
+      "include-component-in-tag": true,
+      "changelog-path": "CHANGELOG.md"
+    },
+    "pkgs/universal_storage_github_api": {
+      "release-type": "dart",
+      "package-name": "universal_storage_github_api",
+      "component": "universal_storage_github_api",
+      "include-component-in-tag": true,
+      "changelog-path": "CHANGELOG.md"
+    },
+    "pkgs/universal_storage_github_oauth": {
+      "release-type": "dart",
+      "package-name": "universal_storage_github_oauth",
+      "component": "universal_storage_github_oauth",
+      "include-component-in-tag": true,
+      "changelog-path": "CHANGELOG.md"
+    },
+    "pkgs/universal_storage_interface": {
+      "release-type": "dart",
+      "package-name": "universal_storage_interface",
+      "component": "universal_storage_interface",
+      "include-component-in-tag": true,
+      "changelog-path": "CHANGELOG.md"
+    },
+    "pkgs/universal_storage_live_apply": {
+      "release-type": "dart",
+      "package-name": "universal_storage_live_apply",
+      "component": "universal_storage_live_apply",
+      "include-component-in-tag": true,
+      "changelog-path": "CHANGELOG.md"
+    },
+    "pkgs/universal_storage_local_db": {
+      "release-type": "dart",
+      "package-name": "universal_storage_local_db",
+      "component": "universal_storage_local_db",
+      "include-component-in-tag": true,
+      "changelog-path": "CHANGELOG.md"
+    },
+    "pkgs/universal_storage_mesh": {
+      "release-type": "dart",
+      "package-name": "universal_storage_mesh",
+      "component": "universal_storage_mesh",
+      "include-component-in-tag": true,
+      "changelog-path": "CHANGELOG.md"
+    },
+    "pkgs/universal_storage_mesh_transport": {
+      "release-type": "dart",
+      "package-name": "universal_storage_mesh_transport",
+      "component": "universal_storage_mesh_transport",
+      "include-component-in-tag": true,
+      "changelog-path": "CHANGELOG.md"
+    },
+    "pkgs/universal_storage_oauth": {
+      "release-type": "dart",
+      "package-name": "universal_storage_oauth",
+      "component": "universal_storage_oauth",
+      "include-component-in-tag": true,
+      "changelog-path": "CHANGELOG.md"
+    },
+    "pkgs/universal_storage_realtime": {
+      "release-type": "dart",
+      "package-name": "universal_storage_realtime",
+      "component": "universal_storage_realtime",
+      "include-component-in-tag": true,
+      "changelog-path": "CHANGELOG.md"
+    },
+    "pkgs/universal_storage_session_aead": {
+      "release-type": "dart",
+      "package-name": "universal_storage_session_aead",
+      "component": "universal_storage_session_aead",
+      "include-component-in-tag": true,
+      "changelog-path": "CHANGELOG.md"
+    },
+    "pkgs/universal_storage_sync": {
+      "release-type": "dart",
+      "package-name": "universal_storage_sync",
+      "component": "universal_storage_sync",
+      "include-component-in-tag": true,
+      "changelog-path": "CHANGELOG.md"
+    },
+    "pkgs/universal_storage_sync_utils": {
+      "release-type": "dart",
+      "package-name": "universal_storage_sync_utils",
+      "component": "universal_storage_sync_utils",
+      "include-component-in-tag": true,
+      "changelog-path": "CHANGELOG.md"
+    },
+    "pkgs/universal_storage_sync_utils_flutter": {
+      "release-type": "dart",
+      "package-name": "universal_storage_sync_utils_flutter",
+      "component": "universal_storage_sync_utils_flutter",
+      "include-component-in-tag": true,
+      "changelog-path": "CHANGELOG.md"
+    },
+    "pkgs/universal_storage_world": {
+      "release-type": "dart",
+      "package-name": "universal_storage_world",
+      "component": "universal_storage_world",
+      "include-component-in-tag": true,
+      "changelog-path": "CHANGELOG.md"
+    }
+  }
+}
