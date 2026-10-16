@@ -75,8 +75,18 @@ final class MeshStorageProvider implements StorageProvider {
   var _inMemory = false;
   final List<MeshTransport> _transports = [];
   final List<StreamSubscription<MeshSession>> _incomingSubscriptions = [];
+  final Set<Future<void>> _inflightExchanges = {};
   final Map<String, ConvergenceDoc> _docs = {};
   var _initialized = false;
+
+  Future<void> _trackExchange(Future<void> exchange) async {
+    _inflightExchanges.add(exchange);
+    try {
+      await exchange;
+    } finally {
+      _inflightExchanges.remove(exchange);
+    }
+  }
 
   // -- Interest management (ADR 0048) --------------------------------------
 
@@ -121,11 +131,13 @@ final class MeshStorageProvider implements StorageProvider {
     _transports.add(transport);
     _incomingSubscriptions.add(
       transport.incoming.listen((session) async {
-        try {
-          await _runExchange(session);
-        } finally {
-          await session.close();
-        }
+        await _trackExchange(() async {
+          try {
+            await _runExchange(session);
+          } finally {
+            await session.close();
+          }
+        }());
       }),
     );
   }
@@ -292,11 +304,14 @@ final class MeshStorageProvider implements StorageProvider {
       if (session == null) {
         continue; // Opportunistic: unreachable peer, try next time.
       }
-      try {
-        await _runExchange(session);
-      } finally {
-        await session.close();
-      }
+      final activeSession = session;
+      await _trackExchange(() async {
+        try {
+          await _runExchange(activeSession);
+        } finally {
+          await activeSession.close();
+        }
+      }());
     }
   }
 
@@ -306,6 +321,9 @@ final class MeshStorageProvider implements StorageProvider {
       await sub.cancel();
     }
     _incomingSubscriptions.clear();
+    if (_inflightExchanges.isNotEmpty) {
+      await Future.wait(_inflightExchanges.toList());
+    }
     _transports.clear();
     _docs.clear();
     _store = null;
