@@ -1,0 +1,28 @@
+name: Feature request
+description: Propose a new capability or API
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or use case
+      description: What pain does this solve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed approach
+    validations:
+      required: true
+  - type: dropdown
+    id: north_star
+    attributes:
+      label: North Star impact (see AGENTS.md)
+      options:
+        - none
+        - applies
+        - clarifies
+        - sub_star
+        - amends
+        - conflicts

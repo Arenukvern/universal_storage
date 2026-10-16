@@ -1,0 +1,32 @@
+# DESIGN_FAQ — why Universal Storage is shaped this way
+
+## Why a monorepo workspace?
+
+Packages share evolving contracts (`universal_storage_interface`) and release
+together during the `0.1.0-dev` alpha. A Dart 3 workspace keeps path
+dependencies honest while pub.dev consumers pin semver ranges per package.
+
+## Why split OAuth and GitHub OAuth?
+
+`universal_storage_oauth` holds **contracts** (provider interfaces, credential
+storage models). The GitHub device-flow implementation moved to
+`universal_storage_github_oauth` so apps that only need contracts do not pull
+HTTP/GitHub client dependencies.
+
+## Why split sync utils and sync utils Flutter?
+
+`universal_storage_sync_utils` stays pure Dart (profiles, migration recipes,
+path validation). Folder pickers and macOS security-scoped bookmarks live in
+`universal_storage_sync_utils_flutter`.
+
+## Why conformance as its own package?
+
+Repeated behavioral scenarios catch real backend bugs (path normalization,
+silent no-ops, listing contracts). One suite, many providers — see
+`pkgs/universal_storage_conformance/README.md`.
+
+## Relationship to dart_flutter_packages
+
+Extracted on **2026-10-14**. Path overrides to the old DFP monorepo are
+intentionally removed; depend on pub packages (`xsoulspace_lints`,
+`xsoulspace_foundation`) or this workspace.

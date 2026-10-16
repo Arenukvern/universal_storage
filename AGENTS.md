@@ -4,8 +4,9 @@ Welcome. This project uses **Skill Steward** to make repository purpose, validat
 
 `universal_storage_*` family (events, sync, mesh, live_apply). Extracted
 from DFP 2026-10-14. Different product from computer-use automation.
-Private GitHub until an explicit public cut; MIT; pub.dev-ready.
-Stewardship follows the mcp_flutter OSS pattern.
+MIT monorepo on GitHub (`Arenukvern/universal_storage`); packages target
+pub.dev during the `0.1.0-dev` alpha. Stewardship follows the mcp_flutter
+OSS pattern.
 
 ## Operational Desk
 
@@ -63,9 +64,9 @@ Discover once per session: `resources/read` `codemap://surface/v1`, or `map_surf
 Then call `map_index` with `operation=`. The transport refuses retired names
 (`map_index_search`, `map_index_query`, `map_index_build`, and the other `map_index_*` tools).
 
-Pass `"root": "/Users/antonio/xs/universal_storage"` when the client cwd is not this repo.
+Pass `"root": "<absolute-path-to-this-repo>"` when the client cwd is not this repo.
 
-1. **Start** — `map_doctor`, then `map_index` `{"operation":"build","root":"/Users/antonio/xs/universal_storage","ignore_prefixes":["build/","dist/",".dart_tool/","target/"]}`, then `map_index` `{"operation":"context_map","root":"/Users/antonio/xs/universal_storage","limit":24}`.
+1. **Start** — `map_doctor`, then `map_index` `{"operation":"build","root":"<absolute-path-to-this-repo>","ignore_prefixes":["build/","dist/",".dart_tool/","target/"]}`, then `map_index` `{"operation":"context_map","root":"<absolute-path-to-this-repo>","limit":24}`.
 2. **Find** — `operation=search` and `query`. Concept-shaped queries add `"mode":"bm25"`.
 3. **Before an edit** — `operation=query`, `kind=impact`, `symbol` = `rel/path.ext::unit.name` from search. `kind=context` returns the node and its edges. `kind=trace` also needs `target`.
 4. **One evidence packet** — `operation=evidence` with `purpose` (`understand`, `impact`, or `trace`) and `budget_bytes`. Open the exact original with `operation=expand` and the handle in `meta.expansion`.
@@ -74,7 +75,7 @@ Pass `"root": "/Users/antonio/xs/universal_storage"` when the client cwd is not 
 
 CLI, from the codemap checkout:
 
-`~/xs/codemap/.venv/bin/python ~/xs/codemap/engines/versions/py_engine/codemap_cli.py --json exec <index_command> --args '{"root":"/Users/antonio/xs/universal_storage",...}'`
+`~/xs/codemap/.venv/bin/python ~/xs/codemap/engines/versions/py_engine/codemap_cli.py --json exec <index_command> --args '{"root":"<absolute-path-to-this-repo>",...}'`
 
 Parser edges only. Unresolved calls stay in the payload.
 <!-- codemap-index:end -->

@@ -1,0 +1,42 @@
+# Universal Storage — North Star
+
+**Status:** guiding charter for the `universal_storage_*` family.
+
+## Objective
+
+Give Dart and Flutter apps one **provider-agnostic storage seam**: local files,
+offline git, GitHub API, CloudKit, peer mesh replicas, and live-apply mutation
+windows — all behind `StorageProvider` / `StorageKernel` contracts so backends
+swap without rewriting product code.
+
+## What this repository owns
+
+- **Contracts** — `universal_storage_interface` models, capabilities, errors.
+- **Orchestration** — `universal_storage_sync` registry, kernel, profiles,
+  migrations, outbox.
+- **Backends** — filesystem, local DB, git offline, GitHub API, CloudKit
+  (Apple + web), mesh P2P (`universal_storage_mesh` + transport).
+- **Cross-cutting** — convergence, chunks, OAuth contracts, GitHub OAuth
+  implementation, live apply, conformance suite.
+
+## What it does not own
+
+- Computer-use / UI automation — see
+  [ai_computer_use_universal_automation](https://github.com/Arenukvern/ai_computer_use_universal_automation).
+- Agent repo stewardship mechanics — see
+  [Skill Steward](https://github.com/Arenukvern/skill_steward).
+
+## Non-negotiables
+
+1. Backends must pass `universal_storage_conformance` before they are treated
+   as swappable.
+2. Sync and mesh paths are **opportunistic** — local reads/writes never block
+   on connectivity.
+3. Merge semantics stay in the kernel / convergence packages, not in transport
+   radios.
+
+## Proof
+
+- `dart analyze` clean at repo root (workspace).
+- Per-package tests green via `tool/ci/test_packages.sh`.
+- Package-level README quickstarts for sync, filesystem, mesh, live_apply.

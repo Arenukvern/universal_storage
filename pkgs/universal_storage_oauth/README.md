@@ -225,6 +225,6 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Support
 
-- 📚 [Documentation](https://github.com/your-org/universal_storage_oauth)
-- 🐛 [Issue Tracker](https://github.com/your-org/universal_storage_oauth/issues)
-- 💬 [Discussions](https://github.com/your-org/universal_storage_oauth/discussions)
+- 📚 [Documentation](https://github.com/Arenukvern/universal_storage/tree/main/pkgs/universal_storage_oauth)
+- 🐛 [Issue Tracker](https://github.com/Arenukvern/universal_storage/tree/main/pkgs/universal_storage_oauth/issues)
+- 💬 [Discussions](https://github.com/Arenukvern/universal_storage/tree/main/pkgs/universal_storage_oauth/discussions)

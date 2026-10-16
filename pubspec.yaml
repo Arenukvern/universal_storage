@@ -1,17 +1,40 @@
 name: universal_storage_workspace
 description: >-
-  Private workspace for universal_storage_* (events, sync, mesh,
-  live_apply). Extracted from dart_flutter_packages 2026-10-14.
+  Dart workspace for the universal_storage_* family (events, sync, mesh,
+  live_apply, CloudKit adapters). MIT monorepo — extracted from
+  dart_flutter_packages 2026-10-14.
 publish_to: none
 
 environment:
   sdk: ^3.13.0
 
 workspace:
-  - pkgs/*
+  - pkgs/universal_storage_chunks
+  - pkgs/universal_storage_cloudkit
+  - pkgs/universal_storage_cloudkit_apple
+  - pkgs/universal_storage_cloudkit_platform_interface
+  - pkgs/universal_storage_cloudkit_web
+  - pkgs/universal_storage_conformance
+  - pkgs/universal_storage_convergence
+  - pkgs/universal_storage_convergence_session
+  - pkgs/universal_storage_db
+  - pkgs/universal_storage_filesystem
+  - pkgs/universal_storage_github_api
+  - pkgs/universal_storage_github_oauth
+  - pkgs/universal_storage_git_offline
+  - pkgs/universal_storage_interface
+  - pkgs/universal_storage_live_apply
+  - pkgs/universal_storage_local_db
+  - pkgs/universal_storage_mesh
+  - pkgs/universal_storage_mesh_transport
+  - pkgs/universal_storage_oauth
+  - pkgs/universal_storage_realtime
+  - pkgs/universal_storage_session_aead
+  - pkgs/universal_storage_sync
+  - pkgs/universal_storage_sync_utils
+  - pkgs/universal_storage_sync_utils_flutter
+  - pkgs/universal_storage_world
 
 dependency_overrides:
   meta: 1.19.0
-  test_api: 0.7.13
-  xsoulspace_lints:
-    path: ../storage_problem/dart_flutter_packages/pkgs/xsoulspace_lints
+  test_api: 0.7.15

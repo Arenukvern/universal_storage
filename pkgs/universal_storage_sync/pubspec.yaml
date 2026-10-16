@@ -4,10 +4,11 @@ description: |
   storage operations with support for local filesystem and Git-based
   control.
 version: 0.1.0-dev.12
-homepage: https://github.com/xsoulspace/universal_storage_sync
-repository: https://github.com/xsoulspace/universal_storage_sync
-issue_tracker: https://github.com/xsoulspace/universal_storage_sync/issues
-documentation: https://github.com/xsoulspace/universal_storage_sync/tree/main/pkgs/universal_storage_sync
+license: MIT
+homepage: https://github.com/Arenukvern/universal_storage
+repository: https://github.com/Arenukvern/universal_storage
+issue_tracker: https://github.com/Arenukvern/universal_storage/issues
+documentation: https://github.com/Arenukvern/universal_storage/tree/main/pkgs/universal_storage_sync
 
 environment:
   sdk: ^3.13.0

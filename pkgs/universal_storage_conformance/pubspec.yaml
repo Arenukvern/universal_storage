@@ -4,6 +4,7 @@ description: >-
   Every StorageProvider implementation must pass this suite to guarantee
   swappability under the StorageKernelContract.
 version: 0.1.0-dev.1
+license: MIT
 
 environment:
   sdk: ^3.13.0
