@@ -14,8 +14,28 @@ String sha256Hex(String input) =>
     crypto.sha256.convert(utf8.encode(input)).toString();
 
 /// Normalize content by trimming trailing whitespace and collapsing CRLF.
-String normalizeContent(String input) =>
-    input.replaceAll('\r\n', '\n').replaceAll(RegExp(r'[ \t]+\n'), '\n').trim();
+String normalizeContent(String input) {
+  if (!input.contains('\n')) return input.trim();
+  final content = input.replaceAll('\r\n', '\n');
+  final output = StringBuffer();
+  var start = 0;
+  var newline = content.indexOf('\n');
+  while (newline != -1) {
+    var end = newline;
+    while (end > start) {
+      final code = content.codeUnitAt(end - 1);
+      if (code != 0x20 && code != 0x09) break;
+      end--;
+    }
+    output
+      ..write(content.substring(start, end))
+      ..write('\n');
+    start = newline + 1;
+    newline = content.indexOf('\n', start);
+  }
+  output.write(content.substring(start));
+  return output.toString().trim();
+}
 
 /// Compute normalized SHA-256 (hex) for string content.
 String normalizedSha256Hex(String input) =>

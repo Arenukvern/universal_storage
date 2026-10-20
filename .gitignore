@@ -12,3 +12,4 @@ pubspec.lock
 *.iml
 .DS_Store
 .steward/
+.codemap/
