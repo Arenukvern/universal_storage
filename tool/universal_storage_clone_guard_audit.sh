@@ -17,6 +17,16 @@ if rg -n 'xsoulspace/universal_storage_sync' pkgs --glob '**/pubspec.yaml' 2>/de
   fail=1
 fi
 
+if rg -n 'path:\s*/Users/' pubspec.yaml pkgs --glob '**/pubspec.yaml' 2>/dev/null; then
+  echo "clone_guard: absolute macOS path override detected" >&2
+  fail=1
+fi
+
+if rg -n 'path:\s*/' pubspec.yaml pkgs --glob '**/pubspec.yaml' 2>/dev/null | rg -v 'path:\s*\.\.' 2>/dev/null; then
+  echo "clone_guard: absolute path: dependency detected" >&2
+  fail=1
+fi
+
 if [[ "$fail" -ne 0 ]]; then
   exit 1
 fi

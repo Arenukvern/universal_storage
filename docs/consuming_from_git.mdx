@@ -1,0 +1,107 @@
+# Consuming packages from Git
+
+Sibling apps (`vosges`, `last_answer`, `ecsai_harness`, and others) should **not** commit `path:` dependencies to absolute monorepo locations. Pin **per-package release tags** on this repository instead, and use a **gitignored** `pubspec_overrides.yaml` for local `xs/` sibling paths.
+
+## Layout
+
+```text
+xs/
+  universal_storage/   # this repo
+  vosges/              # your app
+```
+
+Committed `pubspec.yaml` in the app: **git** dependencies only.  
+Local dev: `pubspec_overrides.yaml` with **relative** `path:` entries (see [tool/dev/write_pubspec_overrides.dart](https://github.com/Arenukvern/universal_storage/blob/main/tool/dev/write_pubspec_overrides.dart)).
+
+## Release tags (release-please)
+
+No tags exist yet on the default branch; release-please will create **component tags** after the first release PR merges, shaped like:
+
+`universal_storage_<package_name>-v<version>`
+
+Versions come from each package’s `version:` field (see [`.release-please-manifest.json`](https://github.com/Arenukvern/universal_storage/blob/main/.release-please-manifest.json)).
+
+## Eight sibling packages
+
+Replace `<TAG>` with the tag for that package (they can differ per package until you align versions).
+
+```yaml
+dependencies:
+  universal_storage_chunks:
+    git:
+      url: https://github.com/Arenukvern/universal_storage
+      path: pkgs/universal_storage_chunks
+      ref: universal_storage_chunks-v0.1.0-dev.1
+  universal_storage_convergence:
+    git:
+      url: https://github.com/Arenukvern/universal_storage
+      path: pkgs/universal_storage_convergence
+      ref: universal_storage_convergence-v0.1.0-dev.1
+  universal_storage_interface:
+    git:
+      url: https://github.com/Arenukvern/universal_storage
+      path: pkgs/universal_storage_interface
+      ref: universal_storage_interface-v0.1.0-dev.12
+  universal_storage_local_db:
+    git:
+      url: https://github.com/Arenukvern/universal_storage
+      path: pkgs/universal_storage_local_db
+      ref: universal_storage_local_db-v0.1.0-dev.1
+  universal_storage_mesh:
+    git:
+      url: https://github.com/Arenukvern/universal_storage
+      path: pkgs/universal_storage_mesh
+      ref: universal_storage_mesh-v0.1.0-dev.1
+  universal_storage_mesh_transport:
+    git:
+      url: https://github.com/Arenukvern/universal_storage
+      path: pkgs/universal_storage_mesh_transport
+      ref: universal_storage_mesh_transport-v0.1.0-dev.1
+  universal_storage_sync:
+    git:
+      url: https://github.com/Arenukvern/universal_storage
+      path: pkgs/universal_storage_sync
+      ref: universal_storage_sync-v0.1.0-dev.12
+  universal_storage_world:
+    git:
+      url: https://github.com/Arenukvern/universal_storage
+      path: pkgs/universal_storage_world
+      ref: universal_storage_world-v0.1.0-dev.1
+```
+
+Use `flutter pub get` when you depend on `universal_storage_local_db` (it pulls `xsoulspace_foundation` / Flutter). Pure-Dart apps can use `dart pub get` if they skip `local_db`.
+
+## Transitive monorepo packages (before pub.dev)
+
+Published `pubspec.yaml` files in this repo use **hosted** semver for other `universal_storage_*` packages (no `path:` in dependencies). Until those versions exist on [pub.dev](https://pub.dev), `dart pub` cannot resolve siblings from tags alone.
+
+**Today:** add `dependency_overrides` for the **mesh closure** package with the **same tag** as the rest of your pins:
+
+```yaml
+dependency_overrides:
+  universal_storage_convergence_session:
+    git:
+      url: https://github.com/Arenukvern/universal_storage
+      path: pkgs/universal_storage_convergence_session
+      ref: universal_storage_convergence_session-v0.1.0-dev.1
+```
+
+If the solver still mixes hosted and git sources, override **all** monorepo packages you depend on (the eight above plus `universal_storage_convergence_session`) to the same `ref`.
+
+**After pub.dev:** publish the monorepo packages from tags (see `.github/workflows/pub_publish.yml`). Then consumers can drop overrides and rely on hosted `^` constraints, or keep git pins only for packages they want to track from source.
+
+## Local path overrides
+
+From your app repository root:
+
+```bash
+dart run ../universal_storage/tool/dev/write_pubspec_overrides.dart write
+# optional: also override convergence_session for mesh work
+dart run ../universal_storage/tool/dev/write_pubspec_overrides.dart write --include-mesh-closure
+```
+
+This writes `pubspec_overrides.yaml` (gitignored). Remove it with the `delete` command.
+
+## CI proof in this repo
+
+`tool/ci/verify_git_consumer_resolution.sh` runs a scratch consumer with git dependencies against the current checkout (or `GITHUB_SHA` on Actions).
