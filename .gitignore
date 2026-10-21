@@ -6,6 +6,8 @@ build/
 **/.build/
 .packages
 pubspec.lock
+pubspec_overrides.yaml
+**/pubspec_overrides.yaml
 **/doc/api/
 .idea/
 .vscode/

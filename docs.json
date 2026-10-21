@@ -30,6 +30,7 @@
         { "title": "Principles", "href": "/PRINCIPLES" },
         { "title": "DESIGN_FAQ", "href": "/DESIGN_FAQ" },
         { "title": "DX_FAQ", "href": "/DX_FAQ" },
+        { "title": "Consuming from Git", "href": "/consuming_from_git" },
         { "title": "Docs map", "href": "/start_here/docs_map" }
       ]
     },
