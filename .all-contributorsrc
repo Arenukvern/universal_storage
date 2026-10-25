@@ -1,0 +1,24 @@
+{
+  "projectName": "universal_storage",
+  "projectOwner": "Arenukvern",
+  "files": [
+    "README.md"
+  ],
+  "commitType": "docs",
+  "commitConvention": "angular",
+  "contributorsPerLine": 7,
+  "contributors": [
+    {
+      "login": "Arenukvern",
+      "name": "Anton Malofeev",
+      "avatar_url": "https://avatars.githubusercontent.com/u/15068151?v=4",
+      "profile": "https://xsoulspace.dev",
+      "contributions": [
+        "code",
+        "doc",
+        "maintenance",
+        "ideas"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,96 @@
+# Universal Storage — North Star
+
+**Tagline:** *Your data outlives your storage.*
+
+**Status:** guiding charter for the `universal_storage_*` family.
+
+## Problem
+
+Private, ad-hoc storage stacks cap what we can do with data. They are brittle
+over years, expensive to operate, and **painful to migrate** when products,
+platforms, or teams change. Apps inherit silos; users inherit lock-in.
+
+Universal Storage exists so applications can treat storage as a **durable,
+swappable seam** — not a one-time integration bet.
+
+## Vision
+
+One user’s corpus should survive backend changes, device changes, and vendor
+changes with **verifiable, reversible migration** and **offline-first sync**
+across that user’s devices. Shared multi-user live worlds are a later horizon;
+reliability and migration come first.
+
+## Pillars
+
+### 1. Long-term reliability
+
+Content-addressed where it helps, versioned by default, **verifiable and
+repairable**. Backends must pass `universal_storage_conformance` before they
+count as swappable. Corruption and drift should be detectable, not silent.
+
+### 2. Migration by default
+
+**Any backend → any backend**: incremental, checksum-aware, resumable, and
+reversible where the backends allow. `StorageProfileMigrationManager` and
+profile recipes are the product surface — not one-off exporter scripts.
+
+### 3. Multi-device sync (first focus)
+
+**One user, many devices** staying consistent: offline-first reads/writes,
+opportunistic sync, conflict-free merging via the convergence kernel. Mesh and
+git remotes are transports; merge authority stays in the kernel.
+
+### 4. Multi-user shared live state (later horizon)
+
+MMO-style shared live documents and presence build on the same convergence
+and mesh layers — **after** single-user multi-device sync is boringly
+trustworthy. See mesh north star (ADR 0010) for P2P scope today.
+
+### 5. Efficiency as a feature
+
+Pluggable **compression, dedup, chunking, lazy access, and sync** with
+benchmarks in CI (soft gates where appropriate). Cost and battery matter at
+scale.
+
+### 6. Private by design
+
+**Encryption** and **no vendor lock-in**: contracts in
+`universal_storage_interface`, OAuth split from GitHub implementations,
+exportable profiles, MIT packages on pub.dev.
+
+## Staged roadmap
+
+| Stage | Focus | Proof |
+| --- | --- | --- |
+| **S0 — Contracts** | Interface, conformance, filesystem + local DB | Conformance green |
+| **S1 — Kernel** | Sync, outbox, migrations, git offline | Scenario + chaos tests |
+| **S2 — Cloud & remotes** | GitHub API, CloudKit adapters | Conformance + integration tests |
+| **S3 — Multi-device** | Profiles, convergence, mesh transport | Two-replica + mesh integration suites |
+| **S4 — Efficiency** | Chunks, benchmarks, batching policies | Tagged benchmarks + soft CI gates |
+| **S5 — Shared live** | Realtime, world catalog, presence (mesh) | ADR-gated; not blocking S1–S3 |
+
+Current ledger: [pkgs/universal_storage_docs/BLOCKERS_NEXT.md](../pkgs/universal_storage_docs/BLOCKERS_NEXT.md).
+
+## Non-goals
+
+- **Computer-use / UI automation** — sibling product
+  [ai_computer_use_universal_automation](https://github.com/Arenukvern/ai_computer_use_universal_automation).
+- **Repo stewardship mechanics** — [Skill Steward](https://github.com/Arenukvern/skill_steward).
+- **Cloud-only “sync”** that blocks local I/O on connectivity.
+- **Central conflict authority** for mesh replicas (no origin server semantics).
+- **Premature MMO-scale shared state** before migration and single-user sync
+  are production-trustworthy.
+
+## What this repository owns
+
+Contracts, kernel, backends (filesystem, DB, git, GitHub, CloudKit, mesh),
+convergence, chunks, OAuth, live apply, and the conformance suite — see
+[docs/start_here/docs_map.mdx](start_here/docs_map.mdx).
+
+## Proof today
+
+```bash
+dart pub get && dart analyze && bash tool/ci/test_packages.sh
+```
+
+Principles: [PRINCIPLES.mdx](PRINCIPLES.mdx).

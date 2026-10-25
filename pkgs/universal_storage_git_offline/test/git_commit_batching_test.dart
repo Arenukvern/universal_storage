@@ -112,6 +112,20 @@ void main() {
       await Process.run('git', [
         '-C',
         seedDir.path,
+        'config',
+        'user.email',
+        'seed@test.local',
+      ]);
+      await Process.run('git', [
+        '-C',
+        seedDir.path,
+        'config',
+        'user.name',
+        'Seed',
+      ]);
+      await Process.run('git', [
+        '-C',
+        seedDir.path,
         'commit',
         '--allow-empty',
         '-m',

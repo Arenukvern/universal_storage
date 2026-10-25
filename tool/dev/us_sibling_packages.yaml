@@ -1,0 +1,14 @@
+# Packages sibling repos (vosges, last_answer, ecsai_harness) pin via git tags.
+# `mesh_closure` adds the one transitive monorepo package mesh needs before pub.dev.
+sibling_consumer_packages:
+  - universal_storage_chunks
+  - universal_storage_convergence
+  - universal_storage_interface
+  - universal_storage_local_db
+  - universal_storage_mesh
+  - universal_storage_mesh_transport
+  - universal_storage_sync
+  - universal_storage_world
+
+mesh_closure_packages:
+  - universal_storage_convergence_session

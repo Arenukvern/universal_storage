@@ -30,6 +30,7 @@ Future<FileSystemStorageProvider> open(Directory root) async {
   return provider;
 }
 
+@Tags(['integration'])
 void main() {
   for (final mode in [0x180, 0x1a4]) {
     for (final boundary in FileSystemWriteBoundary.values) {

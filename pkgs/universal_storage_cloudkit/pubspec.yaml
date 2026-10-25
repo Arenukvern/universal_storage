@@ -1,9 +1,10 @@
 name: universal_storage_cloudkit
 description: CloudKit storage provider for universal_storage with native/web bridge support.
 version: 0.1.0-dev.1
-homepage: https://github.com/xsoulspace/universal_storage_sync
-repository: https://github.com/xsoulspace/universal_storage_sync
-issue_tracker: https://github.com/xsoulspace/universal_storage_sync/issues
+license: MIT
+homepage: https://github.com/Arenukvern/universal_storage
+repository: https://github.com/Arenukvern/universal_storage
+issue_tracker: https://github.com/Arenukvern/universal_storage/issues
 
 environment:
   sdk: ^3.13.0

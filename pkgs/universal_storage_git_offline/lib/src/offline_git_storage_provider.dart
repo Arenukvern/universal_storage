@@ -911,7 +911,11 @@ class OfflineGitStorageProvider extends StorageProvider
           continue;
         }
         final gitDirectory = Directory(path.join(entity.path, '.git'));
-        if (!gitDirectory.existsSync()) {
+        try {
+          if (!gitDirectory.existsSync()) {
+            continue;
+          }
+        } on FileSystemException {
           continue;
         }
         final normalizedPath = path.normalize(path.absolute(entity.path));

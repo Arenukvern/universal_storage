@@ -1,0 +1,39 @@
+name: Bug report
+description: Something broke or behaves incorrectly
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for filing a bug. Security issues: email anton@xsoulspace.dev (see SECURITY.md).
+  - type: input
+    id: package
+    attributes:
+      label: Package
+      description: e.g. universal_storage_sync
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      placeholder: Minimal code or test case
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: input
+    id: dart
+    attributes:
+      label: Dart / Flutter version
+      placeholder: dart --version

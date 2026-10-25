@@ -1,0 +1,46 @@
+{
+  "$schema": "https://docs.page/schema.json",
+  "name": "Universal Storage",
+  "description": "Provider-agnostic Dart storage: sync kernel, backends, mesh, live apply.",
+  "github": "https://github.com/Arenukvern/universal_storage",
+  "theme": {
+    "defaultTheme": "system"
+  },
+  "header": {
+    "showName": true,
+    "showThemeToggle": true,
+    "showGitHubCard": true,
+    "links": [
+      {
+        "title": "GitHub",
+        "href": "https://github.com/Arenukvern/universal_storage"
+      },
+      {
+        "title": "Skill Steward",
+        "href": "https://github.com/Arenukvern/skill_steward"
+      }
+    ]
+  },
+  "sidebar": [
+    {
+      "group": "Start here",
+      "pages": [
+        { "title": "Overview", "href": "/" },
+        { "title": "North Star", "href": "/NORTH_STAR" },
+        { "title": "Principles", "href": "/PRINCIPLES" },
+        { "title": "DESIGN_FAQ", "href": "/DESIGN_FAQ" },
+        { "title": "DX_FAQ", "href": "/DX_FAQ" },
+        { "title": "Consuming from Git", "href": "/consuming_from_git" },
+        { "title": "Docs map", "href": "/start_here/docs_map" }
+      ]
+    },
+    {
+      "group": "Repo root",
+      "pages": [
+        { "title": "README", "href": "https://github.com/Arenukvern/universal_storage/blob/main/README.md" },
+        { "title": "AGENTS.md", "href": "https://github.com/Arenukvern/universal_storage/blob/main/AGENTS.md" },
+        { "title": "CONTRIBUTING", "href": "https://github.com/Arenukvern/universal_storage/blob/main/CONTRIBUTING.md" }
+      ]
+    }
+  ]
+}

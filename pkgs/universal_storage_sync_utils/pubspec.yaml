@@ -2,10 +2,11 @@ name: universal_storage_sync_utils
 description: |
   Pure Dart utility functions for universal_storage_sync profile and repository workflows.
 version: 0.1.0-dev.13
-homepage: https://github.com/xsoulspace/universal_storage_sync/tree/main/pkgs/universal_storage_sync_utils
-repository: https://github.com/xsoulspace/universal_storage_sync
-issue_tracker: https://github.com/xsoulspace/universal_storage_sync/issues
-documentation: https://github.com/xsoulspace/universal_storage_sync/tree/main/pkgs/universal_storage_sync_utils
+license: MIT
+homepage: https://github.com/Arenukvern/universal_storage/tree/main/pkgs/universal_storage_sync_utils
+repository: https://github.com/Arenukvern/universal_storage
+issue_tracker: https://github.com/Arenukvern/universal_storage/issues
+documentation: https://github.com/Arenukvern/universal_storage/tree/main/pkgs/universal_storage_sync_utils
 
 environment:
   sdk: ^3.13.0
