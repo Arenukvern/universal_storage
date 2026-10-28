@@ -28,6 +28,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and `AuthenticatedProvider`; capability declaration now flows exclusively
   through `StorageCapabilities` / `declaredCapabilities`.
 
+## [0.1.1-dev.12](https://github.com/Arenukvern/universal_storage/compare/universal_storage_interface-v0.1.0-dev.12...universal_storage_interface-v0.1.1-dev.12) (2026-10-25)
+
+
+### Bug Fixes
+
+* universal storage ([b707abe](https://github.com/Arenukvern/universal_storage/commit/b707abe8a90a5a78d0be1886dedbfa360dd1144d))
+
 ## [0.1.0-dev.12] - 2026-03-28
 
 - chore: update dependencies

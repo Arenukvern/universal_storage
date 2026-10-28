@@ -1,6 +1,6 @@
 name: universal_storage_interface
 description: Interfaces and core models for universal storage providers (file, VCS, cloud). Shared contracts and exceptions.
-version: 0.1.0-dev.12
+version: 0.1.1-dev.12+-dev.12
 license: MIT
 homepage: https://github.com/Arenukvern/universal_storage
 repository: https://github.com/Arenukvern/universal_storage
