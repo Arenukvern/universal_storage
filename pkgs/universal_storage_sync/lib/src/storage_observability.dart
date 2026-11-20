@@ -151,9 +151,7 @@ final class StorageDebugBundleCollector {
       hasStructuredLogs: _entries.isNotEmpty,
       hasCorrelationIds:
           _entries.isNotEmpty &&
-          _entries.every(
-            (entry) => entry.correlationId.trim().isNotEmpty,
-          ),
+          _entries.every((entry) => entry.correlationId.trim().isNotEmpty),
       hasDebugExportBundle: true,
       availableMetrics: Set<String>.unmodifiable(availableMetrics),
     );
@@ -285,10 +283,7 @@ final class StorageDebugBundleCollector {
     return null;
   }
 
-  int? _percentileDurationMs(
-    List<Duration> values,
-    double percentile,
-  ) {
+  int? _percentileDurationMs(List<Duration> values, double percentile) {
     if (values.isEmpty) {
       return null;
     }
@@ -314,19 +309,13 @@ final class StorageDebugBundleCollector {
     return sanitized;
   }
 
-  Object? _sanitizeValue({
-    required String key,
-    required Object? value,
-  }) {
+  Object? _sanitizeValue({required String key, required Object? value}) {
     if (value is Map) {
       return _sanitizeMap(Map<String, dynamic>.from(value));
     }
     if (value is List) {
       return value
-          .map(
-            (item) =>
-                _sanitizeValue(key: key, value: item) ?? redactedValue,
-          )
+          .map((item) => _sanitizeValue(key: key, value: item) ?? redactedValue)
           .toList(growable: false);
     }
     if (_isSensitiveKey(key) || _looksSensitiveValue(value)) {

@@ -82,11 +82,9 @@ enum RepositoryOwnerType {
 
   const RepositoryOwnerType(this.value);
 
-  factory RepositoryOwnerType.fromJson(String value) =>
-      RepositoryOwnerType.values.firstWhere(
-        (type) => type.value == value,
-        orElse: () => unknown,
-      );
+  factory RepositoryOwnerType.fromJson(String value) => RepositoryOwnerType
+      .values
+      .firstWhere((type) => type.value == value, orElse: () => unknown);
 
   /// The value of the repository owner type.
   final String value;

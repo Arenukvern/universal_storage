@@ -22,9 +22,9 @@ void main() {
       ], workingDirectory: Directory.current.path);
 
       expect(result.exitCode, 0, reason: '${result.stdout}\n${result.stderr}');
-      final artifact =
-          jsonDecode(await File(artifactPath).readAsString())
-              as Map<String, dynamic>;
+      final artifact = jsonDecode(
+        await File(artifactPath).readAsString(),
+      ) as Map<String, dynamic>;
       expect(artifact['status'], 'passed');
       expect(artifact['passed'], isTrue);
     });
@@ -52,9 +52,9 @@ void main() {
           1,
           reason: '${result.stdout}\n${result.stderr}',
         );
-        final artifact =
-            jsonDecode(await File(artifactPath).readAsString())
-                as Map<String, dynamic>;
+        final artifact = jsonDecode(
+          await File(artifactPath).readAsString(),
+        ) as Map<String, dynamic>;
         expect(artifact['status'], 'failed');
         expect(artifact['passed'], isFalse);
         expect((artifact['blocking_findings'] as List).isNotEmpty, isTrue);

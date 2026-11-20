@@ -49,9 +49,7 @@ void main() {
 
   test('frame codec round-trips split and concatenated writes', () {
     final decoder = FrameDecoder();
-    final message = Uint8List.fromList(
-      List.generate(1000, (i) => i % 256),
-    );
+    final message = Uint8List.fromList(List.generate(1000, (i) => i % 256));
     final framed = frameMessage(message);
 
     // Split the frame into awkward chunks.

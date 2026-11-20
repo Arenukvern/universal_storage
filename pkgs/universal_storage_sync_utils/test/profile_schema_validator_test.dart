@@ -65,9 +65,7 @@ namespaces:
 
         expect(result.isValid, isFalse);
         expect(
-          result.errors.any(
-            (issue) => issue.code == 'remote_engine_required',
-          ),
+          result.errors.any((issue) => issue.code == 'remote_engine_required'),
           isTrue,
         );
       },
@@ -89,9 +87,7 @@ namespaces:
 
       expect(result.isValid, isTrue);
       expect(
-        result.warnings.any(
-          (issue) => issue.code == 'unknown_top_level_key',
-        ),
+        result.warnings.any((issue) => issue.code == 'unknown_top_level_key'),
         isTrue,
       );
       expect(

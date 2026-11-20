@@ -24,10 +24,8 @@ final class StorageServiceKernelAdapter {
   Future<String?> readFile(String path) =>
       kernel.read(namespace: namespace, path: path);
 
-  Future<FileOperationResult> removeFile(
-    String path, {
-    String? message,
-  }) => kernel.delete(namespace: namespace, path: path, message: message);
+  Future<FileOperationResult> removeFile(String path, {String? message}) =>
+      kernel.delete(namespace: namespace, path: path, message: message);
 
   Future<List<FileEntry>> listDirectory(String path) =>
       kernel.list(namespace: namespace, directoryPath: path);

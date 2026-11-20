@@ -334,8 +334,7 @@ void main() {
       expect(plan.metadata['app'], 'last_answer');
       expect(
         blueprint.targetProfile.namespaces.any(
-          (namespace) =>
-              namespace.namespace == const StorageNamespace('tags'),
+          (namespace) => namespace.namespace == const StorageNamespace('tags'),
         ),
         isTrue,
       );

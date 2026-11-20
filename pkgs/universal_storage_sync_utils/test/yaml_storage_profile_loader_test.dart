@@ -50,17 +50,17 @@ class _YamlLoaderFakeStorageProvider extends StorageProvider {
   }
 
   @override
-  Future<List<FileEntry>> listDirectory(String directoryPath) async =>
-      files.keys
-          .map(
-            (path) => FileEntry(
-              name: path,
-              isDirectory: false,
-              size: files[path]!.length,
-              modifiedAt: DateTime.now(),
-            ),
-          )
-          .toList(growable: false);
+  Future<List<FileEntry>> listDirectory(String directoryPath) async => files
+      .keys
+      .map(
+        (path) => FileEntry(
+          name: path,
+          isDirectory: false,
+          size: files[path]!.length,
+          modifiedAt: DateTime.now(),
+        ),
+      )
+      .toList(growable: false);
 
   @override
   Future<void> restore(String path, {String? versionId}) async {}

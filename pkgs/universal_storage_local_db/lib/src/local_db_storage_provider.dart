@@ -18,9 +18,8 @@ class LocalDbStorageProvider extends StorageProvider implements LocalEngine {
   Future<void> _mutationQueue = Future<void>.value();
 
   String get _bucketStorageKey {
-    final prefix = _resolveKeyspacePrefix(
-      _config,
-    ).whenEmptyUse('universal_storage');
+    final prefix = _resolveKeyspacePrefix(_config)
+        .whenEmptyUse('universal_storage');
     return 'us_local_db/$prefix/files';
   }
 
@@ -174,10 +173,7 @@ class LocalDbStorageProvider extends StorageProvider implements LocalEngine {
   bool get supportsSync => false;
 
   @override
-  Future<void> sync({
-    String? pullMergeStrategy,
-    String? pushConflictStrategy,
-  }) {
+  Future<void> sync({String? pullMergeStrategy, String? pushConflictStrategy}) {
     throw const UnsupportedOperationException(
       'This provider does not support sync.',
     );
@@ -203,9 +199,8 @@ class LocalDbStorageProvider extends StorageProvider implements LocalEngine {
 
   Future<Map<String, dynamic>> _readBucket() async {
     final rawBucket = await localDb.getMap(_bucketStorageKey);
-    final bucket = jsonDecodeMap(
-      rawBucket,
-    ).whenEmptyUse(const <String, dynamic>{});
+    final bucket = jsonDecodeMap(rawBucket)
+        .whenEmptyUse(const <String, dynamic>{});
     return Map<String, dynamic>.from(bucket);
   }
 
@@ -234,11 +229,10 @@ class LocalDbStorageProvider extends StorageProvider implements LocalEngine {
     return 'universal_storage';
   }
 
-  Map<String, dynamic> _recordFromContent(String content) =>
-      <String, dynamic>{
-        'content': content,
-        'updated_at_utc': DateTime.now().toUtc().toIso8601String(),
-      };
+  Map<String, dynamic> _recordFromContent(String content) => <String, dynamic>{
+    'content': content,
+    'updated_at_utc': DateTime.now().toUtc().toIso8601String(),
+  };
 
   Map<String, dynamic> _decodeRecord(Object? rawRecord) =>
       jsonDecodeMap(rawRecord).whenEmptyUse(const <String, dynamic>{});

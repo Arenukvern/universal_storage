@@ -15,10 +15,7 @@ import 'package:universal_storage_session_aead/universal_storage_session_aead.da
 /// for inspection, and tests can inject raw bytes as if the wire emitted
 /// them (replay/forgery attempts).
 final class _WiretapPair {
-  factory _WiretapPair.paired({
-    String a = 'device-a',
-    String b = 'device-b',
-  }) {
+  factory _WiretapPair.paired({String a = 'device-a', String b = 'device-b'}) {
     final sideA = _WiretapTransport(a);
     final sideB = _WiretapTransport(b);
     sideA._remote = sideB;
@@ -55,22 +52,14 @@ final class _WiretapTransport implements MeshTransport {
     }
     final initiatorIn = StreamController<Uint8List>();
     final responderIn = StreamController<Uint8List>();
-    final initiator = _WiretapSession(
-      peer.peerId,
-      initiatorIn,
-      (bytes) {
-        outbound.add(bytes);
-        responderIn.add(bytes);
-      },
-    );
-    final responder = _WiretapSession(
-      selfId,
-      responderIn,
-      (bytes) {
-        remote.outbound.add(bytes);
-        initiatorIn.add(bytes);
-      },
-    );
+    final initiator = _WiretapSession(peer.peerId, initiatorIn, (bytes) {
+      outbound.add(bytes);
+      responderIn.add(bytes);
+    });
+    final responder = _WiretapSession(selfId, responderIn, (bytes) {
+      remote.outbound.add(bytes);
+      initiatorIn.add(bytes);
+    });
     scheduleMicrotask(() => remote._incoming.add(responder));
     return initiator;
   }
@@ -108,154 +97,159 @@ MeshPeerRecord _recordOf(String id, List<int> key) =>
     MeshPeerRecord(peerId: id, displayName: id, identityKey: key);
 
 void main() {
-  test('pinned handshake seals both directions; wire never shows plaintext',
-      () async {
-    final a = await _identity();
-    final b = await _identity();
-    final pair = _WiretapPair.paired();
+  test(
+    'pinned handshake seals both directions; wire never shows plaintext',
+    () async {
+      final a = await _identity();
+      final b = await _identity();
+      final pair = _WiretapPair.paired();
 
-    final accepted = Completer<SessionAeadSession>();
-    pair.b.incoming.listen((raw) async {
-      try {
-        accepted.complete(
-          await SessionAeadSession.accept(
-            raw: raw,
-            identityKeyPair: b.identity,
-            selfId: 'device-b',
-            pinnedIdentityKeys: {'device-a': a.publicKey},
-          ),
-        );
-      } on Object catch (error) {
-        accepted.completeError(error);
-      }
-    });
+      final accepted = Completer<SessionAeadSession>();
+      pair.b.incoming.listen((raw) async {
+        try {
+          accepted.complete(
+            await SessionAeadSession.accept(
+              raw: raw,
+              identityKeyPair: b.identity,
+              selfId: 'device-b',
+              pinnedIdentityKeys: {'device-a': a.publicKey},
+            ),
+          );
+        } on Object catch (error) {
+          accepted.completeError(error);
+        }
+      });
 
-    final dialer = await SessionAeadSession.start(
-      raw: await pair.a.connect(_recordOf('device-b', b.publicKey)),
-      identityKeyPair: a.identity,
-      selfId: 'device-a',
-      remotePeerId: 'device-b',
-      expectedPeerIdentityKey: b.publicKey,
-    );
-    final host = await accepted.future;
-
-    expect(dialer.remotePeerId, 'device-b');
-    expect(host.remotePeerId, 'device-a');
-    expect(dialer.trustedByPinnedKey, isTrue);
-    expect(host.trustedByPinnedKey, isTrue);
-
-    // Exactly 3 handshake messages crossed the wire.
-    final handshakeFrames =
-        pair.a.outbound.length + pair.b.outbound.length;
-    expect(handshakeFrames, 3);
-
-    final payload = Uint8List.fromList(utf8.encode('gesture 0.42 0.17'));
-    final received = Completer<Uint8List>();
-    host.inbound.listen(received.complete);
-    await dialer.send(payload);
-    expect(await received.future, payload);
-
-    final replyReceived = Completer<Uint8List>();
-    dialer.inbound.listen(replyReceived.complete);
-    await host.send(Uint8List.fromList(utf8.encode('ack')));
-    expect(await replyReceived.future, utf8.encode('ack'));
-
-    // The wire saw M1, M2, M3, and two sealed frames — never plaintext.
-    final allFrames = [...pair.a.outbound, ...pair.b.outbound];
-    expect(allFrames.length, 5);
-    final plaintext = utf8.encode('gesture 0.42 0.17');
-    for (final frame in allFrames) {
-      expect(
-        _contains(frame, plaintext),
-        isFalse,
-        reason: 'plaintext leaked on the wire',
-      );
-    }
-  });
-
-  test('forged initiator identity fails the responder transcript check',
-      () async {
-    final a = await _identity(); // the pinned, impersonated peer
-    final b = await _identity(); // honest host
-    final c = await _identity(); // impostor's key
-    final pair = _WiretapPair.paired(b: 'host');
-
-    final accepted = Completer<SessionAeadSession>();
-    pair.b.incoming.listen((raw) async {
-      try {
-        accepted.complete(
-          await SessionAeadSession.accept(
-            raw: raw,
-            identityKeyPair: b.identity,
-            selfId: 'host',
-            pinnedIdentityKeys: {'device-a': a.publicKey},
-          ),
-        );
-      } on Object catch (error) {
-        accepted.completeError(error);
-      }
-    });
-
-    // The impostor CLAIMS device-a but signs with C's key.
-    await expectLater(
-      SessionAeadSession.start(
-        raw: await pair.a.connect(_recordOf('host', b.publicKey)),
-        identityKeyPair: c.identity,
+      final dialer = await SessionAeadSession.start(
+        raw: await pair.a.connect(_recordOf('device-b', b.publicKey)),
+        identityKeyPair: a.identity,
         selfId: 'device-a',
-        remotePeerId: 'host',
+        remotePeerId: 'device-b',
         expectedPeerIdentityKey: b.publicKey,
-      ),
-      completes,
-    );
-    await expectLater(
-      accepted.future,
-      throwsA(isA<SessionHandshakeException>()),
-    );
-  });
+      );
+      final host = await accepted.future;
 
-  test('strict responder rejects unknown peers before revealing anything',
-      () async {
-    final a = await _identity();
-    final pair = _WiretapPair.paired(a: 'device-z', b: 'host');
+      expect(dialer.remotePeerId, 'device-b');
+      expect(host.remotePeerId, 'device-a');
+      expect(dialer.trustedByPinnedKey, isTrue);
+      expect(host.trustedByPinnedKey, isTrue);
 
-    final accepted = Completer<SessionAeadSession>();
-    pair.b.incoming.listen((raw) async {
-      try {
-        accepted.complete(
-          await SessionAeadSession.accept(
-            raw: raw,
-            identityKeyPair: a.identity,
-            selfId: 'host',
-            // Explicit: strictness is the point of this test.
-            // ignore: avoid_redundant_argument_values
-            trustOnFirstUse: false,
-          ),
+      // Exactly 3 handshake messages crossed the wire.
+      final handshakeFrames = pair.a.outbound.length + pair.b.outbound.length;
+      expect(handshakeFrames, 3);
+
+      final payload = Uint8List.fromList(utf8.encode('gesture 0.42 0.17'));
+      final received = Completer<Uint8List>();
+      host.inbound.listen(received.complete);
+      await dialer.send(payload);
+      expect(await received.future, payload);
+
+      final replyReceived = Completer<Uint8List>();
+      dialer.inbound.listen(replyReceived.complete);
+      await host.send(Uint8List.fromList(utf8.encode('ack')));
+      expect(await replyReceived.future, utf8.encode('ack'));
+
+      // The wire saw M1, M2, M3, and two sealed frames — never plaintext.
+      final allFrames = [...pair.a.outbound, ...pair.b.outbound];
+      expect(allFrames.length, 5);
+      final plaintext = utf8.encode('gesture 0.42 0.17');
+      for (final frame in allFrames) {
+        expect(
+          _contains(frame, plaintext),
+          isFalse,
+          reason: 'plaintext leaked on the wire',
         );
-      } on Object catch (error) {
-        accepted.completeError(error);
       }
-    });
+    },
+  );
 
-    final dialerRaw = await pair.a.connect(_recordOf('host', const <int>[]));
-    final dialer = SessionAeadSession.start(
-      raw: dialerRaw,
-      identityKeyPair: a.identity,
-      selfId: 'device-z',
-      remotePeerId: 'host',
-      trustOnFirstUse: true,
-    );
+  test(
+    'forged initiator identity fails the responder transcript check',
+    () async {
+      final a = await _identity(); // the pinned, impersonated peer
+      final b = await _identity(); // honest host
+      final c = await _identity(); // impostor's key
+      final pair = _WiretapPair.paired(b: 'host');
 
-    await expectLater(
-      accepted.future,
-      throwsA(isA<SessionHandshakeException>()),
-    );
-    // Nothing was revealed to the unknown peer before the rejection.
-    expect(pair.b.outbound, isEmpty);
+      final accepted = Completer<SessionAeadSession>();
+      pair.b.incoming.listen((raw) async {
+        try {
+          accepted.complete(
+            await SessionAeadSession.accept(
+              raw: raw,
+              identityKeyPair: b.identity,
+              selfId: 'host',
+              pinnedIdentityKeys: {'device-a': a.publicKey},
+            ),
+          );
+        } on Object catch (error) {
+          accepted.completeError(error);
+        }
+      });
 
-    // Closing the raw session surfaces the rejection on the dialer too.
-    await dialerRaw.close();
-    await expectLater(dialer, throwsA(isA<SessionHandshakeException>()));
-  });
+      // The impostor CLAIMS device-a but signs with C's key.
+      await expectLater(
+        SessionAeadSession.start(
+          raw: await pair.a.connect(_recordOf('host', b.publicKey)),
+          identityKeyPair: c.identity,
+          selfId: 'device-a',
+          remotePeerId: 'host',
+          expectedPeerIdentityKey: b.publicKey,
+        ),
+        completes,
+      );
+      await expectLater(
+        accepted.future,
+        throwsA(isA<SessionHandshakeException>()),
+      );
+    },
+  );
+
+  test(
+    'strict responder rejects unknown peers before revealing anything',
+    () async {
+      final a = await _identity();
+      final pair = _WiretapPair.paired(a: 'device-z', b: 'host');
+
+      final accepted = Completer<SessionAeadSession>();
+      pair.b.incoming.listen((raw) async {
+        try {
+          accepted.complete(
+            await SessionAeadSession.accept(
+              raw: raw,
+              identityKeyPair: a.identity,
+              selfId: 'host',
+              // Explicit: strictness is the point of this test.
+              // ignore: avoid_redundant_argument_values
+              trustOnFirstUse: false,
+            ),
+          );
+        } on Object catch (error) {
+          accepted.completeError(error);
+        }
+      });
+
+      final dialerRaw = await pair.a.connect(_recordOf('host', const <int>[]));
+      final dialer = SessionAeadSession.start(
+        raw: dialerRaw,
+        identityKeyPair: a.identity,
+        selfId: 'device-z',
+        remotePeerId: 'host',
+        trustOnFirstUse: true,
+      );
+
+      await expectLater(
+        accepted.future,
+        throwsA(isA<SessionHandshakeException>()),
+      );
+      // Nothing was revealed to the unknown peer before the rejection.
+      expect(pair.b.outbound, isEmpty);
+
+      // Closing the raw session surfaces the rejection on the dialer too.
+      await dialerRaw.close();
+      await expectLater(dialer, throwsA(isA<SessionHandshakeException>()));
+    },
+  );
 
   test('TOFU binds a verified key on first contact', () async {
     final a = await _identity();
@@ -297,55 +291,57 @@ void main() {
     expect(await received.future, utf8.encode('tofu works'));
   });
 
-  test('a replayed sealed record drops without disturbing the stream',
-      () async {
-    final a = await _identity();
-    final b = await _identity();
-    final pair = _WiretapPair.paired();
+  test(
+    'a replayed sealed record drops without disturbing the stream',
+    () async {
+      final a = await _identity();
+      final b = await _identity();
+      final pair = _WiretapPair.paired();
 
-    final accepted = Completer<SessionAeadSession>();
-    late final _WiretapSession rawResponder;
-    pair.b.incoming.listen((raw) async {
-      rawResponder = raw as _WiretapSession;
-      accepted.complete(
-        await SessionAeadSession.accept(
-          raw: raw,
-          identityKeyPair: b.identity,
-          selfId: 'device-b',
-          pinnedIdentityKeys: {'device-a': a.publicKey},
-        ),
+      final accepted = Completer<SessionAeadSession>();
+      late final _WiretapSession rawResponder;
+      pair.b.incoming.listen((raw) async {
+        rawResponder = raw as _WiretapSession;
+        accepted.complete(
+          await SessionAeadSession.accept(
+            raw: raw,
+            identityKeyPair: b.identity,
+            selfId: 'device-b',
+            pinnedIdentityKeys: {'device-a': a.publicKey},
+          ),
+        );
+      });
+
+      final dialer = await SessionAeadSession.start(
+        raw: await pair.a.connect(_recordOf('device-b', b.publicKey)),
+        identityKeyPair: a.identity,
+        selfId: 'device-a',
+        remotePeerId: 'device-b',
+        expectedPeerIdentityKey: b.publicKey,
       );
-    });
+      final host = await accepted.future;
 
-    final dialer = await SessionAeadSession.start(
-      raw: await pair.a.connect(_recordOf('device-b', b.publicKey)),
-      identityKeyPair: a.identity,
-      selfId: 'device-a',
-      remotePeerId: 'device-b',
-      expectedPeerIdentityKey: b.publicKey,
-    );
-    final host = await accepted.future;
+      final received = <Uint8List>[];
+      host.inbound.listen(received.add);
+      final payload = Uint8List.fromList(utf8.encode('one'));
+      await dialer.send(payload);
+      await _pump();
+      expect(received, [payload]);
 
-    final received = <Uint8List>[];
-    host.inbound.listen(received.add);
-    final payload = Uint8List.fromList(utf8.encode('one'));
-    await dialer.send(payload);
-    await _pump();
-    expect(received, [payload]);
+      // Replay the SAME sealed frame off the wire: dropped as named data.
+      final sealedFrame = pair.a.outbound.last;
+      rawResponder.inject(sealedFrame);
+      await _pump();
+      expect(host.droppedInboundCount, 1);
 
-    // Replay the SAME sealed frame off the wire: dropped as named data.
-    final sealedFrame = pair.a.outbound.last;
-    rawResponder.inject(sealedFrame);
-    await _pump();
-    expect(host.droppedInboundCount, 1);
-
-    // The channel is unharmed: the next fresh frame still arrives.
-    final second = Uint8List.fromList(utf8.encode('two'));
-    await dialer.send(second);
-    await _pump();
-    expect(received, [payload, second]);
-    expect(host.droppedInboundCount, 1);
-  });
+      // The channel is unharmed: the next fresh frame still arrives.
+      final second = Uint8List.fromList(utf8.encode('two'));
+      await dialer.send(second);
+      await _pump();
+      expect(received, [payload, second]);
+      expect(host.droppedInboundCount, 1);
+    },
+  );
 
   test('SessionAeadTransport wraps a raw transport end to end', () async {
     final a = await _identity();
@@ -368,8 +364,9 @@ void main() {
     final inboundB = Completer<MeshSession>();
     transportB.incoming.listen(inboundB.complete);
 
-    final sessionA = await transportA
-        .connect(_recordOf('device-b', b.publicKey));
+    final sessionA = await transportA.connect(
+      _recordOf('device-b', b.publicKey),
+    );
     expect(sessionA, isA<SessionAeadSession>());
     final sessionB = await inboundB.future;
     expect(sessionB.remotePeerId, 'device-a');
@@ -386,57 +383,58 @@ void main() {
   });
 
   test(
-      'wrapper surfaces handshake failure and keeps accepting afterwards',
-      () async {
-    final a = await _identity();
-    final b = await _identity();
-    final pair = _WiretapPair.paired();
+    'wrapper surfaces handshake failure and keeps accepting afterwards',
+    () async {
+      final a = await _identity();
+      final b = await _identity();
+      final pair = _WiretapPair.paired();
 
-    final failures = <Object>[];
-    // Strict, NO pins: dialing device-b fails on the initiator side
-    // because the record carries no identity key and nothing is pinned.
-    final strictA = SessionAeadTransport(
-      inner: pair.a,
-      identityKeyPair: a.identity,
-      selfId: 'device-a',
-      onHandshakeFailure: (_, error, _) =>
-          failures.add(error),
-    );
-    final pinnedB = SessionAeadTransport(
-      inner: pair.b,
-      identityKeyPair: b.identity,
-      selfId: 'device-b',
-      pinnedIdentityKeys: {'device-a': a.publicKey},
-    );
-    final inboundB = Completer<MeshSession>();
-    pinnedB.incoming.listen(inboundB.complete);
+      final failures = <Object>[];
+      // Strict, NO pins: dialing device-b fails on the initiator side
+      // because the record carries no identity key and nothing is pinned.
+      final strictA = SessionAeadTransport(
+        inner: pair.a,
+        identityKeyPair: a.identity,
+        selfId: 'device-a',
+        onHandshakeFailure: (_, error, _) => failures.add(error),
+      );
+      final pinnedB = SessionAeadTransport(
+        inner: pair.b,
+        identityKeyPair: b.identity,
+        selfId: 'device-b',
+        pinnedIdentityKeys: {'device-a': a.publicKey},
+      );
+      final inboundB = Completer<MeshSession>();
+      pinnedB.incoming.listen(inboundB.complete);
 
-    await expectLater(
-      strictA.connect(_recordOf('device-b', const <int>[])),
-      throwsA(isA<SessionHandshakeException>()),
-    );
-    expect(failures, hasLength(1));
-    expect(failures.single, isA<SessionHandshakeException>());
+      await expectLater(
+        strictA.connect(_recordOf('device-b', const <int>[])),
+        throwsA(isA<SessionHandshakeException>()),
+      );
+      expect(failures, hasLength(1));
+      expect(failures.single, isA<SessionHandshakeException>());
 
-    // Pinning the peer makes the same dial succeed; the wrapper is
-    // unharmed by the earlier failure.
-    final transportA = SessionAeadTransport(
-      inner: pair.a,
-      identityKeyPair: a.identity,
-      selfId: 'device-a',
-      pinnedIdentityKeys: {'device-b': b.publicKey},
-    );
-    final sessionA = await transportA
-        .connect(_recordOf('device-b', b.publicKey));
-    final sessionB = await inboundB.future;
-    expect(sessionB.remotePeerId, 'device-a');
+      // Pinning the peer makes the same dial succeed; the wrapper is
+      // unharmed by the earlier failure.
+      final transportA = SessionAeadTransport(
+        inner: pair.a,
+        identityKeyPair: a.identity,
+        selfId: 'device-a',
+        pinnedIdentityKeys: {'device-b': b.publicKey},
+      );
+      final sessionA = await transportA.connect(
+        _recordOf('device-b', b.publicKey),
+      );
+      final sessionB = await inboundB.future;
+      expect(sessionB.remotePeerId, 'device-a');
 
-    await sessionA.close();
-    await sessionB.close();
-    await strictA.dispose();
-    await transportA.dispose();
-    await pinnedB.dispose();
-  });
+      await sessionA.close();
+      await sessionB.close();
+      await strictA.dispose();
+      await transportA.dispose();
+      await pinnedB.dispose();
+    },
+  );
 }
 
 bool _contains(List<int> haystack, List<int> needle) {

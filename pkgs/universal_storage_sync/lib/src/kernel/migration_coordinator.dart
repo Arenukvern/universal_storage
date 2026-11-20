@@ -170,10 +170,7 @@ bool _migrationPlanInteractionLevel(Map<String, dynamic> metadata) {
       rawLevel.trim().toLowerCase() == SyncInteractionLevel.complex.name;
 }
 
-bool? _migrationPlanBool(
-  Map<String, dynamic> metadata,
-  String key,
-) {
+bool? _migrationPlanBool(Map<String, dynamic> metadata, String key) {
   final raw = metadata[key];
   if (raw == null) {
     return null;

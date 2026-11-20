@@ -35,8 +35,7 @@ abstract interface class LanMeshTransport implements MeshTransport {
 /// Closure seams, not interfaces: implementers already hold identity
 /// material shaped for their own package (vosges' `EphemeralFrameSigner`,
 /// the doc mesh's presence signer) — a lambda adapts in one line.
-typedef LanFrameSealer =
-    Future<Uint8List> Function(MeshEphemeralFrame frame);
+typedef LanFrameSealer = Future<Uint8List> Function(MeshEphemeralFrame frame);
 
 /// Verifies an authentication frame against the sender's REGISTERED
 /// identity key. False (or a throw) means the frame is untrusted.

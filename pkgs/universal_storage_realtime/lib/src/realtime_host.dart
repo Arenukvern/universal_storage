@@ -272,8 +272,9 @@ final class RealtimeHost {
     final next = arbiter.arbitrate(
       active: _activeSenderId,
       candidate: peerId,
-      activeLastEventAt:
-          _activeSenderId == null ? null : _lastActiveAt[_activeSenderId],
+      activeLastEventAt: _activeSenderId == null
+          ? null
+          : _lastActiveAt[_activeSenderId],
       now: clock(),
     );
     if (next == peerId && _activeSenderId != peerId) {

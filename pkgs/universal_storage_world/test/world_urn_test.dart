@@ -30,11 +30,7 @@ void main() {
         'world://ws/',
         'world:///docs',
       ]) {
-        expect(
-          () => WorldUrn.parse(raw),
-          throwsFormatException,
-          reason: raw,
-        );
+        expect(() => WorldUrn.parse(raw), throwsFormatException, reason: raw);
         expect(WorldUrn.tryParse(raw), isNull, reason: raw);
       }
     });

@@ -95,219 +95,205 @@ MeshPresenceSession _session({
 void main() {
   final t0 = DateTime.fromMillisecondsSinceEpoch(1700000000000);
 
-  test(
-    'observer folds a verified peer frame for a doc with NO local '
-    'session — presence is observable without joining',
-    () async {
-      final hub = _FakeHub();
-      final host = hub.endpoint('device-a');
-      final peer = hub.endpoint('device-b');
-      final peerTracker = MeshPresenceTracker(actorId: 'device-b');
-      final peerKeys = await PairingService.newIdentityKeyPair();
-      final peerSession = _session(
-        transport: peer,
-        tracker: peerTracker,
-        docId: 'agent-doc-1',
-        signer: MeshFrameSigner(identityKeyPair: peerKeys),
-      );
-      unawaited(peerSession.open(now: t0));
+  test('observer folds a verified peer frame for a doc with NO local '
+      'session — presence is observable without joining', () async {
+    final hub = _FakeHub();
+    final host = hub.endpoint('device-a');
+    final peer = hub.endpoint('device-b');
+    final peerTracker = MeshPresenceTracker(actorId: 'device-b');
+    final peerKeys = await PairingService.newIdentityKeyPair();
+    final peerSession = _session(
+      transport: peer,
+      tracker: peerTracker,
+      docId: 'agent-doc-1',
+      signer: MeshFrameSigner(identityKeyPair: peerKeys),
+    );
+    unawaited(peerSession.open(now: t0));
 
-      // Host: tracker + authenticator exist (link attached), but NO
-      // session — the measured two-device topology.
-      final hostTracker = MeshPresenceTracker(actorId: 'device-a');
-      final hostAuth = MeshFrameAuthenticator();
-      final observer = MeshPresenceObserver(
-        tracker: hostTracker,
-        authenticator: hostAuth,
-        selfId: 'device-a',
-        clock: () => t0,
-      );
-      final sub = observer.attach(host.frames);
-      addTearDown(() async {
-        await observer.dispose();
-        await sub.cancel();
-        await peerSession.close(now: t0);
-        host.dispose();
-        peer.dispose();
-      });
+    // Host: tracker + authenticator exist (link attached), but NO
+    // session — the measured two-device topology.
+    final hostTracker = MeshPresenceTracker(actorId: 'device-a');
+    final hostAuth = MeshFrameAuthenticator();
+    final observer = MeshPresenceObserver(
+      tracker: hostTracker,
+      authenticator: hostAuth,
+      selfId: 'device-a',
+      clock: () => t0,
+    );
+    final sub = observer.attach(host.frames);
+    addTearDown(() async {
+      await observer.dispose();
+      await sub.cancel();
+      await peerSession.close(now: t0);
+      host.dispose();
+      peer.dispose();
+    });
 
-      await _settle(); // peer's signed join travels to the host
+    await _settle(); // peer's signed join travels to the host
 
-      expect(
-        hostTracker.presence('agent-doc-1').map((e) => e.peerId),
-        contains('device-b'),
-        reason: 'the host never joined, but the peer announcement must '
-            'still be folded (observation, not announcement)',
-      );
-      expect(observer.rejectedFrameCount, 0);
-    },
-  );
+    expect(
+      hostTracker.presence('agent-doc-1').map((e) => e.peerId),
+      contains('device-b'),
+      reason:
+          'the host never joined, but the peer announcement must '
+          'still be folded (observation, not announcement)',
+    );
+    expect(observer.rejectedFrameCount, 0);
+  });
 
-  test(
-    'observer skips frames for docs a local session owns and never '
-    'folds its own echo',
-    () async {
-      final hub = _FakeHub();
-      final host = hub.endpoint('device-a');
-      final peer = hub.endpoint('device-b');
-      final peerTracker = MeshPresenceTracker(actorId: 'device-b');
-      final peerKeys = await PairingService.newIdentityKeyPair();
-      final peerSession = _session(
-        transport: peer,
-        tracker: peerTracker,
-        signer: MeshFrameSigner(identityKeyPair: peerKeys),
-      );
-      unawaited(peerSession.open(now: t0));
+  test('observer skips frames for docs a local session owns and never '
+      'folds its own echo', () async {
+    final hub = _FakeHub();
+    final host = hub.endpoint('device-a');
+    final peer = hub.endpoint('device-b');
+    final peerTracker = MeshPresenceTracker(actorId: 'device-b');
+    final peerKeys = await PairingService.newIdentityKeyPair();
+    final peerSession = _session(
+      transport: peer,
+      tracker: peerTracker,
+      signer: MeshFrameSigner(identityKeyPair: peerKeys),
+    );
+    unawaited(peerSession.open(now: t0));
 
-      final hostTracker = MeshPresenceTracker(actorId: 'device-a');
-      final hostAuth = MeshFrameAuthenticator();
-      var sessionOpen = false;
-      final hostSession = _session(
-        transport: host,
-        tracker: hostTracker,
-        authenticator: hostAuth,
-      );
-      final observer = MeshPresenceObserver(
-        tracker: hostTracker,
-        authenticator: hostAuth,
-        selfId: 'device-a',
-        hasLocalSession: (docId) => sessionOpen && docId == 'doc/1',
-        clock: () => t0,
-      );
-      final sub = observer.attach(host.frames);
-      addTearDown(() async {
-        await observer.dispose();
-        await sub.cancel();
-        await peerSession.close(now: t0);
-        await hostSession.close(now: t0);
-        host.dispose();
-        peer.dispose();
-      });
+    final hostTracker = MeshPresenceTracker(actorId: 'device-a');
+    final hostAuth = MeshFrameAuthenticator();
+    var sessionOpen = false;
+    final hostSession = _session(
+      transport: host,
+      tracker: hostTracker,
+      authenticator: hostAuth,
+    );
+    final observer = MeshPresenceObserver(
+      tracker: hostTracker,
+      authenticator: hostAuth,
+      selfId: 'device-a',
+      hasLocalSession: (docId) => sessionOpen && docId == 'doc/1',
+      clock: () => t0,
+    );
+    final sub = observer.attach(host.frames);
+    addTearDown(() async {
+      await observer.dispose();
+      await sub.cancel();
+      await peerSession.close(now: t0);
+      await hostSession.close(now: t0);
+      host.dispose();
+      peer.dispose();
+    });
 
-      await _settle();
-      // Pre-session: the observer owns the fold.
-      expect(
-        hostTracker.presence('doc/1').map((e) => e.peerId),
-        contains('device-b'),
-      );
+    await _settle();
+    // Pre-session: the observer owns the fold.
+    expect(
+      hostTracker.presence('doc/1').map((e) => e.peerId),
+      contains('device-b'),
+    );
 
-      // Session takes over the doc; the observer must not double-fold
-      // (and double-reject) frames for it.
-      sessionOpen = true;
-      await hostSession.open(now: t0.add(const Duration(seconds: 1)));
-      await peerSession.notifyActivity(now: t0.add(const Duration(seconds: 2)));
-      await _settle();
+    // Session takes over the doc; the observer must not double-fold
+    // (and double-reject) frames for it.
+    sessionOpen = true;
+    await hostSession.open(now: t0.add(const Duration(seconds: 1)));
+    await peerSession.notifyActivity(now: t0.add(const Duration(seconds: 2)));
+    await _settle();
 
-      expect(
-        hostTracker.presence('doc/1').map((e) => e.peerId),
-        contains('device-b'),
-      );
-      expect(observer.rejectedFrameCount, 0);
-    },
-  );
+    expect(
+      hostTracker.presence('doc/1').map((e) => e.peerId),
+      contains('device-b'),
+    );
+    expect(observer.rejectedFrameCount, 0);
+  });
 
-  test(
-    'observer drops unauthenticated frames as named data and never '
-    'folds them',
-    () async {
-      final hub = _FakeHub();
-      final host = hub.endpoint('device-a');
-      final tracker = MeshPresenceTracker(actorId: 'device-a');
-      final observer = MeshPresenceObserver(
-        tracker: tracker,
-        authenticator: MeshFrameAuthenticator(),
-        selfId: 'device-a',
-        clock: () => t0,
-      );
-      final sub = observer.attach(host.frames);
-      addTearDown(() async {
-        await observer.dispose();
-        await sub.cancel();
-        host.dispose();
-      });
+  test('observer drops unauthenticated frames as named data and never '
+      'folds them', () async {
+    final hub = _FakeHub();
+    final host = hub.endpoint('device-a');
+    final tracker = MeshPresenceTracker(actorId: 'device-a');
+    final observer = MeshPresenceObserver(
+      tracker: tracker,
+      authenticator: MeshFrameAuthenticator(),
+      selfId: 'device-a',
+      clock: () => t0,
+    );
+    final sub = observer.attach(host.frames);
+    addTearDown(() async {
+      await observer.dispose();
+      await sub.cancel();
+      host.dispose();
+    });
 
-      // Unsigned frame (no signature at all), built with a scratch
-      // tracker (announce folds locally) and sent from a scratch
-      // endpoint so it arrives AT the observed host.
-      final scratchTracker = MeshPresenceTracker(actorId: 'device-c');
-      final op = scratchTracker.announce(
-        docId: 'doc/1',
-        event: MeshEphemeralEvent.join,
-        now: t0,
-      );
-      await hub.endpoint('device-c').send(op);
-      // Signed but by an unknown peer with a key the receiver cannot
-      // trust yet (no ride-along) — unauthenticated.
-      final forgerTracker = MeshPresenceTracker(actorId: 'device-x');
-      final forgerPair = await PairingService.newIdentityKeyPair();
-      final forgerSession = MeshPresenceSession(
-        transport: hub.endpoint('device-x'),
-        tracker: forgerTracker,
-        docId: 'doc/1',
-        signer: MeshFrameSigner(
-          identityKeyPair: forgerPair,
-          publishIdentityKey: false,
-        ),
-      );
-      unawaited(forgerSession.open(now: t0));
-      addTearDown(() async {
-        await forgerSession.close(now: t0);
-        hub.endpoint('device-x').dispose();
-      });
+    // Unsigned frame (no signature at all), built with a scratch
+    // tracker (announce folds locally) and sent from a scratch
+    // endpoint so it arrives AT the observed host.
+    final scratchTracker = MeshPresenceTracker(actorId: 'device-c');
+    final op = scratchTracker.announce(
+      docId: 'doc/1',
+      event: MeshEphemeralEvent.join,
+      now: t0,
+    );
+    await hub.endpoint('device-c').send(op);
+    // Signed but by an unknown peer with a key the receiver cannot
+    // trust yet (no ride-along) — unauthenticated.
+    final forgerTracker = MeshPresenceTracker(actorId: 'device-x');
+    final forgerPair = await PairingService.newIdentityKeyPair();
+    final forgerSession = MeshPresenceSession(
+      transport: hub.endpoint('device-x'),
+      tracker: forgerTracker,
+      docId: 'doc/1',
+      signer: MeshFrameSigner(
+        identityKeyPair: forgerPair,
+        publishIdentityKey: false,
+      ),
+    );
+    unawaited(forgerSession.open(now: t0));
+    addTearDown(() async {
+      await forgerSession.close(now: t0);
+      hub.endpoint('device-x').dispose();
+    });
 
-      await _settle();
+    await _settle();
 
-      expect(tracker.presence('doc/1'), isEmpty);
-      expect(observer.rejectedFrameCount, 2);
-      expect(
-        observer.rejections.map((r) => r.reason).toSet(),
-        {
-          MeshFrameRejectionReason.unsigned,
-          MeshFrameRejectionReason.unauthenticated,
-        },
-      );
-    },
-  );
+    expect(tracker.presence('doc/1'), isEmpty);
+    expect(observer.rejectedFrameCount, 2);
+    expect(observer.rejections.map((r) => r.reason).toSet(), {
+      MeshFrameRejectionReason.unsigned,
+      MeshFrameRejectionReason.unauthenticated,
+    });
+  });
 
-  test(
-    'observer drops frames whose kernel op is already expired (ttl '
-    'backstop without any session cycle)',
-    () async {
-      final hub = _FakeHub();
-      final host = hub.endpoint('device-a');
-      final peer = hub.endpoint('device-b');
-      final peerTracker = MeshPresenceTracker(actorId: 'device-b');
-      final peerKeys = await PairingService.newIdentityKeyPair();
-      // Peer announces with a clock in the past: by the time the host
-      // folds it, the op's ttl has already elapsed.
-      final past = t0.subtract(const Duration(hours: 1));
-      final peerSession = MeshPresenceSession(
-        transport: peer,
-        tracker: peerTracker,
-        docId: 'doc/1',
-        signer: MeshFrameSigner(identityKeyPair: peerKeys),
-        clock: () => past,
-      );
-      unawaited(peerSession.open(now: past));
+  test('observer drops frames whose kernel op is already expired (ttl '
+      'backstop without any session cycle)', () async {
+    final hub = _FakeHub();
+    final host = hub.endpoint('device-a');
+    final peer = hub.endpoint('device-b');
+    final peerTracker = MeshPresenceTracker(actorId: 'device-b');
+    final peerKeys = await PairingService.newIdentityKeyPair();
+    // Peer announces with a clock in the past: by the time the host
+    // folds it, the op's ttl has already elapsed.
+    final past = t0.subtract(const Duration(hours: 1));
+    final peerSession = MeshPresenceSession(
+      transport: peer,
+      tracker: peerTracker,
+      docId: 'doc/1',
+      signer: MeshFrameSigner(identityKeyPair: peerKeys),
+      clock: () => past,
+    );
+    unawaited(peerSession.open(now: past));
 
-      final hostTracker = MeshPresenceTracker(actorId: 'device-a');
-      final observer = MeshPresenceObserver(
-        tracker: hostTracker,
-        authenticator: MeshFrameAuthenticator(),
-        selfId: 'device-a',
-        clock: () => t0,
-      );
-      final sub = observer.attach(host.frames);
-      addTearDown(() async {
-        await observer.dispose();
-        await sub.cancel();
-        await peerSession.close(now: past);
-        host.dispose();
-        peer.dispose();
-      });
+    final hostTracker = MeshPresenceTracker(actorId: 'device-a');
+    final observer = MeshPresenceObserver(
+      tracker: hostTracker,
+      authenticator: MeshFrameAuthenticator(),
+      selfId: 'device-a',
+      clock: () => t0,
+    );
+    final sub = observer.attach(host.frames);
+    addTearDown(() async {
+      await observer.dispose();
+      await sub.cancel();
+      await peerSession.close(now: past);
+      host.dispose();
+      peer.dispose();
+    });
 
-      await _settle();
-      expect(hostTracker.presence('doc/1', now: t0), isEmpty);
-    },
-  );
+    await _settle();
+    expect(hostTracker.presence('doc/1', now: t0), isEmpty);
+  });
 }

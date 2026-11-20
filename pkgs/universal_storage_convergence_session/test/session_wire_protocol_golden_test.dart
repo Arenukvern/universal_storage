@@ -74,10 +74,7 @@ void main() {
       '{"v":2,"type":"hello","peer_id":"peer-beta",'
       '"display_name":"Zürich Gerät"}';
 
-  void expectGoldenBytes(
-    String golden,
-    Map<String, Object?> frame,
-  ) {
+  void expectGoldenBytes(String golden, Map<String, Object?> frame) {
     final bytes = MeshSyncProtocol.encode(frame);
     expect(utf8.decode(bytes), golden);
     expect(bytes, Uint8List.fromList(utf8.encode(golden)));

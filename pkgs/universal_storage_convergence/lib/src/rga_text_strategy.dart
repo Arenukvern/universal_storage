@@ -47,11 +47,7 @@ final class RgaTextStrategy implements MergeStrategy {
     _foldInsert(state, key, op);
   }
 
-  void _foldInsert(
-    Map<String, Object?> state,
-    String key,
-    OpRecord op,
-  ) {
+  void _foldInsert(Map<String, Object?> state, String key, OpRecord op) {
     final text = op.payload['text'];
     if (text is! String || text.isEmpty) {
       throw ArgumentError.value(
@@ -82,11 +78,7 @@ final class RgaTextStrategy implements MergeStrategy {
     }
   }
 
-  void _foldDelete(
-    Map<String, Object?> state,
-    String key,
-    Object? tombstones,
-  ) {
+  void _foldDelete(Map<String, Object?> state, String key, Object? tombstones) {
     if (tombstones is! List || tombstones.isEmpty) {
       throw ArgumentError.value(
         tombstones,
@@ -111,10 +103,7 @@ final class RgaTextStrategy implements MergeStrategy {
   /// Per-key storage: `{'nodes': {id: node}, 'tomb': {id: true}}`. All
   /// JSON-encodable; tombstones recorded before their element arrives are
   /// honored at read time.
-  static Map<String, Object?> _bucket(
-    Map<String, Object?> state,
-    String key,
-  ) {
+  static Map<String, Object?> _bucket(Map<String, Object?> state, String key) {
     final existing = state[key];
     if (existing is Map<String, Object?>) return existing;
     if (existing != null) {
@@ -185,10 +174,7 @@ final class RgaTextStrategy implements MergeStrategy {
 
   /// Element ids currently live (non-tombstoned) for [key] — the anchors
   /// a local editor needs to issue the next insert.
-  static Set<String> liveElementIds(
-    Map<String, Object?> state,
-    String key,
-  ) {
+  static Set<String> liveElementIds(Map<String, Object?> state, String key) {
     final raw = state[key];
     if (raw is! Map<String, Object?>) return const {};
     final nodesRaw = raw['nodes'];

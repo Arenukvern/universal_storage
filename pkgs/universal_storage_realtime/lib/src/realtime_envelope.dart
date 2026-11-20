@@ -91,8 +91,7 @@ final class RealtimeEnvelope {
     }
   }
 
-  Uint8List encode() =>
-      Uint8List.fromList(utf8.encode(jsonEncode(toJson())));
+  Uint8List encode() => Uint8List.fromList(utf8.encode(jsonEncode(toJson())));
 }
 
 /// Byte-level plane classifier (ADR 0047 "one server, two planes"):

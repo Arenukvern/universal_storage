@@ -8,7 +8,6 @@ import 'package:universal_storage_github_api/universal_storage_github_api.dart';
 /// Minimal in-process fake of the GitHub Contents API sufficient for the
 /// conformance suite: repo metadata, get contents, create/update/delete file.
 class FakeGitHubApi {
-
   FakeGitHubApi() {
     unawaited(
       HttpServer.bind(InternetAddress.loopbackIPv4, 0).then((server) {
@@ -98,10 +97,7 @@ class FakeGitHubApi {
     await response.close();
   }
 
-  Future<void> _handleGet(
-    HttpRequest request,
-    String filePath,
-  ) async {
+  Future<void> _handleGet(HttpRequest request, String filePath) async {
     final response = request.response;
 
     // Directory listing: any GET whose path matches a directory prefix of
@@ -168,13 +164,10 @@ class FakeGitHubApi {
     await response.close();
   }
 
-  Future<void> _handlePut(
-    HttpRequest request,
-    String filePath,
-  ) async {
-    final body =
-        jsonDecode(await utf8.decoder.bind(request).join())
-            as Map<String, dynamic>;
+  Future<void> _handlePut(HttpRequest request, String filePath) async {
+    final body = jsonDecode(
+      await utf8.decoder.bind(request).join(),
+    ) as Map<String, dynamic>;
     final existing = _files[filePath];
     if (existing == null && body['sha'] != null) {
       request.response.statusCode = 422;
@@ -197,13 +190,10 @@ class FakeGitHubApi {
     await request.response.close();
   }
 
-  Future<void> _handleDelete(
-    HttpRequest request,
-    String filePath,
-  ) async {
-    final body =
-        jsonDecode(await utf8.decoder.bind(request).join())
-            as Map<String, dynamic>;
+  Future<void> _handleDelete(HttpRequest request, String filePath) async {
+    final body = jsonDecode(
+      await utf8.decoder.bind(request).join(),
+    ) as Map<String, dynamic>;
     final existing = _files[filePath];
     if (existing == null || existing.sha != body['sha']) {
       request.response.statusCode = 422;

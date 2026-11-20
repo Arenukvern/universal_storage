@@ -137,15 +137,13 @@ class LocalDbUniversalStorageImpl implements LocalDbI {
 
   Map<String, T>? _getSingleFileCacheMap<T extends Object>({
     required _StorageOperationDataType dataType,
-  }) =>
-      switch (dataType) {
-            _StorageOperationDataType.oBool => _singleFilesBoolsCache,
-            _StorageOperationDataType.oInt => _singleFilesIntsCache,
-            _StorageOperationDataType.oString => _singleFilesStringsCache,
-            _StorageOperationDataType.oMap => _singleFilesMapsCache,
-            _StorageOperationDataType.oMapList => _singleFilesMapListsCache,
-          }
-          as Map<String, T>?;
+  }) => switch (dataType) {
+    _StorageOperationDataType.oBool => _singleFilesBoolsCache,
+    _StorageOperationDataType.oInt => _singleFilesIntsCache,
+    _StorageOperationDataType.oString => _singleFilesStringsCache,
+    _StorageOperationDataType.oMap => _singleFilesMapsCache,
+    _StorageOperationDataType.oMapList => _singleFilesMapListsCache,
+  } as Map<String, T>?;
 
   T? _getSingleFileCacheValue<T extends Object>({
     required String key,
@@ -196,24 +194,20 @@ class LocalDbUniversalStorageImpl implements LocalDbI {
   }
 
   @override
-  Future<bool> getBool({
-    required String key,
-    bool defaultValue = false,
-  }) => _readKeyValueFromSingleFile(
-    key: key,
-    dataType: _StorageOperationDataType.oBool,
-    defaultValue: defaultValue,
-  );
+  Future<bool> getBool({required String key, bool defaultValue = false}) =>
+      _readKeyValueFromSingleFile(
+        key: key,
+        dataType: _StorageOperationDataType.oBool,
+        defaultValue: defaultValue,
+      );
 
   @override
-  Future<void> setBool({
-    required String key,
-    required bool value,
-  }) => _writeKeyValueToSingleFile(
-    key: key,
-    dataType: _StorageOperationDataType.oBool,
-    value: value,
-  );
+  Future<void> setBool({required String key, required bool value}) =>
+      _writeKeyValueToSingleFile(
+        key: key,
+        dataType: _StorageOperationDataType.oBool,
+        value: value,
+      );
 
   @override
   Future<int> getInt({required String key, int defaultValue = 0}) =>
@@ -343,24 +337,20 @@ class LocalDbUniversalStorageImpl implements LocalDbI {
   }
 
   @override
-  Future<String> getString({
-    required String key,
-    String defaultValue = '',
-  }) => _readKeyValueFromSingleFile(
-    key: key,
-    dataType: _StorageOperationDataType.oString,
-    defaultValue: defaultValue,
-  );
+  Future<String> getString({required String key, String defaultValue = ''}) =>
+      _readKeyValueFromSingleFile(
+        key: key,
+        dataType: _StorageOperationDataType.oString,
+        defaultValue: defaultValue,
+      );
 
   @override
-  Future<void> setString({
-    required String key,
-    required String value,
-  }) => _writeKeyValueToSingleFile(
-    key: key,
-    dataType: _StorageOperationDataType.oString,
-    value: value,
-  );
+  Future<void> setString({required String key, required String value}) =>
+      _writeKeyValueToSingleFile(
+        key: key,
+        dataType: _StorageOperationDataType.oString,
+        value: value,
+      );
 
   @override
   Future<Iterable<String>> getStringsIterable({

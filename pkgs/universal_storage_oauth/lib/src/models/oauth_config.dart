@@ -28,8 +28,7 @@ extension type const OAuthClientId(String value) {
   /// Returns [other] if this client ID is empty, otherwise returns this.
   ///
   /// Useful for providing fallback values when the current client ID is empty.
-  OAuthClientId whenEmptyUse(OAuthClientId other) =>
-      isEmpty ? other : this;
+  OAuthClientId whenEmptyUse(OAuthClientId other) => isEmpty ? other : this;
 
   /// An empty client ID instance.
   static const empty = OAuthClientId('');

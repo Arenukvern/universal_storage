@@ -8,13 +8,11 @@ import 'hlc.dart';
 /// reduces to `op.hlc <= vv[actor]` — no per-op id sets needed for dedupe.
 @immutable
 final class VersionVector {
-
   VersionVector([Map<String, Hlc>? entries])
     : _entries = Map<String, Hlc>.unmodifiable(entries ?? const {});
-  factory VersionVector.fromJson(Map<String, dynamic> json) =>
-      VersionVector(
-        json.map((actor, raw) => MapEntry(actor, hlcFromJson(raw))),
-      );
+  factory VersionVector.fromJson(Map<String, dynamic> json) => VersionVector(
+    json.map((actor, raw) => MapEntry(actor, hlcFromJson(raw))),
+  );
 
   static final VersionVector zero = VersionVector();
 

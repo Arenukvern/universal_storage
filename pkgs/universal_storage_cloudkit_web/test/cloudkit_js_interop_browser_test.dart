@@ -182,9 +182,8 @@ void _installNativeCloudKitStub(_NativeCloudKitStub stub) {
         stub.pathByRecordName[recordName] = path;
       }
     }
-    return <String, Object?>{
-      'records': stub.recordsByPath.values.toList(),
-    }.jsify();
+    return <String, Object?>{'records': stub.recordsByPath.values.toList()}
+        .jsify();
   }).toJS;
 
   database['deleteRecords'] = ((JSAny? requestRaw) {

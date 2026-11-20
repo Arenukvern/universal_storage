@@ -124,9 +124,8 @@ void main() {
       );
       await reopened.rollback();
       expect(
-        (await store.read(
-          tx.runId,
-        ))!.entries.single.providerReceipts.map((r) => r.phase),
+        (await store.read(tx.runId))!.entries.single.providerReceipts
+            .map((r) => r.phase),
         [LiveApplyReceiptPhase.inverse],
       );
       expect(await inner.getFile('a'), 'original');

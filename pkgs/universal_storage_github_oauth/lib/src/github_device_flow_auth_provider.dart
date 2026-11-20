@@ -25,13 +25,14 @@ final class GithubDeviceFlowConfig {
 
   /// Device-code request endpoint. Override for web proxies.
   final String deviceCodeUrl;
+
   /// Token polling endpoint. Override for web proxies.
   final String tokenUrl;
+
   /// REST API base URL. Override for web proxies or GHES.
   final String apiBaseUrl;
 
-  static const defaultDeviceCodeUrl =
-      'https://github.com/login/device/code';
+  static const defaultDeviceCodeUrl = 'https://github.com/login/device/code';
   static const defaultTokenUrl = 'https://github.com/login/oauth/access_token';
   static const defaultApiBaseUrl = 'https://api.github.com';
 }
@@ -101,12 +102,20 @@ class GithubDeviceFlowAuthProvider implements OAuthProvider {
       );
       return OAuthResult.success(credentials: credentials, user: user);
     } on OAuthFlowCancelledException {
-      throw const AuthenticationException('Authentication was cancelled by user');
+      throw const AuthenticationException(
+        'Authentication was cancelled by user',
+      );
     } on OAuthFlowException catch (e) {
-      await _delegate.onAuthorizationError(error: 'flow_error', description: e.message);
+      await _delegate.onAuthorizationError(
+        error: 'flow_error',
+        description: e.message,
+      );
       throw AuthenticationException('OAuth flow failed: ${e.message}');
     } on Exception catch (e) {
-      await _delegate.onAuthorizationError(error: 'unknown_error', description: '$e');
+      await _delegate.onAuthorizationError(
+        error: 'unknown_error',
+        description: '$e',
+      );
       throw AuthenticationException('GitHub authentication failed', '$e');
     }
   }
@@ -139,7 +148,10 @@ class GithubDeviceFlowAuthProvider implements OAuthProvider {
     final response = await _httpClient.post(
       Uri.parse(flowConfig.deviceCodeUrl),
       headers: {'Accept': 'application/json'},
-      body: {'client_id': flowConfig.clientId, 'scope': flowConfig.scopes.join(' ')},
+      body: {
+        'client_id': flowConfig.clientId,
+        'scope': flowConfig.scopes.join(' '),
+      },
     );
 
     if (response.statusCode != 200) {
@@ -259,7 +271,10 @@ class GithubDeviceFlowAuthProvider implements OAuthProvider {
       } else if (response.statusCode == 401) {
         throw const ApiException.unauthorized();
       }
-      throw ApiException('Failed to get user information', 'HTTP ${response.statusCode}');
+      throw ApiException(
+        'Failed to get user information',
+        'HTTP ${response.statusCode}',
+      );
     } on Exception catch (e) {
       if (e is ApiException) rethrow;
       throw ApiException('Failed to get user information', '$e');

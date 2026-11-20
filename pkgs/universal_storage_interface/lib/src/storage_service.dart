@@ -33,9 +33,17 @@ class StorageService {
       if (existingContent != null) {
         // Await before returning: a bare `return future` inside `try`
         // bypasses the catch clauses below in async functions.
-        return await _provider.updateFile(path, content, commitMessage: message);
+        return await _provider.updateFile(
+          path,
+          content,
+          commitMessage: message,
+        );
       } else {
-        return await _provider.createFile(path, content, commitMessage: message);
+        return await _provider.createFile(
+          path,
+          content,
+          commitMessage: message,
+        );
       }
     } on FileNotFoundException {
       return _provider.createFile(path, content, commitMessage: message);
@@ -64,10 +72,8 @@ class StorageService {
   /// {@template storage_service.removeFile}
   /// Removes file at [path]. [message] for version-controlled storage.
   /// {@endtemplate}
-  Future<FileOperationResult> removeFile(
-    String path, {
-    String? message,
-  }) => _provider.deleteFile(path, commitMessage: message);
+  Future<FileOperationResult> removeFile(String path, {String? message}) =>
+      _provider.deleteFile(path, commitMessage: message);
 
   /// {@template storage_service.listDirectory}
   /// Lists files/subdirectories within [path].

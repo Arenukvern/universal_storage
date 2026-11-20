@@ -52,11 +52,7 @@ final class LwwMapStrategy implements MergeStrategy {
 
     final deleted = op.payload[_deletedKey] == true;
     final value = deleted ? null : op.payload['v'];
-    state[key] = {
-      'v': value,
-      _deletedKey: deleted,
-      'hlc': op.hlc.toJson(),
-    };
+    state[key] = {'v': value, _deletedKey: deleted, 'hlc': op.hlc.toJson()};
   }
 
   /// Reads the current value for [key]; returns `null` when missing or
@@ -67,10 +63,7 @@ final class LwwMapStrategy implements MergeStrategy {
   /// Reads the full JSON-encodable register value for [key] without
   /// assuming a String payload — the "structured JSON namespaces" case of
   /// ADR 0011 §2 (maps, lists, manifests). Null when missing or tombstoned.
-  static Object? readDynamicValue(
-    Map<String, Object?> state,
-    String key,
-  ) {
+  static Object? readDynamicValue(Map<String, Object?> state, String key) {
     final entry = _readEntry(state[key]);
     if (entry == null || entry.$2) return null;
     return entry.$3;

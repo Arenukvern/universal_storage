@@ -211,11 +211,7 @@ final class MeshPresenceTracker {
     return {'k': peerId, 'v': value};
   }
 
-  MeshPresenceEntry? _parseEntry(
-    String docId,
-    String peerId,
-    Object? raw,
-  ) {
+  MeshPresenceEntry? _parseEntry(String docId, String peerId, Object? raw) {
     if (raw is! Map) return null;
     if (raw['del'] == true) return null; // Left: never listed as present.
     final value = raw['v'];
@@ -244,9 +240,8 @@ final class MeshPresenceTracker {
       peerId: peerId,
       lastEvent: event,
       lastSeen: hlc,
-      expiresAt: DateTime.fromMillisecondsSinceEpoch(
-        hlc.wallMillis,
-      ).add(Duration(milliseconds: ttlMs)),
+      expiresAt: DateTime.fromMillisecondsSinceEpoch(hlc.wallMillis)
+          .add(Duration(milliseconds: ttlMs)),
       details: details,
     );
   }

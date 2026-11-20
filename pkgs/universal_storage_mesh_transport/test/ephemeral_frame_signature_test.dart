@@ -90,9 +90,7 @@ void main() {
     test('tryDecode skips malformed and unknown-version bytes', () {
       expect(MeshEphemeralFrame.tryDecode(frame.encode()), frame);
       expect(
-        MeshEphemeralFrame.tryDecode(
-          Uint8List.fromList('nope'.codeUnits),
-        ),
+        MeshEphemeralFrame.tryDecode(Uint8List.fromList('nope'.codeUnits)),
         isNull,
       );
       final bumped = utf8

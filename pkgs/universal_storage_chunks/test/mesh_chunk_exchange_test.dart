@@ -18,158 +18,168 @@ Future<void> _until(Future<bool> Function() probe) async {
 }
 
 void main() {
-  test('fetch moves verified chunks from a serving peer into the sink',
-      () async {
-    final serverStore = MemoryChunkStore();
-    final serverBlobs = ChunkedBlobStore(chunks: serverStore);
-    final manifest = await serverBlobs.putBytes(
-      List<int>.generate(200 * 1024, (i) => i % 251),
-    );
-
-    final pair = FakeMeshPair.paired();
-    final clientSink = MemoryChunkStore();
-
-    final clientSession = await pair.a.connect(
-      const MeshPeerRecord(peerId: 'device-b', displayName: 'B'),
-    );
-    pair.b.incoming.listen((session) {
-      unawaited(MeshChunkExchange.serve(session: session, store: serverStore));
-    });
-
-    final received = await MeshChunkExchange.fetch(
-      session: clientSession,
-      addresses: manifest.chunks,
-      sink: clientSink,
-    );
-    await clientSession.close();
-
-    expect(received, manifest.chunks.length);
-
-    // The fetched set materializes identically on the client side.
-    final clientBlobs = ChunkedBlobStore(chunks: clientSink);
-    final restored = await clientBlobs.getBytes(manifest);
-    expect(restored.length, manifest.size);
-  });
-
-  test('a lying server yields absent chunks on the client, never bad bytes',
-      () async {
-    final serverStore = MemoryChunkStore();
-    final serverBlobs = ChunkedBlobStore(chunks: serverStore);
-    final manifest = await serverBlobs.putBytes(
-      List<int>.generate(150 * 1024, (i) => i % 241),
-    );
-
-    // Disk rot / malicious rewrite, simulated one level up: the server's
-    // GET answers tampered bytes for one victim address. The wire hash
-    // check is the last line — the client must adopt nothing.
-    final victim = manifest.chunks.first;
-    final lying = _LyingStore(serverStore, victim, Uint8List(1024));
-
-    final pair = FakeMeshPair.paired();
-    final clientSink = MemoryChunkStore();
-    final clientSession = await pair.a.connect(
-      const MeshPeerRecord(peerId: 'device-b', displayName: 'B'),
-    );
-    pair.b.incoming.listen((session) {
-      unawaited(MeshChunkExchange.serve(session: session, store: lying));
-    });
-
-    final received = await MeshChunkExchange.fetch(
-      session: clientSession,
-      addresses: manifest.chunks,
-      sink: clientSink,
-    );
-    await clientSession.close();
-
-    expect(received, manifest.chunks.length - 1);
-    expect(
-      await clientSink.has(victim),
-      isFalse,
-      reason: 'tampered bytes must never be adopted under any address',
-    );
-  });
-
-  test('push ships verified chunks over a dialed session; serve absorbs them',
-      () async {
-    final senderBlobs = ChunkedBlobStore(chunks: MemoryChunkStore());
-    final manifest = await senderBlobs.putBytes(
-      List<int>.generate(300 * 1024, (i) => (i * 7) % 256),
-    );
-
-    final pair = FakeMeshPair.paired();
-    final receiverStore = MemoryChunkStore();
-    pair.b.incoming.listen((session) {
-      unawaited(
-        MeshChunkExchange.serve(session: session, store: receiverStore),
+  test(
+    'fetch moves verified chunks from a serving peer into the sink',
+    () async {
+      final serverStore = MemoryChunkStore();
+      final serverBlobs = ChunkedBlobStore(chunks: serverStore);
+      final manifest = await serverBlobs.putBytes(
+        List<int>.generate(200 * 1024, (i) => i % 251),
       );
-    });
 
-    final pusherSession = await pair.a.connect(
-      const MeshPeerRecord(peerId: 'device-b', displayName: 'B'),
-    );
-    final sent = await MeshChunkExchange.push(
-      session: pusherSession,
-      addresses: manifest.chunks,
-      store: senderBlobs.chunks,
-    );
-    await pusherSession.close();
-    await _until(() => receiverStore.has(manifest.chunks.last));
+      final pair = FakeMeshPair.paired();
+      final clientSink = MemoryChunkStore();
 
-    expect(sent, manifest.chunks.length);
-    // The receiver assembles identical bytes — the dialer-only topology
-    // shipped a blob with no second server.
-    final receiverBlobs = ChunkedBlobStore(chunks: receiverStore);
-    final restored = await receiverBlobs.getBytes(manifest);
-    expect(restored.length, manifest.size);
-  });
-
-  test('serve PoP-rejects a pushed lie and keeps honest chunks flowing',
-      () async {
-    final senderStore = MemoryChunkStore();
-    final senderBlobs = ChunkedBlobStore(chunks: senderStore);
-    final manifest = await senderBlobs.putBytes(
-      List<int>.generate(64 * 1024, (i) => i % 253),
-    );
-    final lie = List<int>.filled(1024, 0xAB);
-
-    final pair = FakeMeshPair.paired();
-    final receiverStore = MemoryChunkStore();
-    pair.b.incoming.listen((session) {
-      unawaited(
-        MeshChunkExchange.serve(session: session, store: receiverStore),
+      final clientSession = await pair.a.connect(
+        const MeshPeerRecord(peerId: 'device-b', displayName: 'B'),
       );
-    });
+      pair.b.incoming.listen((session) {
+        unawaited(
+          MeshChunkExchange.serve(session: session, store: serverStore),
+        );
+      });
 
-    final session = await pair.a.connect(
-      const MeshPeerRecord(peerId: 'device-b', displayName: 'B'),
-    );
-    // A pushed chunk whose bytes do not hash to its address…
-    await session.send(
-      MeshChunkProtocol.encode({
-        'v': 1,
-        'type': MeshChunkExchange.chunkType,
-        'address': manifest.chunks.first,
-        'bytes': base64Encode(lie),
-      }),
-    );
-    // …followed by an honest push of the real chunks.
-    final sent = await MeshChunkExchange.push(
-      session: session,
-      addresses: manifest.chunks,
-      store: senderBlobs.chunks,
-    );
-    await session.close();
-    await _until(() => receiverStore.has(manifest.chunks.first));
+      final received = await MeshChunkExchange.fetch(
+        session: clientSession,
+        addresses: manifest.chunks,
+        sink: clientSink,
+      );
+      await clientSession.close();
 
-    expect(sent, manifest.chunks.length);
-    expect(
-      await receiverStore.has(manifest.chunks.first),
-      isTrue,
-      reason: 'the honest push filled the gap the lie left',
-    );
-    final receiverBlobs = ChunkedBlobStore(chunks: receiverStore);
-    expect((await receiverBlobs.getBytes(manifest)).length, manifest.size);
-  });
+      expect(received, manifest.chunks.length);
+
+      // The fetched set materializes identically on the client side.
+      final clientBlobs = ChunkedBlobStore(chunks: clientSink);
+      final restored = await clientBlobs.getBytes(manifest);
+      expect(restored.length, manifest.size);
+    },
+  );
+
+  test(
+    'a lying server yields absent chunks on the client, never bad bytes',
+    () async {
+      final serverStore = MemoryChunkStore();
+      final serverBlobs = ChunkedBlobStore(chunks: serverStore);
+      final manifest = await serverBlobs.putBytes(
+        List<int>.generate(150 * 1024, (i) => i % 241),
+      );
+
+      // Disk rot / malicious rewrite, simulated one level up: the server's
+      // GET answers tampered bytes for one victim address. The wire hash
+      // check is the last line — the client must adopt nothing.
+      final victim = manifest.chunks.first;
+      final lying = _LyingStore(serverStore, victim, Uint8List(1024));
+
+      final pair = FakeMeshPair.paired();
+      final clientSink = MemoryChunkStore();
+      final clientSession = await pair.a.connect(
+        const MeshPeerRecord(peerId: 'device-b', displayName: 'B'),
+      );
+      pair.b.incoming.listen((session) {
+        unawaited(MeshChunkExchange.serve(session: session, store: lying));
+      });
+
+      final received = await MeshChunkExchange.fetch(
+        session: clientSession,
+        addresses: manifest.chunks,
+        sink: clientSink,
+      );
+      await clientSession.close();
+
+      expect(received, manifest.chunks.length - 1);
+      expect(
+        await clientSink.has(victim),
+        isFalse,
+        reason: 'tampered bytes must never be adopted under any address',
+      );
+    },
+  );
+
+  test(
+    'push ships verified chunks over a dialed session; serve absorbs them',
+    () async {
+      final senderBlobs = ChunkedBlobStore(chunks: MemoryChunkStore());
+      final manifest = await senderBlobs.putBytes(
+        List<int>.generate(300 * 1024, (i) => (i * 7) % 256),
+      );
+
+      final pair = FakeMeshPair.paired();
+      final receiverStore = MemoryChunkStore();
+      pair.b.incoming.listen((session) {
+        unawaited(
+          MeshChunkExchange.serve(session: session, store: receiverStore),
+        );
+      });
+
+      final pusherSession = await pair.a.connect(
+        const MeshPeerRecord(peerId: 'device-b', displayName: 'B'),
+      );
+      final sent = await MeshChunkExchange.push(
+        session: pusherSession,
+        addresses: manifest.chunks,
+        store: senderBlobs.chunks,
+      );
+      await pusherSession.close();
+      await _until(() => receiverStore.has(manifest.chunks.last));
+
+      expect(sent, manifest.chunks.length);
+      // The receiver assembles identical bytes — the dialer-only topology
+      // shipped a blob with no second server.
+      final receiverBlobs = ChunkedBlobStore(chunks: receiverStore);
+      final restored = await receiverBlobs.getBytes(manifest);
+      expect(restored.length, manifest.size);
+    },
+  );
+
+  test(
+    'serve PoP-rejects a pushed lie and keeps honest chunks flowing',
+    () async {
+      final senderStore = MemoryChunkStore();
+      final senderBlobs = ChunkedBlobStore(chunks: senderStore);
+      final manifest = await senderBlobs.putBytes(
+        List<int>.generate(64 * 1024, (i) => i % 253),
+      );
+      final lie = List<int>.filled(1024, 0xAB);
+
+      final pair = FakeMeshPair.paired();
+      final receiverStore = MemoryChunkStore();
+      pair.b.incoming.listen((session) {
+        unawaited(
+          MeshChunkExchange.serve(session: session, store: receiverStore),
+        );
+      });
+
+      final session = await pair.a.connect(
+        const MeshPeerRecord(peerId: 'device-b', displayName: 'B'),
+      );
+      // A pushed chunk whose bytes do not hash to its address…
+      await session.send(
+        MeshChunkProtocol.encode({
+          'v': 1,
+          'type': MeshChunkExchange.chunkType,
+          'address': manifest.chunks.first,
+          'bytes': base64Encode(lie),
+        }),
+      );
+      // …followed by an honest push of the real chunks.
+      final sent = await MeshChunkExchange.push(
+        session: session,
+        addresses: manifest.chunks,
+        store: senderBlobs.chunks,
+      );
+      await session.close();
+      await _until(() => receiverStore.has(manifest.chunks.first));
+
+      expect(sent, manifest.chunks.length);
+      expect(
+        await receiverStore.has(manifest.chunks.first),
+        isTrue,
+        reason: 'the honest push filled the gap the lie left',
+      );
+      final receiverBlobs = ChunkedBlobStore(chunks: receiverStore);
+      expect((await receiverBlobs.getBytes(manifest)).length, manifest.size);
+    },
+  );
 }
 
 /// A store that answers one victim address with tampered bytes — the

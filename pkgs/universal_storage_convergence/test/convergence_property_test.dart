@@ -26,11 +26,7 @@ void main() {
 
   /// Delivers [ops] to [doc] in a seeded shuffled order, in small batches
   /// simulating flaky link chunking.
-  void deliverShuffled(
-    ConvergenceDoc doc,
-    List<OpRecord> ops,
-    int seed,
-  ) {
+  void deliverShuffled(ConvergenceDoc doc, List<OpRecord> ops, int seed) {
     final shuffled = [...ops]..shuffle(Random(seed));
     for (var i = 0; i < shuffled.length; i += 3) {
       final batch = shuffled.skip(i).take(3);
@@ -133,22 +129,25 @@ void main() {
       expect(writer.needsSnapshotFor(laggingVv), isFalse);
     });
 
-    test('compact retires the log; snapshot adoption covers compacted peers', () {
-      final writer = ConvergenceDoc(docId: 'd', actorId: 'w');
-      writer.applyLocal({'k': 'a', 'v': '1'}, timeAt(0));
-      writer.applyLocal({'k': 'b', 'v': '2'}, timeAt(10));
+    test(
+      'compact retires the log; snapshot adoption covers compacted peers',
+      () {
+        final writer = ConvergenceDoc(docId: 'd', actorId: 'w');
+        writer.applyLocal({'k': 'a', 'v': '1'}, timeAt(0));
+        writer.applyLocal({'k': 'b', 'v': '2'}, timeAt(10));
 
-      expect(writer.compact(), 2);
-      expect(writer.pendingOps, isEmpty);
+        expect(writer.compact(), 2);
+        expect(writer.pendingOps, isEmpty);
 
-      // A peer that never saw anything can no longer be served by deltas.
-      expect(writer.needsSnapshotFor(VersionVector.zero), isTrue);
+        // A peer that never saw anything can no longer be served by deltas.
+        expect(writer.needsSnapshotFor(VersionVector.zero), isTrue);
 
-      final lateJoiner = ConvergenceDoc(docId: 'd', actorId: 'late');
-      lateJoiner.adoptSnapshot(writer.snapshotFor());
-      expect(LwwMapStrategy.readValue(lateJoiner.state, 'a'), '1');
-      expect(LwwMapStrategy.readValue(lateJoiner.state, 'b'), '2');
-    });
+        final lateJoiner = ConvergenceDoc(docId: 'd', actorId: 'late');
+        lateJoiner.adoptSnapshot(writer.snapshotFor());
+        expect(LwwMapStrategy.readValue(lateJoiner.state, 'a'), '1');
+        expect(LwwMapStrategy.readValue(lateJoiner.state, 'b'), '2');
+      },
+    );
 
     test('adopting an older snapshot keeps newer local pending ops', () {
       final writer = ConvergenceDoc(docId: 'd', actorId: 'w');

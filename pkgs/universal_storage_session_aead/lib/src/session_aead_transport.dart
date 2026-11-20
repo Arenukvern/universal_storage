@@ -63,11 +63,8 @@ final class SessionAeadTransport implements MeshTransport {
   /// error, stack trace)`. The raw session is already closed when this
   /// runs. Diagnostics seam — dropping the peer is the behavior either
   /// way (named data, never folded).
-  final void Function(
-    MeshSession raw,
-    Object error,
-    StackTrace stackTrace,
-  )? onHandshakeFailure;
+  final void Function(MeshSession raw, Object error, StackTrace stackTrace)?
+  onHandshakeFailure;
 
   final _incoming = StreamController<MeshSession>();
 

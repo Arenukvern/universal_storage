@@ -59,9 +59,7 @@ void main() {
 
   test('decode rejects unknown versions and garbage bytes', () {
     expect(
-      () => MeshEphemeralFrame.decode(
-        Uint8List.fromList('not json'.codeUnits),
-      ),
+      () => MeshEphemeralFrame.decode(Uint8List.fromList('not json'.codeUnits)),
       throwsA(anyOf(isArgumentError, isFormatException)),
     );
     final raw = frame.encode();
@@ -114,44 +112,43 @@ void main() {
     }
   });
 
-  test('ephemeral frames relay unchanged through the addressed relay',
-      () async {
-    final relay = AddressedRelayServer(port: 0);
-    final port = await relay.start();
-    addTearDown(relay.dispose);
-    final endpoint = Uri.parse('ws://127.0.0.1:$port');
+  test(
+    'ephemeral frames relay unchanged through the addressed relay',
+    () async {
+      final relay = AddressedRelayServer(port: 0);
+      final port = await relay.start();
+      addTearDown(relay.dispose);
+      final endpoint = Uri.parse('ws://127.0.0.1:$port');
 
-    final a = AddressedRelayClient(selfId: 'device-a', endpoint: endpoint);
-    final b = AddressedRelayClient(selfId: 'device-b', endpoint: endpoint);
-    await a.openRelay();
-    await b.openRelay();
+      final a = AddressedRelayClient(selfId: 'device-a', endpoint: endpoint);
+      final b = AddressedRelayClient(selfId: 'device-b', endpoint: endpoint);
+      await a.openRelay();
+      await b.openRelay();
 
-    final inbound = b.incoming.first;
-    // Opening the logical session is required for b to receive data; the
-    // session handle itself is not needed since the ephemeral send is
-    // addressed by peer id.
-    await a.connect(
-      const MeshPeerRecord(peerId: 'device-b', displayName: 'B'),
-    );
-    final remote = await inbound;
+      final inbound = b.incoming.first;
+      // Opening the logical session is required for b to receive data; the
+      // session handle itself is not needed since the ephemeral send is
+      // addressed by peer id.
+      await a.connect(
+        const MeshPeerRecord(peerId: 'device-b', displayName: 'B'),
+      );
+      final remote = await inbound;
 
-    final received = <Uint8List>[];
-    final done = Completer<void>();
-    remote.inbound.listen((bytes) {
-      received.add(bytes);
-      done.complete();
-    });
+      final received = <Uint8List>[];
+      final done = Completer<void>();
+      remote.inbound.listen((bytes) {
+        received.add(bytes);
+        done.complete();
+      });
 
-    // Sent under the ephemeral envelope kind; delivered through the same
-    // path as data — relayed, never treated durably.
-    await a.sendEphemeral(
-      toPeerId: 'device-b',
-      payload: frame.encode(),
-    );
-    await done.future.timeout(const Duration(seconds: 5));
-    expect(MeshEphemeralFrame.decode(received.single), frame);
+      // Sent under the ephemeral envelope kind; delivered through the same
+      // path as data — relayed, never treated durably.
+      await a.sendEphemeral(toPeerId: 'device-b', payload: frame.encode());
+      await done.future.timeout(const Duration(seconds: 5));
+      expect(MeshEphemeralFrame.decode(received.single), frame);
 
-    await a.close();
-    await b.close();
-  });
+      await a.close();
+      await b.close();
+    },
+  );
 }

@@ -82,9 +82,7 @@ final class MeshSyncProtocol {
   }
 
   /// Per-document version vectors: `{docId: {actor: hlc}}`.
-  static Map<String, Object?> vv(
-    Map<String, VersionVector> docVectors,
-  ) => {
+  static Map<String, Object?> vv(Map<String, VersionVector> docVectors) => {
     'type': vvType,
     'docs': {
       for (final entry in docVectors.entries) entry.key: entry.value.toJson(),
@@ -111,9 +109,7 @@ final class MeshSyncProtocol {
     'states': [for (final s in states) s.toJson()],
   };
 
-  static ({List<OpRecord> ops, List<Snapshot> states}) parseDelta(
-    Object? raw,
-  ) {
+  static ({List<OpRecord> ops, List<Snapshot> states}) parseDelta(Object? raw) {
     final body = raw! as Map<dynamic, dynamic>;
     return (
       ops: ((body['ops'] ?? const []) as List<dynamic>)
@@ -133,13 +129,12 @@ final class MeshSyncProtocol {
 /// sends its `hello` before anything else, and every sync frame carries
 /// the `type`/`v` pair — realtime app frames (e.g. gesture events) carry
 /// neither, so one decrypted first frame routes the session.
-bool looksLikeWorldSyncFrame(Uint8List frame) =>
-    meshFrameTypeIs(frame, const {
-      MeshSyncProtocol.helloType,
-      MeshSyncProtocol.subType,
-      MeshSyncProtocol.vvType,
-      MeshSyncProtocol.deltaType,
-    });
+bool looksLikeWorldSyncFrame(Uint8List frame) => meshFrameTypeIs(frame, const {
+  MeshSyncProtocol.helloType,
+  MeshSyncProtocol.subType,
+  MeshSyncProtocol.vvType,
+  MeshSyncProtocol.deltaType,
+});
 
 bool meshFrameTypeIs(Uint8List frame, Set<String> types) {
   try {

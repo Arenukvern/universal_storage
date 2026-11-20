@@ -9,12 +9,11 @@ import 'package:universal_storage_convergence_session/universal_storage_converge
 void main() {
   const planner = DeltaPlanner();
 
-  OpRecord op(String docId, int counter, String actor) =>
-      OpRecord(
-        docId: docId,
-        hlc: Hlc(1700000000000 + counter, counter, actor),
-        payload: {'k': 'k$counter', 'v': 'v$counter'},
-      );
+  OpRecord op(String docId, int counter, String actor) => OpRecord(
+    docId: docId,
+    hlc: Hlc(1700000000000 + counter, counter, actor),
+    payload: {'k': 'k$counter', 'v': 'v$counter'},
+  );
 
   /// A hand-rolled replica for pure decision tests.
   FakeReplica replica(
@@ -208,8 +207,7 @@ class FakeReplica implements DeltaReplica {
   List<OpRecord> opsSince(VersionVector remoteVv) => _opsSince(remoteVv);
 
   @override
-  bool needsSnapshotFor(VersionVector remoteVv) =>
-      _needsSnapshotFor(remoteVv);
+  bool needsSnapshotFor(VersionVector remoteVv) => _needsSnapshotFor(remoteVv);
 
   @override
   Snapshot snapshotFor() => _snapshot;
@@ -229,8 +227,7 @@ class _DocSource implements DeltaReplica {
   @override
   List<OpRecord> get pendingOps => _doc.pendingOps;
   @override
-  List<OpRecord> opsSince(VersionVector remoteVv) =>
-      _doc.opsSince(remoteVv);
+  List<OpRecord> opsSince(VersionVector remoteVv) => _doc.opsSince(remoteVv);
   @override
   bool needsSnapshotFor(VersionVector remoteVv) =>
       _doc.needsSnapshotFor(remoteVv);

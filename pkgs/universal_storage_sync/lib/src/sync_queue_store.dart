@@ -365,8 +365,7 @@ final class StorageServiceSyncQueueStore implements SyncQueueStore {
       return rawList
           .whereType<Map<dynamic, dynamic>>()
           .map(
-            (item) =>
-                SyncOutboxEntry.fromJson(Map<String, dynamic>.from(item)),
+            (item) => SyncOutboxEntry.fromJson(Map<String, dynamic>.from(item)),
           )
           .where((entry) => entry.namespace == namespace)
           .toList(growable: false);
@@ -412,12 +411,8 @@ final class StorageServiceSyncQueueStore implements SyncQueueStore {
       'namespace': namespace.value,
       'updated_at': DateTime.now().toUtc().toIso8601String(),
       'outbox': state.outbox.map((entry) => entry.toJson()).toList(),
-      'dead_letter': state.deadLetter
-          .map((entry) => entry.toJson())
-          .toList(),
-      'conflicts': state.conflicts
-          .map((entry) => entry.toJson())
-          .toList(),
+      'dead_letter': state.deadLetter.map((entry) => entry.toJson()).toList(),
+      'conflicts': state.conflicts.map((entry) => entry.toJson()).toList(),
       'applied_entry_ids': _boundedAppliedIds(state.appliedEntryIds),
     };
 

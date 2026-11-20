@@ -61,7 +61,8 @@ final class CompositeMergeStrategy implements MergeStrategy {
           'lane prefix must not contain "," or ">" (spec encoding)',
         );
       }
-    }    return CompositeMergeStrategy._(Map.unmodifiable(lanes));
+    }
+    return CompositeMergeStrategy._(Map.unmodifiable(lanes));
   }
 
   /// Restores a composite from its wire spec (the part after

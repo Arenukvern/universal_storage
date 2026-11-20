@@ -14,9 +14,7 @@ final class StorageProfileMigrationEndpoint implements MigrationEndpoint {
     required StorageKernel targetKernel,
     String manifestDirectory = '.us/migrations',
     StorageNamespace? manifestNamespace,
-    Set<String> sourcePathExcludePrefixes = const <String>{
-      '.us/migrations',
-    },
+    Set<String> sourcePathExcludePrefixes = const <String>{'.us/migrations'},
   }) : _manager = StorageProfileMigrationManager(
          sourceKernel: sourceKernel,
          targetKernel: targetKernel,
@@ -49,8 +47,7 @@ final class StorageProfileMigrationEndpoint implements MigrationEndpoint {
         const <String, MigrationDecisionAction>{},
     // Legacy alias kept for backward compatibility with migration managers that
     // still pass DecisionState values directly.
-    Map<String, DecisionState> decisionStates =
-        const <String, DecisionState>{},
+    Map<String, DecisionState> decisionStates = const <String, DecisionState>{},
   }) => _manager.executeMigrationWithOptions(
     plan: plan,
     overwrite: overwrite,
@@ -221,8 +218,7 @@ final class StorageProfileMigrationManager implements MigrationEndpoint {
     bool? pauseForDecisions,
     Map<String, MigrationDecisionAction> decisionActions =
         const <String, MigrationDecisionAction>{},
-    Map<String, DecisionState> decisionStates =
-        const <String, DecisionState>{},
+    Map<String, DecisionState> decisionStates = const <String, DecisionState>{},
   }) async {
     final resolvedOverwrite =
         overwrite ?? _planBool(plan.metadata, 'overwrite') ?? true;
@@ -314,9 +310,7 @@ final class StorageProfileMigrationManager implements MigrationEndpoint {
           );
         }
       }
-      operations.sort(
-        (left, right) => left.key.compareTo(right.key),
-      );
+      operations.sort((left, right) => left.key.compareTo(right.key));
 
       final completed = <String>{
         for (final operation in completedOperations) operation.key,
@@ -1149,16 +1143,13 @@ final class StorageProfileMigrationManager implements MigrationEndpoint {
     return now.difference(acquiredAt) > _manifestLockTtl;
   }
 
-  MigrationStatus _migrationStatusFromManifest(
-    Map<String, dynamic> manifest,
-  ) => MigrationStatus.values.firstWhere(
-    (value) => value.name == (manifest['status'] ?? ''),
-    orElse: () => MigrationStatus.draft,
-  );
+  MigrationStatus _migrationStatusFromManifest(Map<String, dynamic> manifest) =>
+      MigrationStatus.values.firstWhere(
+        (value) => value.name == (manifest['status'] ?? ''),
+        orElse: () => MigrationStatus.draft,
+      );
 
-  _MigrationLockInfo? _manifestLockFromManifest(
-    Map<String, dynamic> manifest,
-  ) {
+  _MigrationLockInfo? _manifestLockFromManifest(Map<String, dynamic> manifest) {
     final rawLock = manifest['migration_lock'];
     if (rawLock is! Map) {
       return null;
@@ -1348,10 +1339,8 @@ final class StorageProfileMigrationManager implements MigrationEndpoint {
       }
     }
     checkpoints.sort(
-      (left, right) =>
-          '${left.sourceNamespace.value}:${left.sourcePath}'.compareTo(
-            '${right.sourceNamespace.value}:${right.sourcePath}',
-          ),
+      (left, right) => '${left.sourceNamespace.value}:${left.sourcePath}'
+          .compareTo('${right.sourceNamespace.value}:${right.sourcePath}'),
     );
     return checkpoints;
   }
@@ -1361,10 +1350,8 @@ final class StorageProfileMigrationManager implements MigrationEndpoint {
   ) {
     final checkpoints = checkpointsByOperationId.values.toList(growable: false);
     checkpoints.sort(
-      (left, right) =>
-          '${left.sourceNamespace.value}:${left.sourcePath}'.compareTo(
-            '${right.sourceNamespace.value}:${right.sourcePath}',
-          ),
+      (left, right) => '${left.sourceNamespace.value}:${left.sourcePath}'
+          .compareTo('${right.sourceNamespace.value}:${right.sourcePath}'),
     );
     return checkpoints;
   }

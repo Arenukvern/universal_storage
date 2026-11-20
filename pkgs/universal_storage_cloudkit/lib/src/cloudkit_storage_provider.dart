@@ -791,10 +791,7 @@ class CloudKitStorageProvider extends StorageProvider implements RemoteEngine {
         continue;
       }
 
-      final segments = relative
-          .split('/')
-          .where((e) => e.isNotEmpty)
-          .toList();
+      final segments = relative.split('/').where((e) => e.isNotEmpty).toList();
       if (segments.isEmpty) {
         continue;
       }
@@ -1188,10 +1185,7 @@ class _MirrorState {
     manifest: manifest ?? this.manifest,
   );
 
-  _MirrorState withManifestEntry(
-    String path,
-    _ManifestEntry entry,
-  ) {
+  _MirrorState withManifestEntry(String path, _ManifestEntry entry) {
     final next = Map<String, _ManifestEntry>.from(manifest);
     next[path] = entry;
     return copyWith(manifest: next);

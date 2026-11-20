@@ -28,37 +28,39 @@ void main() {
     await directory.delete(recursive: true);
   });
 
-  test('stage → list → promote writes to target and clears the draft',
-      () async {
-    final entryId = await stager.stage(
-      service: service,
-      path: 'docs/design.md',
-      content: 'proposed new paragraph',
-      agentId: 'test-agent',
-    );
-    expect(entryId, isNotEmpty);
+  test(
+    'stage → list → promote writes to target and clears the draft',
+    () async {
+      final entryId = await stager.stage(
+        service: service,
+        path: 'docs/design.md',
+        content: 'proposed new paragraph',
+        agentId: 'test-agent',
+      );
+      expect(entryId, isNotEmpty);
 
-    final pending = await stager.listPending(service: service);
-    expect(pending, hasLength(1));
-    expect(pending.single.path, 'docs/design.md');
-    expect(pending.single.content, 'proposed new paragraph');
+      final pending = await stager.listPending(service: service);
+      expect(pending, hasLength(1));
+      expect(pending.single.path, 'docs/design.md');
+      expect(pending.single.content, 'proposed new paragraph');
 
-    final result = await stager.promote(
-      service: service,
-      namespaceProfile: const StorageNamespaceProfile(
-        namespace: StorageNamespace.projects,
-        policy: StoragePolicy.localOnly,
-      ),
-      entryId: entryId,
-      targetPath: 'docs/design.md',
-      content: 'proposed new paragraph',
-    );
-    expect(result.path.endsWith('docs/design.md'), isTrue);
+      final result = await stager.promote(
+        service: service,
+        namespaceProfile: const StorageNamespaceProfile(
+          namespace: StorageNamespace.projects,
+          policy: StoragePolicy.localOnly,
+        ),
+        entryId: entryId,
+        targetPath: 'docs/design.md',
+        content: 'proposed new paragraph',
+      );
+      expect(result.path.endsWith('docs/design.md'), isTrue);
 
-    final promoted = await service.readFile('docs/design.md');
-    expect(promoted, 'proposed new paragraph');
-    expect(await stager.listPending(service: service), isEmpty);
-  });
+      final promoted = await service.readFile('docs/design.md');
+      expect(promoted, 'proposed new paragraph');
+      expect(await stager.listPending(service: service), isEmpty);
+    },
+  );
 
   test('drop removes the proposal without touching the target', () async {
     final entryId = await stager.stage(
@@ -71,8 +73,7 @@ void main() {
     expect(await service.readFile('docs/x.md'), isNull);
   });
 
-  test('staging identical content twice collapses to one proposal',
-      () async {
+  test('staging identical content twice collapses to one proposal', () async {
     await stager.stage(
       service: service,
       path: 'docs/same.md',

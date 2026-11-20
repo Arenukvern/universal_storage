@@ -60,9 +60,7 @@ class UnsupportedCloudKitBridge implements CloudKitBridge {
   }
 
   @override
-  Future<List<CloudKitRecord>> queryByPathPrefix(
-    String pathPrefix,
-  ) async {
+  Future<List<CloudKitRecord>> queryByPathPrefix(String pathPrefix) async {
     throw const CloudKitBridgeException(
       code: CloudKitBridgeErrorCode.unsupported,
       message: 'CloudKit bridge is not registered for this platform.',

@@ -170,8 +170,7 @@ String emitRawCode(Map<String, Object?> ir) {
     ..writeln();
 
   final cloudKitGlobal = globalDeclarations.firstWhere(
-    (global) =>
-        global['kind'] == 'variable' && global['name'] == 'CloudKit',
+    (global) => global['kind'] == 'variable' && global['name'] == 'CloudKit',
     orElse: () => const <String, Object?>{},
   );
 

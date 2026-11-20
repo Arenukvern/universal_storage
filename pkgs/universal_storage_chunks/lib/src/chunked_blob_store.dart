@@ -25,7 +25,10 @@ final class MissingChunksException implements Exception {
 /// the existing sync ships the reference; bytes move separately over the
 /// [MeshChunkExchange] or any other channel.
 final class ChunkedBlobStore {
-  ChunkedBlobStore({required this.chunks, this.chunker = const ContentDefinedChunker()});
+  ChunkedBlobStore({
+    required this.chunks,
+    this.chunker = const ContentDefinedChunker(),
+  });
 
   /// The backing content-addressed store.
   final ChunkStore chunks;
@@ -35,10 +38,7 @@ final class ChunkedBlobStore {
   /// Splits, stores (idempotently — dedupe is the address), and returns
   /// the manifest. v1 stores chunks uncompressed (ADR 0042 §1: the
   /// address never depends on the codec; compression is a later layer).
-  Future<ChunkManifest> putBytes(
-    List<int> bytes, {
-    String? mime,
-  }) async {
+  Future<ChunkManifest> putBytes(List<int> bytes, {String? mime}) async {
     final root = chunkAddress(bytes);
     final addresses = <String>[];
     for (final slice in chunker.chunk(bytes)) {

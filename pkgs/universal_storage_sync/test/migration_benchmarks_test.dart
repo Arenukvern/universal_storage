@@ -211,7 +211,8 @@ void main() {
             expect(
               stopwatch.elapsed,
               lessThan(const Duration(seconds: 2)),
-              reason: 'filesystem migration throughput dropped below 50 files/sec',
+              reason:
+                  'filesystem migration throughput dropped below 50 files/sec',
             );
           }
         } finally {
@@ -480,10 +481,8 @@ class _BenchInMemoryLocalDb implements LocalDbI {
   }) async => _bools[key] ?? defaultValue;
 
   @override
-  Future<int> getInt({
-    required String key,
-    int defaultValue = 0,
-  }) async => _ints[key] ?? defaultValue;
+  Future<int> getInt({required String key, int defaultValue = 0}) async =>
+      _ints[key] ?? defaultValue;
 
   @override
   Future<Map<String, dynamic>> getMap(String key) async =>
@@ -533,10 +532,7 @@ class _BenchInMemoryLocalDb implements LocalDbI {
   }
 
   @override
-  Future<void> setBool({
-    required String key,
-    required bool value,
-  }) async {
+  Future<void> setBool({required String key, required bool value}) async {
     _bools[key] = value;
   }
 
@@ -568,10 +564,7 @@ class _BenchInMemoryLocalDb implements LocalDbI {
   }
 
   @override
-  Future<void> setString({
-    required String key,
-    required String value,
-  }) async {
+  Future<void> setString({required String key, required String value}) async {
     _strings[key] = value;
   }
 

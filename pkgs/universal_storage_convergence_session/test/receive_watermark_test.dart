@@ -100,8 +100,7 @@ void main() {
 
     test('a restored watermark keeps ordering later local writes', () {
       const aheadOpHlc = Hlc(4000000000000, 0, 'remote');
-      final wm = ReceiveWatermark(actorId: 'local')
-        ..observe(aheadOpHlc);
+      final wm = ReceiveWatermark(actorId: 'local')..observe(aheadOpHlc);
       final restored = ReceiveWatermark.fromJson(wm.toJson());
 
       final doc = ConvergenceDoc(docId: 'd', actorId: 'local');
@@ -138,8 +137,7 @@ void main() {
       () {
         final doc = ConvergenceDoc(docId: 'd', actorId: 'local')
           ..applyRemote([remoteOp]);
-        final wm = ReceiveWatermark(actorId: 'local')
-          ..observe(remoteOp.hlc);
+        final wm = ReceiveWatermark(actorId: 'local')..observe(remoteOp.hlc);
 
         final localOp = doc.applyLocal(
           const {'k': 'x', 'v': 'local-value'},

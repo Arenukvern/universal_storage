@@ -74,11 +74,10 @@ final class IsolateFrameSigner
       }
     });
     try {
-      await Isolate.spawn(
-        _signerWorkerMain,
-        (replyPort.sendPort, _seed),
-        debugName: 'vosges-frame-signer',
-      );
+      await Isolate.spawn(_signerWorkerMain, (
+        replyPort.sendPort,
+        _seed,
+      ), debugName: 'vosges-frame-signer');
       _replyPort = replyPort;
       // No idle timer: the isolate parks on its ReceivePort (~0 CPU), and
       // killing it on a timer risks racing an in-flight send.
@@ -159,11 +158,10 @@ final class IsolateFrameAuthenticator implements EphemeralFrameAuthenticator {
       _pending.remove(requestId)?.complete(verified);
     });
     try {
-      await Isolate.spawn(
-        _authenticatorWorkerMain,
-        (replyPort.sendPort, _identityKeys),
-        debugName: 'vosges-frame-authenticator',
-      );
+      await Isolate.spawn(_authenticatorWorkerMain, (
+        replyPort.sendPort,
+        _identityKeys,
+      ), debugName: 'vosges-frame-authenticator');
       _replyPort = replyPort;
       // Awaited so a worker that dies before its first hello runs the
       // catch below (cancel ports, clear the spawn cache).

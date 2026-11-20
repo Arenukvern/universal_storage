@@ -22,10 +22,7 @@ abstract class StorageProvider {
     String? commitMessage,
   });
 
-  Future<FileOperationResult> deleteFile(
-    String path, {
-    String? commitMessage,
-  });
+  Future<FileOperationResult> deleteFile(String path, {String? commitMessage});
 
   Future<List<FileEntry>> listDirectory(String directoryPath);
 
@@ -59,10 +56,7 @@ abstract class StorageProvider {
   // TODO(arenukvern): refactor variables to be abstract
   // sync ca be between two providers or remote and local data inside
   // one provider therefore clarify what it does
-  Future<void> sync({
-    String? pullMergeStrategy,
-    String? pushConflictStrategy,
-  }) {
+  Future<void> sync({String? pullMergeStrategy, String? pushConflictStrategy}) {
     throw const UnsupportedOperationException(
       'This provider does not support sync.',
     );

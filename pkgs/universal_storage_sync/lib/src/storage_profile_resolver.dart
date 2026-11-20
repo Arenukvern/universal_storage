@@ -6,9 +6,7 @@ abstract interface class StorageProfileResolver {
 
   Future<StorageService> resolveService(StorageNamespace namespace);
 
-  Future<StorageCapabilities> resolveCapabilities(
-    StorageNamespace namespace,
-  );
+  Future<StorageCapabilities> resolveCapabilities(StorageNamespace namespace);
 }
 
 /// In-memory resolver for profile-based routing.
@@ -29,9 +27,7 @@ final class InMemoryStorageProfileResolver implements StorageProfileResolver {
   Iterable<StorageNamespace> get namespaces => _namespaceServices.keys;
 
   @override
-  Future<StorageService> resolveService(
-    StorageNamespace namespace,
-  ) async {
+  Future<StorageService> resolveService(StorageNamespace namespace) async {
     final service = _namespaceServices[namespace];
     if (service == null) {
       throw ConfigurationException(

@@ -94,5 +94,4 @@ final class WebMeshKvStore implements MeshKeyValueStore {
 
 /// Web-backed selection for the conditional import in
 /// `mesh_storage_provider.dart` / `mesh_peer_registry.dart`.
-MeshKeyValueStore createMeshKvStore(String root) =>
-    WebMeshKvStore(root: root);
+MeshKeyValueStore createMeshKvStore(String root) => WebMeshKvStore(root: root);

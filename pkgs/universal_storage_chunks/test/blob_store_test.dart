@@ -13,11 +13,14 @@ void main() {
   });
 
   group('FileChunkStore', () {
-    chunkStoreConformanceTests('FileChunkStore', create: () async {
-      final dir = await Directory.systemTemp.createTemp('chunks_conf_');
-      addTearDown(() => dir.delete(recursive: true));
-      return FileChunkStore(dir.path);
-    });
+    chunkStoreConformanceTests(
+      'FileChunkStore',
+      create: () async {
+        final dir = await Directory.systemTemp.createTemp('chunks_conf_');
+        addTearDown(() => dir.delete(recursive: true));
+        return FileChunkStore(dir.path);
+      },
+    );
   });
 
   group('ChunkedBlobStore', () {
@@ -49,28 +52,33 @@ void main() {
 
       expect(second.root, first.root);
       expect(second.chunks, first.chunks);
-      expect(store.length, countAfterFirst,
-          reason: 'idempotent puts must not add chunks');
-    });
-
-    test('edit locality at the blob level: a small edit adds few chunks',
-        () async {
-      final bytes = List<int>.generate(300 * 1024, (i) => i % 199);
-      final before = await blobs.putBytes(bytes);
-      final countBefore = store.length;
-
-      final edited = [...bytes]..[150 * 1024] ^= 0xFF;
-      final after = await blobs.putBytes(edited);
-
-      expect(after.root, isNot(before.root));
       expect(
-        store.length - countBefore,
-        lessThanOrEqualTo(4),
-        reason: 'content-defined cuts: only chunks near the edit re-form',
+        store.length,
+        countAfterFirst,
+        reason: 'idempotent puts must not add chunks',
       );
-      // And the OLD version still materializes (LWW losers stay whole).
-      expect(await blobs.getBytes(before), bytes);
     });
+
+    test(
+      'edit locality at the blob level: a small edit adds few chunks',
+      () async {
+        final bytes = List<int>.generate(300 * 1024, (i) => i % 199);
+        final before = await blobs.putBytes(bytes);
+        final countBefore = store.length;
+
+        final edited = [...bytes]..[150 * 1024] ^= 0xFF;
+        final after = await blobs.putBytes(edited);
+
+        expect(after.root, isNot(before.root));
+        expect(
+          store.length - countBefore,
+          lessThanOrEqualTo(4),
+          reason: 'content-defined cuts: only chunks near the edit re-form',
+        );
+        // And the OLD version still materializes (LWW losers stay whole).
+        expect(await blobs.getBytes(before), bytes);
+      },
+    );
 
     test('missing chunks are detected and named', () async {
       final manifest = await blobs.putBytes(
@@ -86,16 +94,18 @@ void main() {
       expect(missing, partial.chunks, reason: 'an empty store lacks all');
     });
 
-    test('getBytes throws MissingChunksException on an incomplete store',
-        () async {
-      final bytes = List<int>.generate(200 * 1024, (i) => i % 241);
-      final manifest = await blobs.putBytes(bytes);
-      final emptyStore = ChunkedBlobStore(chunks: MemoryChunkStore());
-      await expectLater(
-        emptyStore.getBytes(manifest),
-        throwsA(isA<MissingChunksException>()),
-      );
-    });
+    test(
+      'getBytes throws MissingChunksException on an incomplete store',
+      () async {
+        final bytes = List<int>.generate(200 * 1024, (i) => i % 241);
+        final manifest = await blobs.putBytes(bytes);
+        final emptyStore = ChunkedBlobStore(chunks: MemoryChunkStore());
+        await expectLater(
+          emptyStore.getBytes(manifest),
+          throwsA(isA<MissingChunksException>()),
+        );
+      },
+    );
 
     test('progressive plan walks leading chunks first (mip order)', () async {
       final bytes = List<int>.generate(300 * 1024, (i) => i % 233);
@@ -127,7 +137,9 @@ void main() {
 
     test('reachableAddresses unions manifests (local-GC helper)', () async {
       final a = await blobs.putBytes(List<int>.generate(70 * 1024, (i) => i));
-      final b = await blobs.putBytes(List<int>.generate(70 * 1024, (i) => i * 3));
+      final b = await blobs.putBytes(
+        List<int>.generate(70 * 1024, (i) => i * 3),
+      );
       final reachable = await blobs.reachableAddresses([a, b]);
       expect(reachable, {...a.chunks, ...b.chunks});
     });

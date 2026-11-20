@@ -45,8 +45,7 @@ class AppState extends ChangeNotifier {
   bool get hasWorkspace => filePathConfig.isNotEmpty;
 
   /// Number of completed todos
-  int get completedCount =>
-      todos.where((todo) => todo.isCompleted).length;
+  int get completedCount => todos.where((todo) => todo.isCompleted).length;
 
   /// Number of pending todos
   int get pendingCount => todos.where((todo) => !todo.isCompleted).length;
@@ -311,10 +310,7 @@ class AppState extends ChangeNotifier {
     return _legacyStorageService!.saveFile(path, content, message: message);
   }
 
-  Future<FileOperationResult> _removeFile(
-    String path, {
-    String? message,
-  }) {
+  Future<FileOperationResult> _removeFile(String path, {String? message}) {
     if (_storageAdapter != null) {
       return _storageAdapter!.removeFile(path, message: message);
     }

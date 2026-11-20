@@ -44,8 +44,7 @@ abstract interface class MigrationEndpoint {
     bool pauseForDecisions = false,
     Map<String, MigrationDecisionAction> decisionActions =
         const <String, MigrationDecisionAction>{},
-    Map<String, DecisionState> decisionStates =
-        const <String, DecisionState>{},
+    Map<String, DecisionState> decisionStates = const <String, DecisionState>{},
   }) => executeMigration(plan: plan);
 
   Future<MigrationExecutionResult> rollbackMigration({

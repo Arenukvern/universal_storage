@@ -98,14 +98,11 @@ class _ScriptedHttpClient implements http.Client {
   }
 
   @override
-  Future<http.Response> get(
-    Uri url, {
-    Map<String, String>? headers,
-  }) async => http.Response(jsonEncode({'login': 'octocat', 'id': 1}), 200);
+  Future<http.Response> get(Uri url, {Map<String, String>? headers}) async =>
+      http.Response(jsonEncode({'login': 'octocat', 'id': 1}), 200);
 
   @override
-  dynamic noSuchMethod(Invocation invocation) =>
-      super.noSuchMethod(invocation);
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
 void main() {

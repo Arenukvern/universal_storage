@@ -53,10 +53,7 @@ void main() {
       final report = evaluator.evaluate(input: _baseInput());
 
       expect(report.passed, isTrue);
-      expect(
-        report.findings.where((finding) => finding.isBlocking),
-        isEmpty,
-      );
+      expect(report.findings.where((finding) => finding.isBlocking), isEmpty);
     });
 
     test('fails gate when deprecation item is overdue and unfinished', () {

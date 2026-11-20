@@ -8,9 +8,7 @@ enum DecisionState { autoResolved, needsUserDecision, blocked }
 /// Explicit per-operation migration action used by complex conflict workflows.
 enum MigrationDecisionAction { overwrite, skip, abort }
 
-MigrationDecisionAction? migrationDecisionActionFromString(
-  Object? value,
-) {
+MigrationDecisionAction? migrationDecisionActionFromString(Object? value) {
   final name = value?.toString();
   if (name == null || name.isEmpty) {
     return null;

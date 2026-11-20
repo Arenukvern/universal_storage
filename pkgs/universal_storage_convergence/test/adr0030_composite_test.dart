@@ -51,34 +51,37 @@ void main() {
       final restored = ConvergenceDoc.fromJson(doc.toJson());
       expect(restored.strategy.name, spec);
       expect(restored.strategy, isA<CompositeMergeStrategy>());
-      expect(
-        LwwMapStrategy.readValue(restored.state, 'node/x/field'),
-        'v1',
-      );
+      expect(LwwMapStrategy.readValue(restored.state, 'node/x/field'), 'v1');
       expect(RgaTextStrategy.readText(restored.state, 'text/x'), 'hi');
 
       // Restored doc still dispatches: new ops fold through the right lane.
       restored.applyLocal({'k': 'node/x/field', 'v': 'v2'}, nextTime());
       final anchorId = doc.pendingOps.last.opId;
-      restored.applyLocal(
-        {'k': 'text/x', 'after': '$anchorId#1', 'text': '!'},
-        nextTime(),
-      );
+      restored.applyLocal({
+        'k': 'text/x',
+        'after': '$anchorId#1',
+        'text': '!',
+      }, nextTime());
       expect(LwwMapStrategy.readValue(restored.state, 'node/x/field'), 'v2');
       expect(RgaTextStrategy.readText(restored.state, 'text/x'), 'hi!');
     });
 
     test('longest-matching prefix wins', () {
-      final doc = ConvergenceDoc(
-        docId: 'd',
-        actorId: 'a',
-        strategy: CompositeMergeStrategy({
-          'a/': const RgaTextStrategy(),
-          'a/b/': const LwwMapStrategy(),
-        }),
-      )
-        ..applyLocal({'k': 'a/b/x', 'v': 'lww'}, nextTime())
-        ..applyLocal({'k': 'a/c', 'after': null, 'text': 'rga'}, nextTime());
+      final doc =
+          ConvergenceDoc(
+              docId: 'd',
+              actorId: 'a',
+              strategy: CompositeMergeStrategy({
+                'a/': const RgaTextStrategy(),
+                'a/b/': const LwwMapStrategy(),
+              }),
+            )
+            ..applyLocal({'k': 'a/b/x', 'v': 'lww'}, nextTime())
+            ..applyLocal({
+              'k': 'a/c',
+              'after': null,
+              'text': 'rga',
+            }, nextTime());
       // `a/b/x` went to the LWW lane (register entry shape)…
       final entry = doc.state['a/b/x'];
       expect(entry, isA<Map>());
@@ -118,10 +121,7 @@ void main() {
     });
 
     test('malformed lane maps and specs are named errors', () {
-      expect(
-        () => CompositeMergeStrategy(const {}),
-        throwsArgumentError,
-      );
+      expect(() => CompositeMergeStrategy(const {}), throwsArgumentError);
       expect(
         () => CompositeMergeStrategy({'': const LwwMapStrategy()}),
         throwsArgumentError,
@@ -167,23 +167,26 @@ void main() {
       r1
         ..applyLocal({'k': 'node/n1/title', 'v': 'r1'}, nextTime())
         ..applyLocal({'k': 'order/n1/c1', 'v': 'n'}, nextTime());
-      final hello = r1.applyLocal(
-        {'k': 'text/b1', 'after': null, 'text': 'Hello '},
-        nextTime(),
-      );
-      r1.applyLocal(
-        {'k': 'text/b1', 'after': '${hello.opId}#5', 'text': '!'},
-        nextTime(),
-      );
+      final hello = r1.applyLocal({
+        'k': 'text/b1',
+        'after': null,
+        'text': 'Hello ',
+      }, nextTime());
+      r1.applyLocal({
+        'k': 'text/b1',
+        'after': '${hello.opId}#5',
+        'text': '!',
+      }, nextTime());
 
       // r2: conflicting LWW write, disjoint order register, concurrent RGA.
       r2
         ..applyLocal({'k': 'node/n1/title', 'v': 'r2'}, nextTime())
         ..applyLocal({'k': 'order/n1/c2', 'v': 'a'}, nextTime())
-        ..applyLocal(
-          {'k': 'text/b1', 'after': null, 'text': 'world'},
-          nextTime(),
-        )
+        ..applyLocal({
+          'k': 'text/b1',
+          'after': null,
+          'text': 'world',
+        }, nextTime())
         ..applyLocal({'k': 'node/n2/level', 'v': '3'}, nextTime());
 
       // r3: interleaved across all three lanes, plus an LWW tombstone.
@@ -216,43 +219,48 @@ void main() {
       }
     }
 
-    test('any delivery order, lane interleaving, and batch split converges',
-        () {
-      final docs = buildReplicas();
-      final ops = allOps(docs);
+    test(
+      'any delivery order, lane interleaving, and batch split converges',
+      () {
+        final docs = buildReplicas();
+        final ops = allOps(docs);
 
-      final orders = <int, int>{
-        11: 1, // single-op batches, arbitrary order
-        22: 2,
-        33: 3,
-        44: ops.length, // one huge batch
-      };
-      final seen = <Map<String, Object?>>[];
-      for (final MapEntry(key: seed, value: batchSize) in orders.entries) {
-        final doc = compositeDoc('observer');
-        deliverShuffled(doc, ops, seed, batchSize: batchSize);
-        seen.add(doc.state);
-      }
-      // Writers converge with the observers too.
-      deliverShuffled(docs[0], ops, 55);
-      deliverShuffled(docs[1], ops, 66, batchSize: 5);
-      deliverShuffled(docs[2], ops, 77, batchSize: 4);
-      seen.addAll(docs.map((d) => d.state));
+        final orders = <int, int>{
+          11: 1, // single-op batches, arbitrary order
+          22: 2,
+          33: 3,
+          44: ops.length, // one huge batch
+        };
+        final seen = <Map<String, Object?>>[];
+        for (final MapEntry(key: seed, value: batchSize) in orders.entries) {
+          final doc = compositeDoc('observer');
+          deliverShuffled(doc, ops, seed, batchSize: batchSize);
+          seen.add(doc.state);
+        }
+        // Writers converge with the observers too.
+        deliverShuffled(docs[0], ops, 55);
+        deliverShuffled(docs[1], ops, 66, batchSize: 5);
+        deliverShuffled(docs[2], ops, 77, batchSize: 4);
+        seen.addAll(docs.map((d) => d.state));
 
-      for (final state in seen) {
-        expect(state, seen.first, reason: 'states diverged: $state');
-      }
+        for (final state in seen) {
+          expect(state, seen.first, reason: 'states diverged: $state');
+        }
 
-      // One fold outcome, deterministic content across lanes.
-      final state = seen.first;
-      expect(LwwMapStrategy.readValue(state, 'node/n1/title'), isNotNull);
-      expect(LwwMapStrategy.readValue(state, 'node/n2/level'), isNull,
-          reason: 'tombstone wins');
-      expect(
-        RgaTextStrategy.readText(state, 'text/b1'),
-        RgaTextStrategy.readText(docs[0].state, 'text/b1'),
-      );
-    });
+        // One fold outcome, deterministic content across lanes.
+        final state = seen.first;
+        expect(LwwMapStrategy.readValue(state, 'node/n1/title'), isNotNull);
+        expect(
+          LwwMapStrategy.readValue(state, 'node/n2/level'),
+          isNull,
+          reason: 'tombstone wins',
+        );
+        expect(
+          RgaTextStrategy.readText(state, 'text/b1'),
+          RgaTextStrategy.readText(docs[0].state, 'text/b1'),
+        );
+      },
+    );
 
     test('composite fold equals per-lane folds merged (inheritance)', () {
       final docs = buildReplicas();
@@ -301,36 +309,29 @@ void main() {
       expect(doc.vv.actors, ['a']);
       // The ONE log carries all lanes' ops.
       expect(doc.pendingOps, hasLength(3));
-      expect(doc.pendingOps.map((op) => op.payload['k']), containsAll([
-        'node/f',
-        'text/b',
-        'order/p/c',
-      ]));
+      expect(
+        doc.pendingOps.map((op) => op.payload['k']),
+        containsAll(['node/f', 'text/b', 'order/p/c']),
+      );
     });
   });
 
   group('CompositeMergeStrategy — atomic snapshot coverage', () {
-    test('snapshot folds ALL lanes; adopting peers are never half-covered',
-        () {
+    test('snapshot folds ALL lanes; adopting peers are never half-covered', () {
       final writer = compositeDoc('writer')
         ..applyLocal({'k': 'node/n1/title', 'v': 't'}, nextTime())
         ..applyLocal({'k': 'order/n1/c1', 'v': 'n'}, nextTime())
-        ..applyLocal(
-        {'k': 'text/b1', 'after': null, 'text': 'body'},
-        nextTime(),
-      );
+        ..applyLocal({
+          'k': 'text/b1',
+          'after': null,
+          'text': 'body',
+        }, nextTime());
 
       final snapshot = writer.snapshotFor();
       // Snapshot state == folded state across every lane.
       expect(snapshot.state, writer.state);
-      expect(
-        LwwMapStrategy.readValue(snapshot.state, 'node/n1/title'),
-        't',
-      );
-      expect(
-        LwwMapStrategy.readValue(snapshot.state, 'order/n1/c1'),
-        'n',
-      );
+      expect(LwwMapStrategy.readValue(snapshot.state, 'node/n1/title'), 't');
+      expect(LwwMapStrategy.readValue(snapshot.state, 'order/n1/c1'), 'n');
       expect(RgaTextStrategy.readText(snapshot.state, 'text/b1'), 'body');
 
       // A peer adopting the snapshot gets every lane at once.
@@ -345,10 +346,11 @@ void main() {
       final writer = compositeDoc('writer')
         ..applyLocal({'k': 'node/n1/title', 'v': 't'}, nextTime())
         ..applyLocal({'k': 'order/n1/c1', 'v': 'n'}, nextTime())
-        ..applyLocal(
-        {'k': 'text/b1', 'after': null, 'text': 'body'},
-        nextTime(),
-      );
+        ..applyLocal({
+          'k': 'text/b1',
+          'after': null,
+          'text': 'body',
+        }, nextTime());
       expect(writer.compact(), 3);
       expect(writer.pendingOps, isEmpty);
       expect(writer.needsSnapshotFor(VersionVector.zero), isTrue);

@@ -110,8 +110,7 @@ final class MeshStorageProvider implements StorageProvider {
   /// from [policy] immediately. Re-set before every pulse — policies are
   /// per-cycle resolvers (movement between zones re-subscribes without
   /// protocol change). Null clears back to the wildcard.
-  void setInterest(InterestPolicy? policy) =>
-      _interest = policy?.resolve();
+  void setInterest(InterestPolicy? policy) => _interest = policy?.resolve();
 
   /// Receiver-expressed delivery preference for the NEXT exchanges: the
   /// peer sends these docIds' ops first (ascending rank). Optional;
@@ -436,9 +435,7 @@ final class MeshStorageProvider implements StorageProvider {
     // DeltaPlanner — the exact plan logic mesh always ran, now shared
     // byte-identically with ecsly world sync.
     final wanted =
-        _docs.values
-            .where((doc) => selection.matchesDocId(doc.docId))
-            .toList()
+        _docs.values.where((doc) => selection.matchesDocId(doc.docId)).toList()
           ..sort((a, b) {
             final rankA = priority[a.docId] ?? _unrankedDeliveryRank;
             final rankB = priority[b.docId] ?? _unrankedDeliveryRank;
@@ -552,8 +549,7 @@ final class _DocDeltaSource implements DeltaReplica {
   @override
   List<OpRecord> get pendingOps => _doc.pendingOps;
   @override
-  List<OpRecord> opsSince(VersionVector remoteVv) =>
-      _doc.opsSince(remoteVv);
+  List<OpRecord> opsSince(VersionVector remoteVv) => _doc.opsSince(remoteVv);
   @override
   bool needsSnapshotFor(VersionVector remoteVv) =>
       _doc.needsSnapshotFor(remoteVv);

@@ -55,19 +55,16 @@ final class ProfileCapabilityDecision {
   final List<NamespaceCapabilityDecision> namespaces;
 
   /// Whether all namespaces are strictly allowed.
-  bool get allAllowed => namespaces.every(
-    (entry) => entry.decision == CapabilityDecision.allowed,
-  );
+  bool get allAllowed =>
+      namespaces.every((entry) => entry.decision == CapabilityDecision.allowed);
 
   /// Whether there is at least one degraded namespace.
-  bool get hasDegraded => namespaces.any(
-    (entry) => entry.decision == CapabilityDecision.degraded,
-  );
+  bool get hasDegraded =>
+      namespaces.any((entry) => entry.decision == CapabilityDecision.degraded);
 
   /// Whether there is at least one blocked namespace.
-  bool get hasBlocked => namespaces.any(
-    (entry) => entry.decision == CapabilityDecision.blocked,
-  );
+  bool get hasBlocked =>
+      namespaces.any((entry) => entry.decision == CapabilityDecision.blocked);
 }
 
 /// Utility for profile capability checks and safe degradation decisions.

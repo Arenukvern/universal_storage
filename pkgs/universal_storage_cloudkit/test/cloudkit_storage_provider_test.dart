@@ -104,9 +104,8 @@ void main() {
       'sync performs pull-then-push and persists token state file',
       () async {
         await provider.createFile('notes/a.txt', 'local-content');
-        await File(
-          '${tempDir.path}/notes/a.txt',
-        ).writeAsString('locally-edited');
+        await File('${tempDir.path}/notes/a.txt')
+            .writeAsString('locally-edited');
 
         bridge.nextDelta = const CloudKitDelta(
           nextServerChangeToken: 'after-sync-token',
@@ -233,9 +232,8 @@ void main() {
       'lastWriteWins applies newer remote content after push conflict',
       () async {
         await provider.createFile('lww_remote_newer.txt', 'local-initial');
-        await File(
-          '${tempDir.path}/lww_remote_newer.txt',
-        ).writeAsString('local-edited');
+        await File('${tempDir.path}/lww_remote_newer.txt')
+            .writeAsString('local-edited');
 
         bridge.recordsByPath['lww_remote_newer.txt'] = _fakeRecord(
           path: 'lww_remote_newer.txt',
@@ -383,9 +381,7 @@ class FakeCloudKitBridge implements CloudKitBridge {
   }
 
   @override
-  Future<List<CloudKitRecord>> queryByPathPrefix(
-    String pathPrefix,
-  ) async {
+  Future<List<CloudKitRecord>> queryByPathPrefix(String pathPrefix) async {
     callLog.add('queryByPathPrefix:$pathPrefix');
     if (pathPrefix.isEmpty) {
       return recordsByPath.values.toList(growable: false);

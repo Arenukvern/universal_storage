@@ -8,15 +8,15 @@ import 'storage_kernel.dart';
 import 'storage_profile_resolver.dart';
 
 /// Factory function that builds a storage service for one namespace profile.
-typedef NamespaceServiceFactory =
-    Future<StorageService> Function(StorageNamespaceProfile namespaceProfile);
+typedef NamespaceServiceFactory = Future<StorageService> Function(
+  StorageNamespaceProfile namespaceProfile,
+);
 
 /// Optional function resolving runtime capabilities for a namespace service.
-typedef NamespaceCapabilitiesFactory =
-    Future<StorageCapabilities> Function(
-      StorageNamespaceProfile namespaceProfile,
-      StorageService service,
-    );
+typedef NamespaceCapabilitiesFactory = Future<StorageCapabilities> Function(
+  StorageNamespaceProfile namespaceProfile,
+  StorageService service,
+);
 
 /// Result of loading a profile into a ready [StorageKernel].
 @immutable

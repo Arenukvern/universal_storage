@@ -24,33 +24,36 @@ bool _isSyncHello(Uint8List frame) {
 }
 
 void main() {
-  test('sync-marked sessions are claimed, and the deciding frame is forwarded', () async {
-    final hub = FakeMeshHub();
-    final planes = ClaimingMeshTransport(inner: hub, claim: _isSyncHello);
-    final claimed = <MeshSession>[];
-    planes.incoming.listen(claimed.add);
-    final passthrough = <MeshSession>[];
-    planes.passthrough.incoming.listen(passthrough.add);
+  test(
+    'sync-marked sessions are claimed, and the deciding frame is forwarded',
+    () async {
+      final hub = FakeMeshHub();
+      final planes = ClaimingMeshTransport(inner: hub, claim: _isSyncHello);
+      final claimed = <MeshSession>[];
+      planes.incoming.listen(claimed.add);
+      final passthrough = <MeshSession>[];
+      planes.passthrough.incoming.listen(passthrough.add);
 
-    final dial = hub.openSession('phone');
-    dial.receive(_frame({'type': 'hello', 'v': 2}));
-    await pumpEventQueue();
-    expect(claimed, hasLength(1));
-    expect(passthrough, isEmpty);
+      final dial = hub.openSession('phone');
+      dial.receive(_frame({'type': 'hello', 'v': 2}));
+      await pumpEventQueue();
+      expect(claimed, hasLength(1));
+      expect(passthrough, isEmpty);
 
-    // The consumer sees the hello it must answer, then every later frame.
-    final inbound = <String>[];
-    final ready = Completer<void>();
-    claimed.single.inbound.listen((frame) {
-      inbound.add(utf8.decode(frame));
-      if (!ready.isCompleted) ready.complete();
-    });
-    await ready.future;
-    expect(inbound.single, contains('hello'));
-    dial.receive(_frame({'type': 'vv'}));
-    await pumpEventQueue();
-    expect(inbound, hasLength(2));
-  });
+      // The consumer sees the hello it must answer, then every later frame.
+      final inbound = <String>[];
+      final ready = Completer<void>();
+      claimed.single.inbound.listen((frame) {
+        inbound.add(utf8.decode(frame));
+        if (!ready.isCompleted) ready.complete();
+      });
+      await ready.future;
+      expect(inbound.single, contains('hello'));
+      dial.receive(_frame({'type': 'vv'}));
+      await pumpEventQueue();
+      expect(inbound, hasLength(2));
+    },
+  );
 
   test('realtime sessions pass through with every frame', () async {
     final hub = FakeMeshHub();
@@ -76,68 +79,77 @@ void main() {
     expect(inbound.single, contains('heartbeat'));
   });
 
-  test('a session silent past the claim timeout routes to passthrough', () async {
-    final hub = FakeMeshHub();
-    final planes = ClaimingMeshTransport(
-      inner: hub,
-      claim: _isSyncHello,
-      claimTimeout: const Duration(milliseconds: 30),
-    );
-    final claimed = <MeshSession>[];
-    planes.incoming.listen(claimed.add);
-    final passthrough = <MeshSession>[];
-    planes.passthrough.incoming.listen(passthrough.add);
+  test(
+    'a session silent past the claim timeout routes to passthrough',
+    () async {
+      final hub = FakeMeshHub();
+      final planes = ClaimingMeshTransport(
+        inner: hub,
+        claim: _isSyncHello,
+        claimTimeout: const Duration(milliseconds: 30),
+      );
+      final claimed = <MeshSession>[];
+      planes.incoming.listen(claimed.add);
+      final passthrough = <MeshSession>[];
+      planes.passthrough.incoming.listen(passthrough.add);
 
-    hub.openSession('quiet-phone');
-    await pumpEventQueue();
-    expect(claimed, isEmpty);
-    expect(passthrough, isEmpty, reason: 'parked while silent');
+      hub.openSession('quiet-phone');
+      await pumpEventQueue();
+      expect(claimed, isEmpty);
+      expect(passthrough, isEmpty, reason: 'parked while silent');
 
-    await Future<void>.delayed(const Duration(milliseconds: 60));
-    expect(passthrough, hasLength(1), reason: 'timeout routes to realtime');
-    expect(claimed, isEmpty);
-  });
+      await Future<void>.delayed(const Duration(milliseconds: 60));
+      expect(passthrough, hasLength(1), reason: 'timeout routes to realtime');
+      expect(claimed, isEmpty);
+    },
+  );
 
-  test('a session that dies before its first frame is dropped, not routed', () async {
-    final hub = FakeMeshHub();
-    final planes = ClaimingMeshTransport(
-      inner: hub,
-      claim: _isSyncHello,
-      claimTimeout: const Duration(seconds: 30),
-    );
-    final claimed = <MeshSession>[];
-    planes.incoming.listen(claimed.add);
-    final passthrough = <MeshSession>[];
-    planes.passthrough.incoming.listen(passthrough.add);
+  test(
+    'a session that dies before its first frame is dropped, not routed',
+    () async {
+      final hub = FakeMeshHub();
+      final planes = ClaimingMeshTransport(
+        inner: hub,
+        claim: _isSyncHello,
+        claimTimeout: const Duration(seconds: 30),
+      );
+      final claimed = <MeshSession>[];
+      planes.incoming.listen(claimed.add);
+      final passthrough = <MeshSession>[];
+      planes.passthrough.incoming.listen(passthrough.add);
 
-    final dial = hub.openSession('ghost');
-    await pumpEventQueue();
-    expect(hub.openSessions, hasLength(1));
-    dial.closeLocally();
-    await pumpEventQueue();
-    expect(claimed, isEmpty);
-    expect(passthrough, isEmpty, reason: 'dead sessions belong to no plane');
-  });
+      final dial = hub.openSession('ghost');
+      await pumpEventQueue();
+      expect(hub.openSessions, hasLength(1));
+      dial.closeLocally();
+      await pumpEventQueue();
+      expect(claimed, isEmpty);
+      expect(passthrough, isEmpty, reason: 'dead sessions belong to no plane');
+    },
+  );
 
-  test('a session closed before its first frame is dropped, not routed', () async {
-    final hub = FakeMeshHub();
-    final planes = ClaimingMeshTransport(
-      inner: hub,
-      claim: _isSyncHello,
-      claimTimeout: const Duration(seconds: 30),
-    );
-    final claimed = <MeshSession>[];
-    planes.incoming.listen(claimed.add);
-    final passthrough = <MeshSession>[];
-    planes.passthrough.incoming.listen(passthrough.add);
+  test(
+    'a session closed before its first frame is dropped, not routed',
+    () async {
+      final hub = FakeMeshHub();
+      final planes = ClaimingMeshTransport(
+        inner: hub,
+        claim: _isSyncHello,
+        claimTimeout: const Duration(seconds: 30),
+      );
+      final claimed = <MeshSession>[];
+      planes.incoming.listen(claimed.add);
+      final passthrough = <MeshSession>[];
+      planes.passthrough.incoming.listen(passthrough.add);
 
-    final dial = hub.openSession('shy');
-    await pumpEventQueue();
-    await dial.close();
-    await pumpEventQueue();
-    expect(claimed, isEmpty);
-    expect(passthrough, isEmpty);
-  });
+      final dial = hub.openSession('shy');
+      await pumpEventQueue();
+      await dial.close();
+      await pumpEventQueue();
+      expect(claimed, isEmpty);
+      expect(passthrough, isEmpty);
+    },
+  );
 
   test('outbound dials pass through untouched', () async {
     final pair = FakeMeshPair.paired(a: 'host', b: 'phone');

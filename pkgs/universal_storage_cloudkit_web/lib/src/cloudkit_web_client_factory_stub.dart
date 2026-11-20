@@ -10,17 +10,14 @@ class _UnsupportedCloudKitWebClient implements CloudKitWebClient {
 
   static const _error = CloudKitBridgeException(
     code: CloudKitBridgeErrorCode.unsupported,
-    message:
-        'CloudKit web bridge is available only on web runtimes with CloudKit JS loaded.',
+    message: 'CloudKit web bridge is available only on web runtimes with CloudKit JS loaded.',
   );
 
   @override
-  Future<void> initialize(CloudKitBridgeConfig config) async =>
-      throw _error;
+  Future<void> initialize(CloudKitBridgeConfig config) async => throw _error;
 
   @override
-  Future<CloudKitRecord?> fetchRecordByPath(String path) async =>
-      throw _error;
+  Future<CloudKitRecord?> fetchRecordByPath(String path) async => throw _error;
 
   @override
   Future<void> saveRecord(CloudKitRecord record) async => throw _error;
@@ -29,9 +26,8 @@ class _UnsupportedCloudKitWebClient implements CloudKitWebClient {
   Future<void> deleteRecord(String recordName) async => throw _error;
 
   @override
-  Future<List<CloudKitRecord>> queryByPathPrefix(
-    String pathPrefix,
-  ) async => throw _error;
+  Future<List<CloudKitRecord>> queryByPathPrefix(String pathPrefix) async =>
+      throw _error;
 
   @override
   Future<CloudKitDelta> fetchChanges({String? serverChangeToken}) async =>

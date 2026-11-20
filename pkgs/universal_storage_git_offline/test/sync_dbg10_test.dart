@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:test/test.dart';
 import 'package:universal_storage_git_offline/universal_storage_git_offline.dart';
 import 'package:universal_storage_interface/universal_storage_interface.dart';
@@ -10,11 +11,36 @@ void main() {
     final dirB = await Directory.systemTemp.createTemp('sync2_b_');
     final seedDir = await Directory.systemTemp.createTemp('sync2_seed_');
     await Process.run('git', ['init', seedDir.path]);
-    await Process.run('git', ['-C', seedDir.path, 'config', 'user.email', 'seed@test.local']);
-    await Process.run('git', ['-C', seedDir.path, 'config', 'user.name', 'Seed']);
-    await Process.run('git', ['-C', seedDir.path, 'commit', '--allow-empty', '-m', 'seed']);
+    await Process.run('git', [
+      '-C',
+      seedDir.path,
+      'config',
+      'user.email',
+      'seed@test.local',
+    ]);
+    await Process.run('git', [
+      '-C',
+      seedDir.path,
+      'config',
+      'user.name',
+      'Seed',
+    ]);
+    await Process.run('git', [
+      '-C',
+      seedDir.path,
+      'commit',
+      '--allow-empty',
+      '-m',
+      'seed',
+    ]);
     await Process.run('git', ['-C', seedDir.path, 'branch', '-M', 'main']);
-    final push = await Process.run('git', ['-C', seedDir.path, 'push', remoteDir.path, 'main']);
+    final push = await Process.run('git', [
+      '-C',
+      seedDir.path,
+      'push',
+      remoteDir.path,
+      'main',
+    ]);
     // ignore: avoid_print
     print('PUSH exit=${push.exitCode} err=${push.stderr}');
     await seedDir.delete(recursive: true);

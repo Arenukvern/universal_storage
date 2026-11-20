@@ -83,9 +83,9 @@ void main() {
     expect(await backing.list('docs/'), [
       'docs/${Uri.encodeComponent('a/b.txt').replaceAll('/', '%2F')}.json',
     ]);
-    final registry =
-        (jsonDecode(await backing.read('peers.json') ?? '') as List<dynamic>)
-            .cast<Map<String, dynamic>>();
+    final registry = (jsonDecode(
+      await backing.read('peers.json') ?? '',
+    ) as List<dynamic>).cast<Map<String, dynamic>>();
     expect(registry.single['peer_id'], 'host-1');
   });
 

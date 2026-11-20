@@ -132,8 +132,7 @@ class MeshAppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<String?> readFile(FileEntry entry) =>
-      _provider.getFile(entry.name);
+  Future<String?> readFile(FileEntry entry) => _provider.getFile(entry.name);
 
   String pairingCodeBase64() {
     if (_qrPayload == null) {

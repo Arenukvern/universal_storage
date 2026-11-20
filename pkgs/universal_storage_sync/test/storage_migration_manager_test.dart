@@ -264,10 +264,8 @@ List<Map<String, dynamic>> _decodeJsonMapListField(
   String key,
 ) => _decodeJsonMapList(source[key]);
 
-String _decodeJsonStringField(
-  Map<String, dynamic> source,
-  String key,
-) => jsonDecodeString(source[key]);
+String _decodeJsonStringField(Map<String, dynamic> source, String key) =>
+    jsonDecodeString(source[key]);
 
 void main() {
   group('StorageProfileMigrationManager', () {
@@ -494,8 +492,7 @@ void main() {
       await sourceKernel.write(
         namespace: StorageNamespace.projects,
         path: 'legacy/old-id.json',
-        content:
-            '{"schema_version":"1","id":"old-id","title":"Draft","discarded":"x"}',
+        content: '{"schema_version":"1","id":"old-id","title":"Draft","discarded":"x"}',
       );
 
       final endpoint = StorageProfileMigrationEndpoint(
@@ -542,9 +539,8 @@ void main() {
       );
       expect(checkpoints.single['transform_steps'], isA<List<dynamic>>());
       expect(
-        _decodeJsonStringList(
-          checkpoints.single['transform_steps'],
-        ).contains('schema_transform'),
+        _decodeJsonStringList(checkpoints.single['transform_steps'])
+            .contains('schema_transform'),
         isTrue,
       );
     });
@@ -645,122 +641,119 @@ void main() {
       );
     });
 
-    test(
-      'dry run can produce per-operation preview for conflict-aware migration mode',
-      () async {
-        final sourceSettings = _MigrationFakeStorageProvider();
-        final sourceProjects = _MigrationFakeStorageProvider();
-        final targetSettings = _MigrationFakeStorageProvider();
-        final targetProjects = _MigrationFakeStorageProvider();
+    test('dry run can produce per-operation preview for conflict-aware migration mode', () async {
+      final sourceSettings = _MigrationFakeStorageProvider();
+      final sourceProjects = _MigrationFakeStorageProvider();
+      final targetSettings = _MigrationFakeStorageProvider();
+      final targetProjects = _MigrationFakeStorageProvider();
 
-        final sourceKernel = _buildKernel(
-          profile: const StorageProfile(
-            name: 'source',
-            namespaces: <StorageNamespaceProfile>[
-              StorageNamespaceProfile(
-                namespace: StorageNamespace.projects,
-                policy: StoragePolicy.localOnly,
-              ),
-            ],
-          ),
-          settingsProvider: sourceSettings,
-          projectsProvider: sourceProjects,
-        );
-        final targetKernel = _buildKernel(
-          profile: const StorageProfile(
-            name: 'target',
-            namespaces: <StorageNamespaceProfile>[
-              StorageNamespaceProfile(
-                namespace: StorageNamespace.projects,
-                policy: StoragePolicy.localOnly,
-              ),
-            ],
-          ),
-          settingsProvider: targetSettings,
-          projectsProvider: targetProjects,
-        );
+      final sourceKernel = _buildKernel(
+        profile: const StorageProfile(
+          name: 'source',
+          namespaces: <StorageNamespaceProfile>[
+            StorageNamespaceProfile(
+              namespace: StorageNamespace.projects,
+              policy: StoragePolicy.localOnly,
+            ),
+          ],
+        ),
+        settingsProvider: sourceSettings,
+        projectsProvider: sourceProjects,
+      );
+      final targetKernel = _buildKernel(
+        profile: const StorageProfile(
+          name: 'target',
+          namespaces: <StorageNamespaceProfile>[
+            StorageNamespaceProfile(
+              namespace: StorageNamespace.projects,
+              policy: StoragePolicy.localOnly,
+            ),
+          ],
+        ),
+        settingsProvider: targetSettings,
+        projectsProvider: targetProjects,
+      );
 
-        final sourceConfig = await _createConfig();
-        final targetConfig = await _createConfig();
-        for (final provider in <_MigrationFakeStorageProvider>[
-          sourceSettings,
-          sourceProjects,
-        ]) {
-          await StorageService(provider).initializeWithConfig(sourceConfig);
-        }
-        for (final provider in <_MigrationFakeStorageProvider>[
-          targetSettings,
-          targetProjects,
-        ]) {
-          await StorageService(provider).initializeWithConfig(targetConfig);
-        }
+      final sourceConfig = await _createConfig();
+      final targetConfig = await _createConfig();
+      for (final provider in <_MigrationFakeStorageProvider>[
+        sourceSettings,
+        sourceProjects,
+      ]) {
+        await StorageService(provider).initializeWithConfig(sourceConfig);
+      }
+      for (final provider in <_MigrationFakeStorageProvider>[
+        targetSettings,
+        targetProjects,
+      ]) {
+        await StorageService(provider).initializeWithConfig(targetConfig);
+      }
 
-        await sourceKernel.write(
-          namespace: StorageNamespace.projects,
-          path: 'notes/new.txt',
-          content: 'fresh',
-        );
-        await sourceKernel.write(
-          namespace: StorageNamespace.projects,
-          path: 'notes/old.txt',
-          content: 'different',
-        );
-        await targetKernel.write(
-          namespace: StorageNamespace.projects,
-          path: 'notes/old.txt',
-          content: 'original',
-        );
-        await targetKernel.write(
-          namespace: StorageNamespace.projects,
-          path: 'notes/same.txt',
-          content: 'same',
-        );
+      await sourceKernel.write(
+        namespace: StorageNamespace.projects,
+        path: 'notes/new.txt',
+        content: 'fresh',
+      );
+      await sourceKernel.write(
+        namespace: StorageNamespace.projects,
+        path: 'notes/old.txt',
+        content: 'different',
+      );
+      await targetKernel.write(
+        namespace: StorageNamespace.projects,
+        path: 'notes/old.txt',
+        content: 'original',
+      );
+      await targetKernel.write(
+        namespace: StorageNamespace.projects,
+        path: 'notes/same.txt',
+        content: 'same',
+      );
 
-        final endpoint = StorageProfileMigrationEndpoint(
-          sourceKernel: sourceKernel,
-          targetKernel: targetKernel,
-        );
-        final plan = MigrationPlan(
-          id: 'preview_plan',
-          sourceProfileHash: 'source_hash',
-          targetProfileHash: 'target_hash',
-          createdAt: DateTime.now(),
-        );
+      final endpoint = StorageProfileMigrationEndpoint(
+        sourceKernel: sourceKernel,
+        targetKernel: targetKernel,
+      );
+      final plan = MigrationPlan(
+        id: 'preview_plan',
+        sourceProfileHash: 'source_hash',
+        targetProfileHash: 'target_hash',
+        createdAt: DateTime.now(),
+      );
 
-        final result = await endpoint.executeMigrationWithOptions(
-          plan: plan,
-          dryRun: true,
-          overwrite: false,
-          collectDiffs: true,
-        );
+      final result = await endpoint.executeMigrationWithOptions(
+        plan: plan,
+        dryRun: true,
+        overwrite: false,
+        collectDiffs: true,
+      );
 
-        expect(result.ok, isTrue);
-        expect(result.status, MigrationStatus.prepared);
-        final metadata = result.metadata;
-        final preview = _decodeJsonMapListField(metadata, 'preflight_preview');
-        expect(preview.length, 2);
+      expect(result.ok, isTrue);
+      expect(result.status, MigrationStatus.prepared);
+      final metadata = result.metadata;
+      final preview = _decodeJsonMapListField(metadata, 'preflight_preview');
+      expect(preview.length, 2);
 
-        final byPath = <String, Map<String, dynamic>>{
-          for (final item in preview)
-            _decodeJsonStringField(item, 'source_path'): item,
-        };
-        final newItem = byPath['notes/new.txt'];
-        final oldItem = byPath['notes/old.txt'];
-        expect(newItem, isNotNull);
-        expect(oldItem, isNotNull);
-        expect(_decodeJsonStringField(newItem!, 'status'), 'create');
-        expect(_decodeJsonStringField(oldItem!, 'status'), 'conflict');
-        expect(
-          _decodeJsonStringField(oldItem, 'decision_state'),
-          DecisionState.needsUserDecision.name,
-        );
-        final newItemMetadata = _decodeJsonMapField(newItem, 'metadata');
-        expect(
-          _decodeJsonStringField(newItemMetadata, 'diff_summary'),
-          'Target file missing.',
-        );
-      },
-    );
+      final byPath = <String, Map<String, dynamic>>{
+        for (final item in preview)
+          _decodeJsonStringField(item, 'source_path'): item,
+      };
+      final newItem = byPath['notes/new.txt'];
+      final oldItem = byPath['notes/old.txt'];
+      expect(newItem, isNotNull);
+      expect(oldItem, isNotNull);
+      expect(_decodeJsonStringField(newItem!, 'status'), 'create');
+      expect(_decodeJsonStringField(oldItem!, 'status'), 'conflict');
+      expect(
+        _decodeJsonStringField(oldItem, 'decision_state'),
+        DecisionState.needsUserDecision.name,
+      );
+      final newItemMetadata = _decodeJsonMapField(newItem, 'metadata');
+      expect(
+        _decodeJsonStringField(newItemMetadata, 'diff_summary'),
+        'Target file missing.',
+      );
+    });
 
     test(
       'execution can pause for decision when conflict appears in complex mode',
@@ -1766,9 +1759,8 @@ void main() {
       settingsProvider: settingsProvider,
       projectsProvider: _MigrationFakeStorageProvider(),
     );
-    await StorageService(
-      settingsProvider,
-    ).initializeWithConfig(await _createConfig());
+    await StorageService(settingsProvider)
+        .initializeWithConfig(await _createConfig());
 
     final result = await kernel.rollbackMigration(
       plan: MigrationPlan(
@@ -1801,9 +1793,8 @@ void main() {
         settingsProvider: settingsProvider,
         projectsProvider: _MigrationFakeStorageProvider(),
       );
-      await StorageService(
-        settingsProvider,
-      ).initializeWithConfig(await _createConfig());
+      await StorageService(settingsProvider)
+          .initializeWithConfig(await _createConfig());
 
       final result = await kernel.executeMigration(
         plan: MigrationPlan(

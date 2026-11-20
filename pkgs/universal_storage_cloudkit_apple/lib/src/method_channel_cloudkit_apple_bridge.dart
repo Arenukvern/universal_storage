@@ -69,12 +69,11 @@ class MethodChannelCloudKitAppleBridge implements CloudKitBridge {
   }
 
   @override
-  Future<List<CloudKitRecord>> queryByPathPrefix(
-    String pathPrefix,
-  ) async => _invoke<List<CloudKitRecord>>(() async {
-    final response = await _apiClient.queryByPathPrefix(pathPrefix);
-    return response.map(_toRecord).toList(growable: false);
-  });
+  Future<List<CloudKitRecord>> queryByPathPrefix(String pathPrefix) async =>
+      _invoke<List<CloudKitRecord>>(() async {
+        final response = await _apiClient.queryByPathPrefix(pathPrefix);
+        return response.map(_toRecord).toList(growable: false);
+      });
 
   @override
   Future<CloudKitDelta> fetchChanges({String? serverChangeToken}) async =>
@@ -102,18 +101,17 @@ class MethodChannelCloudKitAppleBridge implements CloudKitBridge {
     }
   }
 
-  CloudKitRecord _toRecord(CloudKitAppleRecordData data) =>
-      CloudKitRecord(
-        recordName: data.recordName,
-        path: data.path,
-        content: data.content,
-        checksum: data.checksum,
-        size: data.size,
-        updatedAt:
-            DateTime.tryParse(data.updatedAtIso8601) ??
-            DateTime.fromMillisecondsSinceEpoch(0).toUtc(),
-        changeTag: data.changeTag,
-      );
+  CloudKitRecord _toRecord(CloudKitAppleRecordData data) => CloudKitRecord(
+    recordName: data.recordName,
+    path: data.path,
+    content: data.content,
+    checksum: data.checksum,
+    size: data.size,
+    updatedAt:
+        DateTime.tryParse(data.updatedAtIso8601) ??
+        DateTime.fromMillisecondsSinceEpoch(0).toUtc(),
+    changeTag: data.changeTag,
+  );
 
   CloudKitBridgeException _mapPlatformException(PlatformException error) {
     final code = switch (error.code) {

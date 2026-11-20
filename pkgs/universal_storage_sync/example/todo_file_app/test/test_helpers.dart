@@ -4,13 +4,11 @@ import 'package:todo_file_app/state/app_state.dart';
 import 'package:universal_storage_interface/universal_storage_interface.dart';
 
 /// Creates a test widget with necessary providers and material app wrapper
-Widget createTestWidget({
-  required Widget child,
-  AppState? appState,
-}) => ChangeNotifierProvider(
-  create: (_) => appState ?? AppState(),
-  child: MaterialApp(home: Scaffold(body: child)),
-);
+Widget createTestWidget({required Widget child, AppState? appState}) =>
+    ChangeNotifierProvider(
+      create: (_) => appState ?? AppState(),
+      child: MaterialApp(home: Scaffold(body: child)),
+    );
 
 /// Creates a mock AppState for testing
 class MockAppState extends AppState {

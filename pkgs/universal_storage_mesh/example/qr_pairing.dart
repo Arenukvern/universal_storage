@@ -51,9 +51,7 @@ Future<void> main() async {
 }
 
 String _terminalQr(Uint8List payload) {
-  final qr = QrCode(
-    payload: QrPayload.fromTypedData(payload),
-  );
+  final qr = QrCode(payload: QrPayload.fromTypedData(payload));
   final image = QrImage(qr);
   final modules = image.moduleCount;
   final buffer = StringBuffer();

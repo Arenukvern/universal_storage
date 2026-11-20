@@ -129,9 +129,10 @@ void main() {
         final state = await provider.readFileState('new');
         expect(state.content, 'value');
         expect(state.mode, 0x1a4);
-        final entries = File(
-          '${root.path}/.us/journal/_root.log',
-        ).readAsLinesSync().map((line) => jsonDecode(line) as Map).toList();
+        final entries = File('${root.path}/.us/journal/_root.log')
+            .readAsLinesSync()
+            .map((line) => jsonDecode(line) as Map)
+            .toList();
         expect(entries.first['schema_version'], 2);
         expect(entries.first['file_mode'], 0x1a4);
         expect(entries.first['file_state_profile'], storagePosixRwxProfile);
@@ -290,9 +291,8 @@ void main() {
       final temp = File('${root.path}/.us/tmp/_root/prepared.tmp');
       temp.parent.createSync(recursive: true);
       writePosixStage(temp.path, 'corrupt', 0x180);
-      File(
-        '${root.path}/.us/journal/_root.log',
-      ).writeAsStringSync('${jsonEncode(prepared(0x180))}\n');
+      File('${root.path}/.us/journal/_root.log')
+          .writeAsStringSync('${jsonEncode(prepared(0x180))}\n');
       final reopened = await open();
       expect(await reopened.getFile('owned'), 'baseline');
       expect(temp.readAsStringSync(), 'corrupt');
@@ -310,9 +310,8 @@ void main() {
         final temp = File('${root.path}/.us/tmp/_root/prepared.tmp');
         temp.parent.createSync(recursive: true);
         writePosixStage(temp.path, 'candidate', 0x1ed);
-        File(
-          '${root.path}/.us/journal/_root.log',
-        ).writeAsStringSync('${jsonEncode(prepared(0x1ed))}\n');
+        File('${root.path}/.us/journal/_root.log')
+            .writeAsStringSync('${jsonEncode(prepared(0x1ed))}\n');
         final reopened = await open();
         expect(target.readAsStringSync(), 'candidate');
         expect(target.statSync().mode & 0xfff, 0x1ed);

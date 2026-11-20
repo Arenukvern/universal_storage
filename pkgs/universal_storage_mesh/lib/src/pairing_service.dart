@@ -213,9 +213,7 @@ final class PairingService {
     return utf8.encode('$_protocolName|${ids[0]}|${ids[1]}');
   }
 
-  static ({List<int> body, List<int> signature}) _parsePayload(
-    Uint8List raw,
-  ) {
+  static ({List<int> body, List<int> signature}) _parsePayload(Uint8List raw) {
     final prefix = utf8.encode('$_protocolName\n');
     if (raw.length < prefix.length + 2) {
       throw const PairingException('Payload too short');

@@ -34,8 +34,7 @@ class CloudKitWebBridge implements CloudKitBridge {
       _client.fetchRecordByPath(path);
 
   @override
-  Future<void> saveRecord(CloudKitRecord record) =>
-      _client.saveRecord(record);
+  Future<void> saveRecord(CloudKitRecord record) => _client.saveRecord(record);
 
   @override
   Future<void> deleteRecord(String recordName) =>

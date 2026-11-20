@@ -38,9 +38,7 @@ void main() {
       FileSystemConfig(
         filePathConfig: FilePathConfig.create(
           path: tempDir,
-          macOSBookmarkData: MacOSBookmark.fromDirectory(
-            Directory(tempDir),
-          ),
+          macOSBookmarkData: MacOSBookmark.fromDirectory(Directory(tempDir)),
         ),
       ),
     );
@@ -86,8 +84,7 @@ void main() {
   });
 
   group('append crash recovery', () {
-    test('prepared-but-uncommitted append replays from the temp copy',
-        () async {
+    test('prepared-but-uncommitted append replays from the temp copy', () async {
       const path = 'logs/crash.log';
       await provider.createFile(path, 'head\n');
       // Simulate a crash between the prepared journal entry and the byte
@@ -102,30 +99,13 @@ void main() {
       final journal = File('$tempDir/.us/journal/logs.log');
       await journal.parent.create(recursive: true);
       await journal.writeAsString(
-        '${jsonEncode(<String, dynamic>{
-          'schema_version': 1,
-          'namespace': 'logs',
-          'operation_id': operationId,
-          'sequence': 999,
-          'operation_type': 'append',
-          'stage': 'prepared',
-          'relative_path': path,
-          'timestamp_utc': '2026-10-10T00:00:00.000Z',
-          'temp_relative_path': tempRelativePath,
-          'checksum': '',
-          'recovered': false,
-          'append_offset': utf8.encode('head\n').length,
-          'append_size': chunk.length,
-        })}\n',
+        '${jsonEncode(<String, dynamic>{'schema_version': 1, 'namespace': 'logs', 'operation_id': operationId, 'sequence': 999, 'operation_type': 'append', 'stage': 'prepared', 'relative_path': path, 'timestamp_utc': '2026-10-10T00:00:00.000Z', 'temp_relative_path': tempRelativePath, 'checksum': '', 'recovered': false, 'append_offset': utf8.encode('head\n').length, 'append_size': chunk.length})}\n',
         mode: FileMode.append,
         flush: true,
       );
 
       final reopened = await reopenedProvider();
-      expect(
-        await reopened.getFile(path),
-        equals('head\ntail\n'),
-      );
+      expect(await reopened.getFile(path), equals('head\ntail\n'));
     });
 
     test('torn partial append truncates back and replays', () async {
@@ -146,21 +126,7 @@ void main() {
       final journal = File('$tempDir/.us/journal/logs.log');
       await journal.parent.create(recursive: true);
       await journal.writeAsString(
-        '${jsonEncode(<String, dynamic>{
-          'schema_version': 1,
-          'namespace': 'logs',
-          'operation_id': operationId,
-          'sequence': 1000,
-          'operation_type': 'append',
-          'stage': 'prepared',
-          'relative_path': path,
-          'timestamp_utc': '2026-10-10T00:00:00.000Z',
-          'temp_relative_path': tempRelativePath,
-          'checksum': '',
-          'recovered': false,
-          'append_offset': head.length,
-          'append_size': chunk.length,
-        })}\n',
+        '${jsonEncode(<String, dynamic>{'schema_version': 1, 'namespace': 'logs', 'operation_id': operationId, 'sequence': 1000, 'operation_type': 'append', 'stage': 'prepared', 'relative_path': path, 'timestamp_utc': '2026-10-10T00:00:00.000Z', 'temp_relative_path': tempRelativePath, 'checksum': '', 'recovered': false, 'append_offset': head.length, 'append_size': chunk.length})}\n',
         mode: FileMode.append,
         flush: true,
       );

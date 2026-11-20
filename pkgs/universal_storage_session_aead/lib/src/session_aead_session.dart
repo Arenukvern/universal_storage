@@ -235,10 +235,8 @@ final class SessionAeadSession implements MeshSession {
     }
   }
 
-  static String _hex4(List<int> bytes) => bytes
-      .take(4)
-      .map((b) => b.toRadixString(16).padLeft(2, '0'))
-      .join();
+  static String _hex4(List<int> bytes) =>
+      bytes.take(4).map((b) => b.toRadixString(16).padLeft(2, '0')).join();
 
   static Future<SessionCipher> _deriveCipher({
     required SimpleKeyPair ephemeral,
@@ -292,8 +290,7 @@ final class SessionAeadSession implements MeshSession {
   Stream<Uint8List> get inbound => _wire.tail;
 
   @override
-  Future<void> send(Uint8List payload) =>
-      _raw.send(_cipher.seal(payload));
+  Future<void> send(Uint8List payload) => _raw.send(_cipher.seal(payload));
 
   @override
   Future<void> close() async {

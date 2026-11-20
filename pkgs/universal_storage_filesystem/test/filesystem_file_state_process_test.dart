@@ -127,9 +127,10 @@ void main() {
             final reopened = await open(workspace);
             final state = await reopened.readFileState('owned');
             final recovery = reopened.lastRecoveryReport;
-            final stillStaged = Directory(
-              '${workspace.path}/.us/tmp',
-            ).listSync(recursive: true).whereType<File>().toList();
+            final stillStaged = Directory('${workspace.path}/.us/tmp')
+                .listSync(recursive: true)
+                .whereType<File>()
+                .toList();
             if (boundary == FileSystemWriteBoundary.stagedPrivateBytes) {
               expect(state.content, 'original private bytes');
               expect(state.mode, 0x180);
@@ -144,25 +145,24 @@ void main() {
               expect((recovery['totals'] as Map)['replayed_operations'], 1);
               expect(stillStaged, isEmpty);
             }
-            final journals = Directory(
-              '${workspace.path}/.us/journal',
-            ).listSync().whereType<File>();
+            final journals = Directory('${workspace.path}/.us/journal')
+                .listSync()
+                .whereType<File>();
             expect(journals.every((file) => file.lengthSync() == 0), true);
-            File(
-              '/tmp/meaning-filesystem-kill-${boundary.name}-$mode.json',
-            ).writeAsStringSync(
-              jsonEncode({
-                'scope':
-                    'actual owned process SIGKILL; not hardware power loss',
-                'observed': observed,
-                'exit_code': exitCode,
-                'stdout': output,
-                'stderr': errors,
-                'after': {'content': state.content, 'mode': state.mode},
-                'recovery': recovery,
-                'orphan_stage_retained': stillStaged.isNotEmpty,
-              }),
-            );
+            File('/tmp/meaning-filesystem-kill-${boundary.name}-$mode.json')
+                .writeAsStringSync(
+                  jsonEncode({
+                    'scope':
+                        'actual owned process SIGKILL; not hardware power loss',
+                    'observed': observed,
+                    'exit_code': exitCode,
+                    'stdout': output,
+                    'stderr': errors,
+                    'after': {'content': state.content, 'mode': state.mode},
+                    'recovery': recovery,
+                    'orphan_stage_retained': stillStaged.isNotEmpty,
+                  }),
+                );
             await reopened.dispose();
           } finally {
             if (!exited) {

@@ -6,10 +6,7 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 
 /// WebSocket client session for the example relay.
 final class WebSocketMeshSession implements MeshSession {
-  WebSocketMeshSession({
-    required this.remotePeerId,
-    required this._channel,
-  });
+  WebSocketMeshSession({required this.remotePeerId, required this._channel});
 
   @override
   final String remotePeerId;
@@ -20,8 +17,7 @@ final class WebSocketMeshSession implements MeshSession {
       _channel.stream.cast<List<int>>().map(Uint8List.fromList);
 
   @override
-  Future<void> send(Uint8List payload) async =>
-      _channel.sink.add(payload);
+  Future<void> send(Uint8List payload) async => _channel.sink.add(payload);
 
   @override
   Future<void> close() async {

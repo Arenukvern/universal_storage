@@ -15,11 +15,17 @@ import 'package:universal_storage_mesh_transport/universal_storage_mesh_transpor
 /// `sha`-less (test-only) — the signature is the secret XORed with the
 /// canonical bytes, bounded to 16 bytes. Enough to prove the transport
 /// enforces the seams; real crypto lives in the callers' packages.
-(Future<Uint8List> Function(MeshEphemeralFrame), Future<bool> Function(MeshEphemeralFrame))
+(
+  Future<Uint8List> Function(MeshEphemeralFrame),
+  Future<bool> Function(MeshEphemeralFrame),
+)
 testSeams(String secret) {
   List<int> seal(List<int> input) => [
-        for (var i = 0; i < 16; i++) input.isEmpty ? 0 : secret.codeUnitAt(i % secret.length) ^ input[i % input.length],
-      ];
+    for (var i = 0; i < 16; i++)
+      input.isEmpty
+          ? 0
+          : secret.codeUnitAt(i % secret.length) ^ input[i % input.length],
+  ];
 
   Future<Uint8List> sealer(MeshEphemeralFrame frame) async =>
       Uint8List.fromList(seal(frame.signingInput()));
@@ -37,43 +43,44 @@ testSeams(String secret) {
   return (sealer, verifier);
 }
 
-MeshPeerRecord peerOf(int port, {String peerId = 'device-a'}) =>
-    MeshPeerRecord(
-      peerId: peerId,
-      displayName: peerId,
-      endpointHints: {'host': '127.0.0.1', 'port': '$port'},
-    );
+MeshPeerRecord peerOf(int port, {String peerId = 'device-a'}) => MeshPeerRecord(
+  peerId: peerId,
+  displayName: peerId,
+  endpointHints: {'host': '127.0.0.1', 'port': '$port'},
+);
 
 void main() {
   group('WebSocketLanTransport', () {
-    test('unsigned mode: handshake, bidirectional payloads, clean close',
-        () async {
-      final server = WebSocketLanTransport(selfId: 'device-a');
-      await server.start();
-      addTearDown(server.close);
+    test(
+      'unsigned mode: handshake, bidirectional payloads, clean close',
+      () async {
+        final server = WebSocketLanTransport(selfId: 'device-a');
+        await server.start();
+        addTearDown(server.close);
 
-      final served = Completer<MeshSession>();
-      server.incoming.listen(served.complete);
+        final served = Completer<MeshSession>();
+        server.incoming.listen(served.complete);
 
-      final client = await server.connect(peerOf(server.port));
-      final hostSession = await served.future.timeout(
-        const Duration(seconds: 5),
-      );
+        final client = await server.connect(peerOf(server.port));
+        final hostSession = await served.future.timeout(
+          const Duration(seconds: 5),
+        );
 
-      final received = <int>[];
-      hostSession.inbound.listen(received.addAll);
-      await client.send(utf8.encode('ping'));
-      await Future<void>.delayed(const Duration(milliseconds: 100));
-      expect(utf8.decode(received), 'ping');
+        final received = <int>[];
+        hostSession.inbound.listen(received.addAll);
+        await client.send(utf8.encode('ping'));
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+        expect(utf8.decode(received), 'ping');
 
-      final echoed = Completer<Uint8List>();
-      client.inbound.listen(echoed.complete);
-      await hostSession.send(utf8.encode('pong'));
-      expect(utf8.decode(await echoed.future), 'pong');
+        final echoed = Completer<Uint8List>();
+        client.inbound.listen(echoed.complete);
+        await hostSession.send(utf8.encode('pong'));
+        expect(utf8.decode(await echoed.future), 'pong');
 
-      await client.close();
-      await hostSession.close();
-    });
+        await client.close();
+        await hostSession.close();
+      },
+    );
 
     test('signed mode: a wrong-secret peer is refused at the handshake '
         '(fatal, never a session source)', () async {

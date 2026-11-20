@@ -5,6 +5,7 @@ import 'dart:developer';
 import 'package:github/github.dart' as gh;
 
 import 'package:universal_storage_oauth/universal_storage_oauth.dart';
+
 import 'github_device_flow_auth_provider.dart';
 
 /// {@template github_repository_service}
@@ -81,10 +82,7 @@ class GitHubRepositoryService implements RepositoryService {
   }
 
   @override
-  Future<RepositoryInfo?> getRepository(
-    String owner,
-    String name,
-  ) async {
+  Future<RepositoryInfo?> getRepository(String owner, String name) async {
     final github = await _getGitHubClient();
 
     try {
@@ -144,10 +142,7 @@ class GitHubRepositoryService implements RepositoryService {
   }
 
   @override
-  Future<List<String>> getRepositoryBranches(
-    String owner,
-    String name,
-  ) async {
+  Future<List<String>> getRepositoryBranches(String owner, String name) async {
     final github = await _getGitHubClient();
 
     try {
@@ -171,10 +166,7 @@ class GitHubRepositoryService implements RepositoryService {
   }
 
   @override
-  Future<List<String>> getRepositoryTags(
-    String owner,
-    String name,
-  ) async {
+  Future<List<String>> getRepositoryTags(String owner, String name) async {
     final github = await _getGitHubClient();
 
     try {

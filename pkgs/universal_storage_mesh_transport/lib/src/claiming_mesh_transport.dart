@@ -66,8 +66,7 @@ final class ClaimingMeshTransport implements MeshTransport {
   /// inner transports (a client dials the sync plane by simply speaking
   /// sync first on its session).
   @override
-  Future<MeshSession> connect(MeshPeerRecord peer) =>
-      _inner.connect(peer);
+  Future<MeshSession> connect(MeshPeerRecord peer) => _inner.connect(peer);
 
   /// Transport view over the NOT-claimed sessions (rejected plane, or
   /// silent past [claimTimeout]). The realtime consumer attaches here.

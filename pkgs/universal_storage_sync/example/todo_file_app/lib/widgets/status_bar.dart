@@ -30,9 +30,8 @@ class StatusBar extends StatelessWidget {
               appState.hasWorkspace
                   ? appState.filePathConfig.path.path
                   : 'No workspace selected',
-              style: Theme.of(
-                context,
-              ).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
+              style: Theme.of(context).textTheme.bodySmall
+                  ?.copyWith(color: Colors.grey[600]),
               overflow: TextOverflow.ellipsis,
             ),
           ),
@@ -80,10 +79,8 @@ class StatusBar extends StatelessWidget {
         const SizedBox(width: 4),
         Text(
           value,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: Colors.grey[600],
-            fontWeight: FontWeight.w500,
-          ),
+          style: Theme.of(context).textTheme.bodySmall
+              ?.copyWith(color: Colors.grey[600], fontWeight: FontWeight.w500),
         ),
       ],
     ),

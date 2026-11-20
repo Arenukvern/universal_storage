@@ -335,9 +335,7 @@ final class StorageReleaseGateReport {
 final class StorageReleaseGateEvaluator {
   const StorageReleaseGateEvaluator();
 
-  StorageReleaseGateReport evaluate({
-    required StorageReleaseGateInput input,
-  }) {
+  StorageReleaseGateReport evaluate({required StorageReleaseGateInput input}) {
     final findings = <StorageReleaseGateFinding>[];
     final now = (input.evaluationTimeUtc ?? DateTime.now().toUtc()).toUtc();
     final summary = <String, dynamic>{
@@ -832,8 +830,7 @@ final class StorageReleaseGateEvaluator {
         const StorageReleaseGateFinding(
           id: 'compatibility.profile_backward_coverage',
           severity: StorageReleaseGateSeverity.warning,
-          message:
-              'Profile schema compatibility coverage has fewer than 2 versions.',
+          message: 'Profile schema compatibility coverage has fewer than 2 versions.',
         ),
       );
     }
@@ -843,8 +840,7 @@ final class StorageReleaseGateEvaluator {
         const StorageReleaseGateFinding(
           id: 'compatibility.migration_backward_coverage',
           severity: StorageReleaseGateSeverity.warning,
-          message:
-              'Migration schema compatibility coverage has fewer than 2 versions.',
+          message: 'Migration schema compatibility coverage has fewer than 2 versions.',
         ),
       );
     }
@@ -1009,10 +1005,7 @@ final class StorageReleaseGateEvaluator {
     );
   }
 
-  Duration? _percentileDuration(
-    List<Duration> values,
-    double percentile,
-  ) {
+  Duration? _percentileDuration(List<Duration> values, double percentile) {
     if (values.isEmpty) {
       return null;
     }

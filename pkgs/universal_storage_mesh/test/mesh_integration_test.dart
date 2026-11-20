@@ -29,10 +29,7 @@ void main() {
       pairAB = FakeMeshPair.paired();
       pairBC = FakeMeshPair.paired(a: 'device-b', b: 'device-c');
 
-      Future<MeshStorageProvider> replica(
-        Directory dir,
-        String id,
-      ) async {
+      Future<MeshStorageProvider> replica(Directory dir, String id) async {
         final p = MeshStorageProvider();
         await p.initWithConfig(
           MeshStorageConfig(storePath: dir.path, peerId: id),

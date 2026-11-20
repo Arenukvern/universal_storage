@@ -136,9 +136,7 @@ final class StorageProfileSchemaValidator {
   }
 
   /// Validates map payload and returns structured issues plus normalized map.
-  StorageProfileValidationResult validateMap(
-    Map<String, dynamic> payload,
-  ) {
+  StorageProfileValidationResult validateMap(Map<String, dynamic> payload) {
     final issues = <StorageProfileValidationIssue>[];
     final normalized = Map<String, dynamic>.from(payload);
 
@@ -493,14 +491,12 @@ final class StorageProfileSchemaValidator {
   Map<String, dynamic> _toJsonMap(Object? node) {
     if (node is YamlMap) {
       return node.map(
-        (key, value) =>
-            MapEntry(key.toString(), _toJsonNode(value)),
+        (key, value) => MapEntry(key.toString(), _toJsonNode(value)),
       );
     }
     if (node is Map<dynamic, dynamic>) {
       return node.map(
-        (key, value) =>
-            MapEntry(key.toString(), _toJsonNode(value)),
+        (key, value) => MapEntry(key.toString(), _toJsonNode(value)),
       );
     }
     throw const ConfigurationException(

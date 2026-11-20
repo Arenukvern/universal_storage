@@ -52,71 +52,80 @@ void main() {
     await dirB.delete(recursive: true);
   });
 
-  test('subscription gates delivery: out-of-zone members never arrive', () async {
-    await replicaA.createFile('zones/dungeon/room-1', 'in-zone');
-    await replicaA.createFile('zones/forest/room-1', 'out-of-zone');
-    await replicaA.createFile('notes/misc', 'unrelated');
+  test(
+    'subscription gates delivery: out-of-zone members never arrive',
+    () async {
+      await replicaA.createFile('zones/dungeon/room-1', 'in-zone');
+      await replicaA.createFile('zones/forest/room-1', 'out-of-zone');
+      await replicaA.createFile('notes/misc', 'unrelated');
 
-    // B subscribes to the dungeon sector only.
-    replicaB.setInterest(const MemberPrefixInterest({'zones/dungeon/'}));
+      // B subscribes to the dungeon sector only.
+      replicaB.setInterest(const MemberPrefixInterest({'zones/dungeon/'}));
 
-    await replicaA.sync();
+      await replicaA.sync();
 
-    expect(await replicaB.getFile('zones/dungeon/room-1'), 'in-zone');
-    expect(await replicaB.getFile('zones/forest/room-1'), isNull);
-    expect(await replicaB.getFile('notes/misc'), isNull);
-  });
+      expect(await replicaB.getFile('zones/dungeon/room-1'), 'in-zone');
+      expect(await replicaB.getFile('zones/forest/room-1'), isNull);
+      expect(await replicaB.getFile('notes/misc'), isNull);
+    },
+  );
 
-  test('no subscription means the wildcard (full delivery, old behavior)',
-      () async {
-    await replicaA.createFile('zones/dungeon/room-1', 'a');
-    await replicaA.createFile('zones/forest/room-1', 'b');
+  test(
+    'no subscription means the wildcard (full delivery, old behavior)',
+    () async {
+      await replicaA.createFile('zones/dungeon/room-1', 'a');
+      await replicaA.createFile('zones/forest/room-1', 'b');
 
-    await replicaA.sync();
+      await replicaA.sync();
 
-    expect(await replicaB.getFile('zones/dungeon/room-1'), 'a');
-    expect(await replicaB.getFile('zones/forest/room-1'), 'b');
-  });
+      expect(await replicaB.getFile('zones/dungeon/room-1'), 'a');
+      expect(await replicaB.getFile('zones/forest/room-1'), 'b');
+    },
+  );
 
-  test('budget caps the delta per exchange; later pulses finish the job',
-      () async {
-    for (var i = 0; i < 5; i++) {
-      await replicaA.createFile('bulk/doc-$i', 'payload-$i');
-    }
+  test(
+    'budget caps the delta per exchange; later pulses finish the job',
+    () async {
+      for (var i = 0; i < 5; i++) {
+        await replicaA.createFile('bulk/doc-$i', 'payload-$i');
+      }
 
-    // B wants everything but only 2 ops per exchange.
-    replicaB.setInterest(const AllInterest());
-    replicaB.setIncomingBudget(2);
+      // B wants everything but only 2 ops per exchange.
+      replicaB.setInterest(const AllInterest());
+      replicaB.setIncomingBudget(2);
 
-    await replicaA.sync();
-    var received = (await replicaB.listDirectory('bulk')).length;
-    expect(received, 2, reason: 'budget caps one exchange to 2 ops');
+      await replicaA.sync();
+      var received = (await replicaB.listDirectory('bulk')).length;
+      expect(received, 2, reason: 'budget caps one exchange to 2 ops');
 
-    await replicaA.sync();
-    received = (await replicaB.listDirectory('bulk')).length;
-    expect(received, 4);
+      await replicaA.sync();
+      received = (await replicaB.listDirectory('bulk')).length;
+      expect(received, 4);
 
-    await replicaA.sync();
-    received = (await replicaB.listDirectory('bulk')).length;
-    expect(received, 5, reason: 'pulses converge the rest incrementally');
-  });
+      await replicaA.sync();
+      received = (await replicaB.listDirectory('bulk')).length;
+      expect(received, 5, reason: 'pulses converge the rest incrementally');
+    },
+  );
 
-  test('priority orders the delta: ranked member crosses the wire first',
-      () async {
-    await replicaA.createFile('bulk/aaa', 'first-written');
-    await replicaA.createFile('bulk/zzz', 'must-arrive-first');
+  test(
+    'priority orders the delta: ranked member crosses the wire first',
+    () async {
+      await replicaA.createFile('bulk/aaa', 'first-written');
+      await replicaA.createFile('bulk/zzz', 'must-arrive-first');
 
-    replicaB.setInterest(const AllInterest());
-    // B ranks zzz ahead; with a budget of one op, ONLY the ranked member
-    // may cross this exchange — outcome-level proof of ordering.
-    replicaB.setDeliveryPriority({'bulk/zzz': 0});
-    replicaB.setIncomingBudget(1);
+      replicaB.setInterest(const AllInterest());
+      // B ranks zzz ahead; with a budget of one op, ONLY the ranked member
+      // may cross this exchange — outcome-level proof of ordering.
+      replicaB.setDeliveryPriority({'bulk/zzz': 0});
+      replicaB.setIncomingBudget(1);
 
-    await replicaA.sync();
+      await replicaA.sync();
 
-    expect(await replicaB.getFile('bulk/zzz'), 'must-arrive-first');
-    expect(await replicaB.getFile('bulk/aaa'), isNull);
-  });
+      expect(await replicaB.getFile('bulk/zzz'), 'must-arrive-first');
+      expect(await replicaB.getFile('bulk/aaa'), isNull);
+    },
+  );
 
   test('memberRefs lists live members with their version vectors; urnOf '
       'names through the resolver', () async {
@@ -189,10 +198,9 @@ final class ScriptedOldPeerTransport implements MeshTransport {
     StreamController<Uint8List> toReplica,
   ) async {
     await for (final frame in replicaFrames) {
-      final message =
-          Map<String, Object?>.from(
-            jsonDecode(utf8.decode(frame)) as Map<dynamic, dynamic>,
-          );
+      final message = Map<String, Object?>.from(
+        jsonDecode(utf8.decode(frame)) as Map<dynamic, dynamic>,
+      );
       switch (message['type']) {
         case 'delta':
           receivedDelta = message;
@@ -208,7 +216,11 @@ final class ScriptedOldPeerTransport implements MeshTransport {
           // The elder has nothing; announce an empty world.
           toReplica.add(_frame({'type': 'vv', 'docs': <String, Object?>{}}));
           toReplica.add(
-            _frame({'type': 'delta', 'ops': <Object?>[], 'states': <Object?>[]}),
+            _frame({
+              'type': 'delta',
+              'ops': <Object?>[],
+              'states': <Object?>[],
+            }),
           );
       }
     }

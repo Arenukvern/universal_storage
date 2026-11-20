@@ -137,7 +137,6 @@ final class SessionHello {
     'id': peerId,
     'idk': base64Encode(identityKey),
   });
-
 }
 
 /// The responder's reply (message 2): a hello body with the responder's
@@ -156,11 +155,8 @@ final class SessionReply {
   factory SessionReply.signed({
     required Uint8List unsignedBody,
     required Uint8List signature,
-  }) => SessionReply._(
-    SessionHello.parse(unsignedBody),
-    unsignedBody,
-    signature,
-  );
+  }) =>
+      SessionReply._(SessionHello.parse(unsignedBody), unsignedBody, signature);
 
   const SessionReply._(this.hello, this.unsignedBody, this.signature);
 
@@ -188,7 +184,6 @@ final class SessionReply {
     );
   }
 
-
   /// Responder identity + fresh ephemeral.
   final SessionHello hello;
 
@@ -201,8 +196,7 @@ final class SessionReply {
 
   static const _signatureLength = 64;
 
-  Uint8List encode() =>
-      Uint8List.fromList([...unsignedBody, ...signature]);
+  Uint8List encode() => Uint8List.fromList([...unsignedBody, ...signature]);
 }
 
 /// The initiator's confirmation (message 3) — the initiator's transcript
@@ -237,7 +231,6 @@ final class SessionConfirm {
     'proto': SessionAeadProtocol.name,
     'sig': base64Encode(signature),
   });
-
 }
 
 /// Directional session keys derived from the handshake. The okm split
@@ -277,11 +270,7 @@ final class SessionHandshakeCodec {
     required SimpleKeyPair identityKeyPair,
   }) async {
     final signature = await _ed25519.sign(
-      signatureInput(
-        role: role,
-        helloBody: helloBody,
-        replyBody: replyBody,
-      ),
+      signatureInput(role: role, helloBody: helloBody, replyBody: replyBody),
       keyPair: identityKeyPair,
     );
     return Uint8List.fromList(signature.bytes);
@@ -299,11 +288,7 @@ final class SessionHandshakeCodec {
   }) async {
     try {
       return await _ed25519.verify(
-        signatureInput(
-          role: role,
-          helloBody: helloBody,
-          replyBody: replyBody,
-        ),
+        signatureInput(role: role, helloBody: helloBody, replyBody: replyBody),
         signature: Signature(
           signature,
           publicKey: SimplePublicKey(
@@ -369,7 +354,8 @@ final class SessionHandshakeCodec {
       Uint8List.fromList([...helloBody, ...replyBody]),
     );
     final ids = [initiatorId, responderId]..sort();
-    final info = '${SessionAeadProtocol.name}'
+    final info =
+        '${SessionAeadProtocol.name}'
         '|${ids[0]}|${ids[1]}|'
         '${_hex(transcript.bytes)}';
     final derived = await _kdf.deriveKey(
@@ -385,20 +371,18 @@ final class SessionHandshakeCodec {
   }
 
   /// Cipher for the RESPONDER side (sends with the first okm half).
-  static SessionCipher responderCipher(
-    SessionDirectionalKeys keys,
-  ) => SessionCipher(
-    sendKey: SecretKeyData(keys.responderToInitiator),
-    receiveKey: SecretKeyData(keys.initiatorToResponder),
-  );
+  static SessionCipher responderCipher(SessionDirectionalKeys keys) =>
+      SessionCipher(
+        sendKey: SecretKeyData(keys.responderToInitiator),
+        receiveKey: SecretKeyData(keys.initiatorToResponder),
+      );
 
   /// Cipher for the INITIATOR side (sends with the second okm half).
-  static SessionCipher initiatorCipher(
-    SessionDirectionalKeys keys,
-  ) => SessionCipher(
-    sendKey: SecretKeyData(keys.initiatorToResponder),
-    receiveKey: SecretKeyData(keys.responderToInitiator),
-  );
+  static SessionCipher initiatorCipher(SessionDirectionalKeys keys) =>
+      SessionCipher(
+        sendKey: SecretKeyData(keys.initiatorToResponder),
+        receiveKey: SecretKeyData(keys.responderToInitiator),
+      );
 
   static Uint8List _u32(int value) {
     final bytes = Uint8List(4);
@@ -406,7 +390,6 @@ final class SessionHandshakeCodec {
     return bytes;
   }
 
-  static String _hex(List<int> bytes) => bytes
-      .map((b) => b.toRadixString(16).padLeft(2, '0'))
-      .join();
+  static String _hex(List<int> bytes) =>
+      bytes.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
 }

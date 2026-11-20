@@ -665,8 +665,7 @@ Object? _normalizeProfileJson(Object? node) {
   if (node is Map) {
     final entries = node.entries.toList()
       ..sort(
-        (left, right) =>
-            left.key.toString().compareTo(right.key.toString()),
+        (left, right) => left.key.toString().compareTo(right.key.toString()),
       );
     return <String, dynamic>{
       for (final entry in entries)

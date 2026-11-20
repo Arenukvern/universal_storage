@@ -17,10 +17,7 @@ import 'mesh_transport.dart';
 final class FakeMeshPair {
   FakeMeshPair._(this.a, this.b);
 
-  factory FakeMeshPair.paired({
-    String a = 'device-a',
-    String b = 'device-b',
-  }) {
+  factory FakeMeshPair.paired({String a = 'device-a', String b = 'device-b'}) {
     final transportA = FakeMeshTransport._(a);
     final transportB = FakeMeshTransport._(b);
     transportA._remote = transportB;
@@ -121,7 +118,6 @@ final class FakeMeshSession implements MeshSession {
     _onClose();
   }
 }
-
 
 /// Multi-peer in-memory transport for HOST-side tests: several controllers
 /// dial one host and the test injects frames per session (born from the

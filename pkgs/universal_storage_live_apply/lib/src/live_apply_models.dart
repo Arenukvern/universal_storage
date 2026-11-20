@@ -40,12 +40,11 @@ class LiveApplyPrior {
 
   /// Read the durable wire record.
   // ignore: prefer_constructors_over_static_methods
-  static LiveApplyPrior fromMap(Map<String, dynamic> map) =>
-      LiveApplyPrior(
-        sha256: map['sha256'] as String,
-        content: map['content'] as String,
-        mode: map['mode'] as int?,
-      );
+  static LiveApplyPrior fromMap(Map<String, dynamic> map) => LiveApplyPrior(
+    sha256: map['sha256'] as String,
+    content: map['content'] as String,
+    mode: map['mode'] as int?,
+  );
 }
 
 /// One journaled path: what was there before, and the content hash the run
@@ -123,24 +122,21 @@ class LiveApplyEntry {
 
   /// Read the durable wire record.
   // ignore: prefer_constructors_over_static_methods
-  static LiveApplyEntry fromMap(Map<String, dynamic> map) =>
-      LiveApplyEntry(
-        path: map['path'] as String,
-        prior: map['prior'] == null
-            ? null
-            : LiveApplyPrior.fromMap(
-                (map['prior'] as Map).cast<String, dynamic>(),
-              ),
-        postSha256: map['post_sha256'] as String,
-        postAbsent: map['post_absent'] as bool? ?? false,
-        pending: map['pending'] as bool? ?? false,
-        pendingPreSha256: map['pending_pre_sha256'] as String?,
-        postMode: map['post_mode'] as int?,
-        pendingPreMode: map['pending_pre_mode'] as int?,
-        inverseStarted: map['inverse_started'] as bool? ?? false,
-        restored: map['restored'] as bool? ?? false,
-        providerReceipts: _readReceipts(map['provider_receipts']),
-      );
+  static LiveApplyEntry fromMap(Map<String, dynamic> map) => LiveApplyEntry(
+    path: map['path'] as String,
+    prior: map['prior'] == null
+        ? null
+        : LiveApplyPrior.fromMap((map['prior'] as Map).cast<String, dynamic>()),
+    postSha256: map['post_sha256'] as String,
+    postAbsent: map['post_absent'] as bool? ?? false,
+    pending: map['pending'] as bool? ?? false,
+    pendingPreSha256: map['pending_pre_sha256'] as String?,
+    postMode: map['post_mode'] as int?,
+    pendingPreMode: map['pending_pre_mode'] as int?,
+    inverseStarted: map['inverse_started'] as bool? ?? false,
+    restored: map['restored'] as bool? ?? false,
+    providerReceipts: _readReceipts(map['provider_receipts']),
+  );
 }
 
 /// Lifecycle of a run. `open` runs are recoverable; `applied` runs sit in
@@ -227,9 +223,7 @@ class LiveApplyJournal {
       _validateFileStateRows(profile, rows);
     }
     if (version == 1 &&
-        rows.any(
-          (e) => (e as Map)['post_sha256'] == liveApplyDeletedSha256,
-        )) {
+        rows.any((e) => (e as Map)['post_sha256'] == liveApplyDeletedSha256)) {
       throw const FormatException(
         'legacy journal has ambiguous empty/deleted state; '
         'reconcile explicitly',

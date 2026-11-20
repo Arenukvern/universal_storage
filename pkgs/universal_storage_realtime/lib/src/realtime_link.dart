@@ -118,10 +118,7 @@ final class RealtimeLink {
   Stream<RealtimeEvent> get inbound => _inbound.stream;
 
   /// Sends a droppable frame: newest-wins per [type] (see the class doc).
-  Future<void> sendDroppable(
-    String type,
-    Map<String, Object?> payload,
-  ) {
+  Future<void> sendDroppable(String type, Map<String, Object?> payload) {
     assert(!RealtimeTypes.isReserved(type), 'reserved types are link-owned');
     final envelope = RealtimeEnvelope(
       type: type,
@@ -134,10 +131,7 @@ final class RealtimeLink {
     return _enqueueDroppable(type, envelope);
   }
 
-  Future<void> _enqueueDroppable(
-    String type,
-    RealtimeEnvelope envelope,
-  ) async {
+  Future<void> _enqueueDroppable(String type, RealtimeEnvelope envelope) async {
     if (_closed) return;
     if (_droppableSending[type] == true) {
       // A send is in flight: newest wins, the older pending is dropped.
@@ -160,10 +154,7 @@ final class RealtimeLink {
   }
 
   /// Sends a reliable frame: exactly-once semantics on receipt.
-  Future<void> sendReliable(
-    String type,
-    Map<String, Object?> payload,
-  ) {
+  Future<void> sendReliable(String type, Map<String, Object?> payload) {
     assert(!RealtimeTypes.isReserved(type), 'reserved types are link-owned');
     return _send(
       RealtimeEnvelope(

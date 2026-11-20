@@ -36,14 +36,14 @@ void main() {
       expect(union.matchesDocId('q/anything'), isTrue);
       expect(union.matchesDocId('z'), isFalse);
 
-      expect(
-        a.union(const InterestSelection.all()).all,
-        isTrue,
-      );
+      expect(a.union(const InterestSelection.all()).all, isTrue);
     });
 
     test('json round-trip is canonical (sorted, auditable)', () {
-      const selection = InterestSelection(docIds: {'b', 'a'}, prefixes: {'z/', 'a/'});
+      const selection = InterestSelection(
+        docIds: {'b', 'a'},
+        prefixes: {'z/', 'a/'},
+      );
       final restored = InterestSelection.fromJson(selection.toJson());
       expect(restored.matchesDocId('a'), isTrue);
       expect(restored.matchesDocId('b'), isTrue);
@@ -70,9 +70,9 @@ void main() {
         isTrue,
       );
       expect(
-        const MemberPrefixInterest({'sectors/'}).resolve().matchesDocId(
-          'sectors/x',
-        ),
+        const MemberPrefixInterest({'sectors/'})
+            .resolve()
+            .matchesDocId('sectors/x'),
         isTrue,
       );
     });

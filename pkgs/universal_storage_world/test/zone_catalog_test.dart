@@ -9,7 +9,11 @@ void main() {
         zoneId: 'dungeon',
         title: 'The Dungeon',
         entries: [
-          ZoneMemberEntry(docId: 'docs/chat-1', title: 'Party chat', kind: 'chat'),
+          ZoneMemberEntry(
+            docId: 'docs/chat-1',
+            title: 'Party chat',
+            kind: 'chat',
+          ),
           ZoneMemberEntry(
             docId: 'assets/dragon.png',
             kind: 'blob',

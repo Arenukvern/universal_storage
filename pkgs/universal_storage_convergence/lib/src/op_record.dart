@@ -25,11 +25,12 @@ final class OpRecord {
   factory OpRecord.fromJson(Map<String, dynamic> json) => OpRecord(
     docId: json['doc_id'] as String,
     hlc: hlcFromJson(json['hlc']),
-    payload: Map<String, dynamic>.from(json['payload'] as Map<dynamic, dynamic>),
-    ttl:
-        json['ttl_ms'] == null
-            ? null
-            : Duration(milliseconds: (json['ttl_ms'] as num).toInt()),
+    payload: Map<String, dynamic>.from(
+      json['payload'] as Map<dynamic, dynamic>,
+    ),
+    ttl: json['ttl_ms'] == null
+        ? null
+        : Duration(milliseconds: (json['ttl_ms'] as num).toInt()),
   );
 
   final String docId;

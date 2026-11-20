@@ -58,11 +58,7 @@ void main() {
       for (final doc in docs) ...doc.pendingOps,
     ];
 
-    void deliverShuffled(
-      ConvergenceDoc doc,
-      List<OpRecord> ops,
-      int seed,
-    ) {
+    void deliverShuffled(ConvergenceDoc doc, List<OpRecord> ops, int seed) {
       final shuffled = [...ops]..shuffle(Random(seed));
       for (var i = 0; i < shuffled.length; i += 2) {
         final batch = shuffled.skip(i).take(2);

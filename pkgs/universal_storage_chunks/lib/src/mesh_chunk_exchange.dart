@@ -130,9 +130,8 @@ final class MeshChunkExchange {
       final message = MeshChunkProtocol.decode(frame);
       switch (message['type']) {
         case reqType:
-          final addresses =
-              (message['addresses'] as List<dynamic>? ?? const [])
-                  .whereType<String>();
+          final addresses = (message['addresses'] as List<dynamic>? ?? const [])
+              .whereType<String>();
           final missing = <String>[];
           for (final address in addresses) {
             final bytes = await store.get(address);

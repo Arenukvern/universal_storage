@@ -9,7 +9,6 @@ import 'package:meta/meta.dart';
 /// deterministic regardless of delivery order.
 @immutable
 final class Hlc implements Comparable<Hlc> {
-
   const Hlc(this.wallMillis, this.counter, this.actorId)
     : assert(wallMillis >= 0),
       assert(counter >= 0),
@@ -108,10 +107,7 @@ Hlc hlcFromJson(Object? raw) => raw is Map<String, dynamic>
 
 /// Restores a persisted last-issued timestamp so monotonicity survives
 /// process restarts (ADR 0011 obligation).
-Hlc hlcRestoreMonotonic({
-  required Hlc persistedLast,
-  required DateTime now,
-}) {
+Hlc hlcRestoreMonotonic({required Hlc persistedLast, required DateTime now}) {
   final wallNow = now.millisecondsSinceEpoch;
   if (wallNow > persistedLast.wallMillis) {
     return Hlc(wallNow, 0, persistedLast.actorId);

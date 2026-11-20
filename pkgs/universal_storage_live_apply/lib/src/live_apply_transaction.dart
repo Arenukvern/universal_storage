@@ -143,11 +143,7 @@ class LiveApplyTransaction {
     return state;
   }
 
-  bool _matches(
-    StorageFileState actual,
-    String? hash,
-    int? mode,
-  ) =>
+  bool _matches(StorageFileState actual, String? hash, int? mode) =>
       (actual.content == null
           ? hash == null
           : hash != null && liveApplySha256(actual.content!) == hash) &&
@@ -197,12 +193,11 @@ class LiveApplyTransaction {
   /// recoverable.
   /// Retained for source compatibility; callers migrate to [mutate].
   @Deprecated('Use mutate to persist intended state before the provider effect')
-  Future<void> recordPost(String path, String? content) =>
-      Future<void>.error(
-        const LiveApplyRefusalException(
-          'post-only journaling is unsafe; use mutate with declared content',
-        ),
-      );
+  Future<void> recordPost(String path, String? content) => Future<void>.error(
+    const LiveApplyRefusalException(
+      'post-only journaling is unsafe; use mutate with declared content',
+    ),
+  );
 
   /// Execute one declared single-path effect, preserving provider semantics.
   /// Intended presence/hash and the pre-operation hash persist BEFORE dispatch.
@@ -278,10 +273,8 @@ class LiveApplyTransaction {
   }
 
   /// Create or update one path under write-ahead intent.
-  Future<FileOperationResult> writeFile(
-    String path,
-    String content,
-  ) => mutate(path, content, () => _putFile(path, content));
+  Future<FileOperationResult> writeFile(String path, String content) =>
+      mutate(path, content, () => _putFile(path, content));
 
   /// Delete one path under write-ahead intent.
   Future<FileOperationResult> deleteFile(String path) =>
@@ -303,10 +296,7 @@ class LiveApplyTransaction {
     );
   });
 
-  Future<FileOperationResult> _putFile(
-    String path,
-    String content,
-  ) async {
+  Future<FileOperationResult> _putFile(String path, String content) async {
     final existing = await inner.getFile(path);
     return existing == null
         ? inner.createFile(path, content)
@@ -323,9 +313,7 @@ class LiveApplyTransaction {
 
   /// Finalize completed work and close the undo window. Hosts with a separate
   /// verification phase require the durable applied state under this same lock.
-  Future<void> commit({
-    bool requireApplied = false,
-  }) => _exclusive(() async {
+  Future<void> commit({bool requireApplied = false}) => _exclusive(() async {
     if (requireApplied && status != LiveApplyRunStatus.applied) {
       throw const LiveApplyRefusalException(
         'run must be applied before finalizing',

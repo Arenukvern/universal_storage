@@ -10,8 +10,9 @@ import 'storage_profile_resolver.dart';
 import 'sync_queue_store.dart';
 
 /// Optional callback for custom conflict decision routing.
-typedef ConflictDecisionHook =
-    FutureOr<DecisionState> Function(SyncConflictEntry conflict);
+typedef ConflictDecisionHook = FutureOr<DecisionState> Function(
+  SyncConflictEntry conflict,
+);
 
 /// Profile-aware storage kernel.
 ///
@@ -414,7 +415,9 @@ final class StorageKernel implements StorageKernelContract {
       // successful no-op rather than a sync failure.
       return StorageOperationResult.success(
         message: 'Sync skipped: provider has no remote configured.',
-        metadata: const <String, dynamic>{'sync_skipped': 'no_remote_configured'},
+        metadata: const <String, dynamic>{
+          'sync_skipped': 'no_remote_configured',
+        },
       );
     }
 
@@ -436,21 +439,19 @@ final class StorageKernel implements StorageKernelContract {
 }
 
 /// Maps conflict resolution strategy to provider pull/merge strategy.
-String pullMergeStrategyFor(
-  ConflictResolutionStrategy conflictResolution,
-) => switch (conflictResolution) {
-  ConflictResolutionStrategy.clientAlwaysRight => 'rebase',
-  ConflictResolutionStrategy.serverAlwaysRight => 'merge',
-  ConflictResolutionStrategy.manualResolution => 'ff-only',
-  ConflictResolutionStrategy.lastWriteWins => 'merge',
-};
+String pullMergeStrategyFor(ConflictResolutionStrategy conflictResolution) =>
+    switch (conflictResolution) {
+      ConflictResolutionStrategy.clientAlwaysRight => 'rebase',
+      ConflictResolutionStrategy.serverAlwaysRight => 'merge',
+      ConflictResolutionStrategy.manualResolution => 'ff-only',
+      ConflictResolutionStrategy.lastWriteWins => 'merge',
+    };
 
 /// Maps conflict resolution strategy to provider push conflict strategy.
-String pushConflictStrategyFor(
-  ConflictResolutionStrategy conflictResolution,
-) => switch (conflictResolution) {
-  ConflictResolutionStrategy.clientAlwaysRight => 'rebase-local',
-  ConflictResolutionStrategy.serverAlwaysRight => 'fail-on-conflict',
-  ConflictResolutionStrategy.manualResolution => 'fail-on-conflict',
-  ConflictResolutionStrategy.lastWriteWins => 'force-with-lease',
-};
+String pushConflictStrategyFor(ConflictResolutionStrategy conflictResolution) =>
+    switch (conflictResolution) {
+      ConflictResolutionStrategy.clientAlwaysRight => 'rebase-local',
+      ConflictResolutionStrategy.serverAlwaysRight => 'fail-on-conflict',
+      ConflictResolutionStrategy.manualResolution => 'fail-on-conflict',
+      ConflictResolutionStrategy.lastWriteWins => 'force-with-lease',
+    };

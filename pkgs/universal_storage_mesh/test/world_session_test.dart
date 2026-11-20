@@ -54,28 +54,29 @@ void main() {
     await dirB.delete(recursive: true);
   });
 
-  test('participant seam: flush → exchange → absorb → compact, in order',
-      () async {
-    final order = <String>[];
-    sessionA.attachParticipant(
-      _RecordingParticipant(
-        onPhase: order.add,
-        duringSync: () async {
-          // The exchange runs while the participant is "between" its
-          // flush and its absorb.
-          await replicaA.createFile('docs/order-probe', 'written mid-cycle');
-        },
-      ),
-    );
+  test(
+    'participant seam: flush → exchange → absorb → compact, in order',
+    () async {
+      final order = <String>[];
+      sessionA.attachParticipant(
+        _RecordingParticipant(
+          onPhase: order.add,
+          duringSync: () async {
+            // The exchange runs while the participant is "between" its
+            // flush and its absorb.
+            await replicaA.createFile('docs/order-probe', 'written mid-cycle');
+          },
+        ),
+      );
 
-    await sessionA.pulse();
+      await sessionA.pulse();
 
-    expect(order, ['flush', 'absorb', 'compact']);
-    expect(sessionA.isPeriodicPulseRunning, isFalse);
-  });
+      expect(order, ['flush', 'absorb', 'compact']);
+      expect(sessionA.isPeriodicPulseRunning, isFalse);
+    },
+  );
 
-  test('pulse coalesces: a pulse landing mid-cycle joins the flight',
-      () async {
+  test('pulse coalesces: a pulse landing mid-cycle joins the flight', () async {
     final flushes = <int>[];
     final gate = Completer<void>();
     sessionA.attachParticipant(
@@ -92,8 +93,11 @@ void main() {
     final first = sessionA.pulse();
     // Second pulse lands while the first cycle is parked in its flush.
     final second = sessionA.pulse();
-    expect(identical(first, second), isTrue,
-        reason: 'a coalescing pulse returns the in-flight cycle');
+    expect(
+      identical(first, second),
+      isTrue,
+      reason: 'a coalescing pulse returns the in-flight cycle',
+    );
 
     gate.complete();
     await first;
@@ -101,27 +105,31 @@ void main() {
     expect(flushes.length, 1, reason: 'exactly one cycle ran');
   });
 
-  test('pulse surfaces the fold through onCycle even after a failed cycle',
-      () async {
-    pair.a.failNextConnect = true; // opportunistic skip — not a failure.
-    var cycles = 0;
-    sessionA.onCycle = () => cycles++;
-    await sessionA.pulse();
-    expect(cycles, 1);
-  });
+  test(
+    'pulse surfaces the fold through onCycle even after a failed cycle',
+    () async {
+      pair.a.failNextConnect = true; // opportunistic skip — not a failure.
+      var cycles = 0;
+      sessionA.onCycle = () => cycles++;
+      await sessionA.pulse();
+      expect(cycles, 1);
+    },
+  );
 
-  test('end-to-end: a participant\'s flush crosses the mesh to a peer',
-      () async {
-    // Minimal stand-in for the app's DocReplicaStore seam: durable state
-    // that flushes into the provider (the storage this session owns), so
-    // the exchange ships it and the peer folds it.
-    final docContent = <String, String>{'docs/session-e2e': 'via-session'};
-    sessionA.attachParticipant(_FileBackedParticipant(replicaA, docContent));
+  test(
+    'end-to-end: a participant\'s flush crosses the mesh to a peer',
+    () async {
+      // Minimal stand-in for the app's DocReplicaStore seam: durable state
+      // that flushes into the provider (the storage this session owns), so
+      // the exchange ships it and the peer folds it.
+      final docContent = <String, String>{'docs/session-e2e': 'via-session'};
+      sessionA.attachParticipant(_FileBackedParticipant(replicaA, docContent));
 
-    await sessionA.pulse();
+      await sessionA.pulse();
 
-    expect(await replicaB.getFile('docs/session-e2e'), 'via-session');
-  });
+      expect(await replicaB.getFile('docs/session-e2e'), 'via-session');
+    },
+  );
 
   test('setInterest publishes through to a mesh-backed provider', () async {
     sessionA.setInterest(const MemberPrefixInterest({'zones/'}));

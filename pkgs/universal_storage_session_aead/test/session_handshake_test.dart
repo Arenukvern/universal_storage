@@ -5,9 +5,8 @@ import 'package:cryptography/cryptography.dart';
 import 'package:test/test.dart';
 import 'package:universal_storage_session_aead/universal_storage_session_aead.dart';
 
-Uint8List _bytes(int length, [int seed = 0]) => Uint8List.fromList(
-  List.generate(length, (i) => (i * 7 + seed) & 0xff),
-);
+Uint8List _bytes(int length, [int seed = 0]) =>
+    Uint8List.fromList(List.generate(length, (i) => (i * 7 + seed) & 0xff));
 
 SessionHello _hello([String id = 'device-a']) => SessionHello(
   ephemeralKey: _bytes(32, 1),
@@ -65,19 +64,18 @@ void main() {
   });
 
   test('malformed keys and signatures are rejected', () {
-    Uint8List bodyWith(Map<String, Object?> overrides) =>
-        Uint8List.fromList(
-          utf8.encode(
-            jsonEncode({
-              'v': 1,
-              'proto': SessionAeadProtocol.name,
-              'e': base64Encode(_bytes(32)),
-              'id': 'device-a',
-              'idk': base64Encode(_bytes(32)),
-              ...overrides,
-            }),
-          ),
-        );
+    Uint8List bodyWith(Map<String, Object?> overrides) => Uint8List.fromList(
+      utf8.encode(
+        jsonEncode({
+          'v': 1,
+          'proto': SessionAeadProtocol.name,
+          'e': base64Encode(_bytes(32)),
+          'id': 'device-a',
+          'idk': base64Encode(_bytes(32)),
+          ...overrides,
+        }),
+      ),
+    );
 
     expect(
       () => SessionHello.parse(bodyWith({'e': base64Encode(_bytes(31))})),
@@ -93,13 +91,17 @@ void main() {
     );
     expect(
       () => SessionReply.parse(
-        Uint8List.fromList(utf8.encode(jsonEncode({
-          'v': 1,
-          'proto': SessionAeadProtocol.name,
-          'e': base64Encode(_bytes(32)),
-          'id': 'device-a',
-          'idk': base64Encode(_bytes(32)),
-        }))),
+        Uint8List.fromList(
+          utf8.encode(
+            jsonEncode({
+              'v': 1,
+              'proto': SessionAeadProtocol.name,
+              'e': base64Encode(_bytes(32)),
+              'id': 'device-a',
+              'idk': base64Encode(_bytes(32)),
+            }),
+          ),
+        ),
       ),
       throwsA(isA<SessionHandshakeException>()),
     );
@@ -121,28 +123,21 @@ void main() {
     Future<bool> verifyWith({
       required SessionHandshakeRole role,
       required Uint8List sig,
-    }) =>
-        SessionHandshakeCodec.verify(
-          role: role,
-          helloBody: helloBody,
-          replyBody: replyBody,
-          signature: sig,
-          identityKey: publicKey.bytes,
-        );
+    }) => SessionHandshakeCodec.verify(
+      role: role,
+      helloBody: helloBody,
+      replyBody: replyBody,
+      signature: sig,
+      identityKey: publicKey.bytes,
+    );
 
     expect(
-      await verifyWith(
-        role: SessionHandshakeRole.responder,
-        sig: responderSig,
-      ),
+      await verifyWith(role: SessionHandshakeRole.responder, sig: responderSig),
       isTrue,
     );
     // The same signature over the INITIATOR transcript is meaningless.
     expect(
-      await verifyWith(
-        role: SessionHandshakeRole.initiator,
-        sig: responderSig,
-      ),
+      await verifyWith(role: SessionHandshakeRole.initiator, sig: responderSig),
       isFalse,
     );
     // A flipped byte in either body invalidates it.

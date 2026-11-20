@@ -341,9 +341,7 @@ void main() {
         final branches = await provider.listBranches();
 
         expect(branches, isNotEmpty);
-        final names = branches
-            .map((branch) => branch.name.value)
-            .toList();
+        final names = branches.map((branch) => branch.name.value).toList();
         expect(names, contains('main'));
         expect(branches.any((branch) => branch.isDefault), isTrue);
       });

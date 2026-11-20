@@ -33,10 +33,7 @@ import 'relay_ephemeral_transport.dart';
 /// hosting stay ABOVE this class (app policy); the session consumes their
 /// outcomes ([registerPeerIdentityKey], peers, attached transports).
 final class MeshWorldSession implements Pulseable {
-  MeshWorldSession({
-    required this.storage,
-    required this.selfId,
-  });
+  MeshWorldSession({required this.storage, required this.selfId});
 
   /// The storage this session syncs (its provider runs the anti-entropy
   /// exchange; mesh-backed providers also serve [peers] and interest).
@@ -106,9 +103,7 @@ final class MeshWorldSession implements Pulseable {
   /// flush every participant before the exchange, absorb after, compact
   /// last. Wrapped in a timeout because an addressed relay silently drops
   /// frames addressed to offline peers; without it manual sync hangs.
-  Future<void> sync({
-    Duration timeout = const Duration(minutes: 1),
-  }) async {
+  Future<void> sync({Duration timeout = const Duration(minutes: 1)}) async {
     await _syncCycle().timeout(timeout);
   }
 
@@ -157,9 +152,7 @@ final class MeshWorldSession implements Pulseable {
   /// app behavior, kept for parity). A pulse landing while a cycle is
   /// still running is skipped — the next tick picks the work up.
   /// Production hosts drive [pulse] from their own scheduler instead.
-  void startPeriodicPulse({
-    Duration interval = const Duration(seconds: 30),
-  }) {
+  void startPeriodicPulse({Duration interval = const Duration(seconds: 30)}) {
     stopPeriodicPulse();
     _pulseTimer = Timer.periodic(interval, (_) {
       unawaited(pulse());
@@ -208,8 +201,7 @@ final class MeshWorldSession implements Pulseable {
   Future<void> joinDoc(String docId) async {
     _presenceDocs.add(docId);
     final link = _presenceLink;
-    if (link != null &&
-        link.connectionState == EphemeralLinkState.connected) {
+    if (link != null && link.connectionState == EphemeralLinkState.connected) {
       await _openPresenceSessions();
     }
   }
@@ -238,12 +230,8 @@ final class MeshWorldSession implements Pulseable {
   /// Live presence for [docId] — the tracker fold over unexpired
   /// ephemeral ops (ADR 0029 §1, ADR 0031 §2). Sweeps on read (expiry is
   /// the crash backstop).
-  List<MeshPresenceEntry> presence(
-    String docId, {
-    DateTime? now,
-  }) =>
-      _presenceTracker?.presence(docId, now: now ?? DateTime.now()) ??
-      const [];
+  List<MeshPresenceEntry> presence(String docId, {DateTime? now}) =>
+      _presenceTracker?.presence(docId, now: now ?? DateTime.now()) ?? const [];
 
   /// How many inbound presence frames were dropped as named data
   /// (ADR 0031 §3) across every open doc session and the passive observer.
@@ -304,13 +292,12 @@ final class MeshWorldSession implements Pulseable {
     // everything else still folds so presence(doc) answers for docs this
     // device never announced on.
     unawaited(_presenceObserver?.dispose());
-    _presenceObserver =
-        MeshPresenceObserver(
-            tracker: _presenceTracker!,
-            authenticator: _presenceAuthenticator!,
-            selfId: selfId,
-            hasLocalSession: _presenceSessions.containsKey,
-          );
+    _presenceObserver = MeshPresenceObserver(
+      tracker: _presenceTracker!,
+      authenticator: _presenceAuthenticator!,
+      selfId: selfId,
+      hasLocalSession: _presenceSessions.containsKey,
+    );
     _presenceObserver!.attach(link.frames);
     if (link.connectionState == EphemeralLinkState.connected) {
       unawaited(_openPresenceSessions());
@@ -351,9 +338,7 @@ final class MeshWorldSession implements Pulseable {
     final authenticator = _presenceAuthenticator;
     if (link == null || authenticator == null) return;
     final transport = link;
-    final signer = MeshFrameSigner(
-      identityKeyPair: await _ensureIdentity(),
-    );
+    final signer = MeshFrameSigner(identityKeyPair: await _ensureIdentity());
     for (final docId in _presenceDocs) {
       if (!identical(_presenceLink, link)) {
         return; // Link replaced mid-cycle — the next connect event reruns.
@@ -459,12 +444,10 @@ final class MeshWorldSession implements Pulseable {
   Future<SimpleKeyPair> _ensureIdentity() {
     final existing = _identityKeyPair;
     if (existing != null) return Future<SimpleKeyPair>.value(existing);
-    return _identityFuture ??= identityKeyPairProvider().then(
-      (keyPair) {
-        _identityKeyPair = keyPair;
-        return keyPair;
-      },
-    );
+    return _identityFuture ??= identityKeyPairProvider().then((keyPair) {
+      _identityKeyPair = keyPair;
+      return keyPair;
+    });
   }
 }
 

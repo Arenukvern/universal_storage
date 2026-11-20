@@ -102,9 +102,8 @@ void main() {
 
     test('unsigned frames stay rejected', () async {
       final authenticator = MeshFrameAuthenticator();
-      final unsigned = MeshPresenceTracker(
-        actorId: 'peer-1',
-      ).announce(docId: 'doc/1', event: MeshEphemeralEvent.join, now: t0);
+      final unsigned = MeshPresenceTracker(actorId: 'peer-1')
+          .announce(docId: 'doc/1', event: MeshEphemeralEvent.join, now: t0);
       expect(unsigned.signature, isNull);
       expect(await authenticator.verify(unsigned), isFalse);
       expect(authenticator.identityKeys, isEmpty);
@@ -244,9 +243,9 @@ void main() {
       expect(record!.displayName, 'peer-1');
       expect(record.identityKey, (await keyPair.extractPublicKey()).bytes);
       // Persisted in the replica backing (web store layout: JSON list).
-      final persisted =
-          (jsonDecode(await backing.read('peers.json') ?? '') as List<dynamic>)
-              .cast<Map<String, dynamic>>();
+      final persisted = (jsonDecode(
+        await backing.read('peers.json') ?? '',
+      ) as List<dynamic>).cast<Map<String, dynamic>>();
       expect(
         persisted.single['identity_key'],
         base64Encode((await keyPair.extractPublicKey()).bytes),

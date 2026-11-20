@@ -802,13 +802,11 @@ class OfflineGitStorageProvider extends StorageProvider
   }
 
   @override
-  Future<void> cloneRepository(
-    VcRepository repository,
-    String localPath,
-  ) => throw const CapabilityMismatchException(
-    'OfflineGitStorageProvider manages an already-local repository and '
-    'does not support clone-to-local workflows.',
-  );
+  Future<void> cloneRepository(VcRepository repository, String localPath) =>
+      throw const CapabilityMismatchException(
+        'OfflineGitStorageProvider manages an already-local repository and '
+        'does not support clone-to-local workflows.',
+      );
 
   @override
   Future<VcRepository> createRepository(
@@ -939,9 +937,7 @@ class OfflineGitStorageProvider extends StorageProvider
       repositories.add(await getRepositoryInfo());
     }
 
-    repositories.sort(
-      (first, second) => first.name.compareTo(second.name),
-    );
+    repositories.sort((first, second) => first.name.compareTo(second.name));
     return repositories;
   }
 

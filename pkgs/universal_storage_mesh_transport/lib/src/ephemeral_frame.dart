@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:meta/meta.dart';
+
 /// Kind of an unlogged peer event carried by a [MeshEphemeralFrame]
 /// (ADR 0029 §1: transport-level ephemeral frames stay OUT of the kernel —
 /// unlogged, no durability, no GC).
@@ -15,13 +16,12 @@ enum MeshEphemeralEvent {
   /// A peer refreshed its liveness for the doc.
   ping;
 
-  static MeshEphemeralEvent fromName(String value) =>
-      switch (value) {
-        'join' => MeshEphemeralEvent.join,
-        'leave' => MeshEphemeralEvent.leave,
-        'ping' => MeshEphemeralEvent.ping,
-        _ => throw ArgumentError.value(value, 'value', 'Unknown event kind'),
-      };
+  static MeshEphemeralEvent fromName(String value) => switch (value) {
+    'join' => MeshEphemeralEvent.join,
+    'leave' => MeshEphemeralEvent.leave,
+    'ping' => MeshEphemeralEvent.ping,
+    _ => throw ArgumentError.value(value, 'value', 'Unknown event kind'),
+  };
 }
 
 /// One transport-level ephemeral frame: a peer event that is relayed like
@@ -63,17 +63,15 @@ final class MeshEphemeralFrame {
         fromPeerId: json['from_peer_id'] as String,
         event: MeshEphemeralEvent.fromName(json['event'] as String),
         ttl: Duration(milliseconds: (json['ttl_ms'] as num).toInt()),
-        payload:
-            json['payload'] == null
-                ? const <String, Object?>{}
-                : Map<String, Object?>.from(
-                  json['payload'] as Map<dynamic, dynamic>,
-                ),
+        payload: json['payload'] == null
+            ? const <String, Object?>{}
+            : Map<String, Object?>.from(
+                json['payload'] as Map<dynamic, dynamic>,
+              ),
         issuedAtMs: (json['issued_at_ms'] as num?)?.toInt(),
-        signature:
-            json['sig'] == null
-                ? null
-                : Uint8List.fromList(base64Decode(json['sig'] as String)),
+        signature: json['sig'] == null
+            ? null
+            : Uint8List.fromList(base64Decode(json['sig'] as String)),
       );
 
   /// Restores a frame from [encode] bytes.
@@ -133,16 +131,15 @@ final class MeshEphemeralFrame {
 
   /// Returns a copy of this frame carrying [signature] (ADR 0031 §3:
   /// sign, then send).
-  MeshEphemeralFrame withSignature(Uint8List signature) =>
-      MeshEphemeralFrame(
-        docId: docId,
-        fromPeerId: fromPeerId,
-        event: event,
-        ttl: ttl,
-        payload: payload,
-        issuedAtMs: issuedAtMs,
-        signature: signature,
-      );
+  MeshEphemeralFrame withSignature(Uint8List signature) => MeshEphemeralFrame(
+    docId: docId,
+    fromPeerId: fromPeerId,
+    event: event,
+    ttl: ttl,
+    payload: payload,
+    issuedAtMs: issuedAtMs,
+    signature: signature,
+  );
 
   /// Serializes to bytes that ride any [MeshSession] unchanged.
   Uint8List encode() {
@@ -199,8 +196,7 @@ final class MeshEphemeralFrame {
   int get hashCode => Object.hash(docId, fromPeerId, event, ttl, issuedAtMs);
 
   @override
-  String toString() =>
-      'MeshEphemeralFrame($event from $fromPeerId on $docId)';
+  String toString() => 'MeshEphemeralFrame($event from $fromPeerId on $docId)';
 
   static bool _mapsEqual(Map<String, Object?> a, Map b) {
     if (a.length != b.length) return false;

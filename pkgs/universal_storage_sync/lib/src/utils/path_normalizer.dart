@@ -134,10 +134,7 @@ mixin PathNormalizer {
       !path.contains(RegExp(r'[\x00-\x1f]'));
 
   /// Joins path segments with the appropriate separator for the provider
-  static String join(
-    List<String> segments,
-    ProviderType providerType,
-  ) {
+  static String join(List<String> segments, ProviderType providerType) {
     if (segments.isEmpty) return '';
 
     final separator = providerType == ProviderType.filesystem
@@ -151,10 +148,7 @@ mixin PathNormalizer {
   }
 
   /// Splits a path into its component segments
-  static List<String> split(
-    String path,
-    ProviderType providerType,
-  ) {
+  static List<String> split(String path, ProviderType providerType) {
     final normalizedPath = normalize(path, providerType);
     if (normalizedPath.isEmpty) return [];
 

@@ -121,10 +121,7 @@ class FileSystemStorageProvider extends StorageProvider
   }
 
   @override
-  StorageFileState intendedFileState(
-    StorageFileState before,
-    String? content,
-  ) {
+  StorageFileState intendedFileState(StorageFileState before, String? content) {
     if (fileStateProfile == null) {
       throw const UnsupportedOperationException('POSIX file state unavailable');
     }
@@ -809,9 +806,7 @@ class FileSystemStorageProvider extends StorageProvider
     }
   }
 
-  Future<bool> _recoverPreparedWrite(
-    _DurabilityJournalEntry prepared,
-  ) async {
+  Future<bool> _recoverPreparedWrite(_DurabilityJournalEntry prepared) async {
     if (prepared.schemaVersion == 2) {
       if (fileStateProfile != prepared.fileStateProfile ||
           prepared.fileMode == null) {
@@ -883,11 +878,7 @@ class FileSystemStorageProvider extends StorageProvider
     }
   }
 
-  bool _matchesFileState(
-    File file,
-    String checksum,
-    int mode,
-  ) {
+  bool _matchesFileState(File file, String checksum, int mode) {
     if (FileSystemEntity.typeSync(file.path, followLinks: false) !=
         FileSystemEntityType.file) {
       return false;
@@ -899,9 +890,7 @@ class FileSystemStorageProvider extends StorageProvider
         _fileChecksum(file) == checksum;
   }
 
-  Future<bool> _recoverPreparedDelete(
-    _DurabilityJournalEntry prepared,
-  ) async {
+  Future<bool> _recoverPreparedDelete(_DurabilityJournalEntry prepared) async {
     final targetFile = File(path.join(_basePath, prepared.relativePath));
     if (targetFile.existsSync()) {
       await targetFile.delete();
@@ -914,9 +903,7 @@ class FileSystemStorageProvider extends StorageProvider
   /// partial append (crash mid-`writeAsBytes`) lands between the two, so
   /// truncate-and-replay is the only idempotent answer. Missing temp copy
   /// with a fully-appended file is still a success (verify the tail).
-  Future<bool> _recoverPreparedAppend(
-    _DurabilityJournalEntry prepared,
-  ) async {
+  Future<bool> _recoverPreparedAppend(_DurabilityJournalEntry prepared) async {
     final targetFile = File(path.join(_basePath, prepared.relativePath));
     final expectedEnd = prepared.appendOffset + prepared.appendSize;
     final size = targetFile.existsSync() ? targetFile.lengthSync() : 0;
@@ -1011,9 +998,7 @@ class FileSystemStorageProvider extends StorageProvider
     }
   }
 
-  Future<void> _persistCheckpoint(
-    _DurabilityCheckpoint checkpoint,
-  ) async {
+  Future<void> _persistCheckpoint(_DurabilityCheckpoint checkpoint) async {
     _checkpointCache[checkpoint.namespace] = checkpoint;
     final checkpointFile = File(_checkpointPath(checkpoint.namespace));
     if (!checkpointFile.parent.existsSync()) {
@@ -1110,12 +1095,12 @@ class FileSystemStorageProvider extends StorageProvider
 
   static Map<String, dynamic> _emptyRecoveryReport() => <String, dynamic>{
     'schema_version': _durabilitySchemaVersion,
-    'started_at': DateTime.fromMillisecondsSinceEpoch(
-      0,
-    ).toUtc().toIso8601String(),
-    'finished_at': DateTime.fromMillisecondsSinceEpoch(
-      0,
-    ).toUtc().toIso8601String(),
+    'started_at': DateTime.fromMillisecondsSinceEpoch(0)
+        .toUtc()
+        .toIso8601String(),
+    'finished_at': DateTime.fromMillisecondsSinceEpoch(0)
+        .toUtc()
+        .toIso8601String(),
     'abnormal_termination_detected': false,
     'totals': <String, dynamic>{
       'replayed_operations': 0,
@@ -1186,9 +1171,8 @@ final class _DurabilityJournalEntry {
       );
 
       final timestampUtc =
-          DateTime.tryParse(
-            (json['timestamp_utc'] ?? '').toString(),
-          )?.toUtc() ??
+          DateTime.tryParse((json['timestamp_utc'] ?? '').toString())
+              ?.toUtc() ??
           DateTime.fromMillisecondsSinceEpoch(0).toUtc();
 
       final schema = json['schema_version'] is int
@@ -1200,9 +1184,8 @@ final class _DurabilityJournalEntry {
       if (schema == 2 &&
           (operationTypeName != operationType.name ||
               stageName != stage.name ||
-              !RegExp(
-                r'^[0-9a-f]{64}$',
-              ).hasMatch((json['checksum'] ?? '').toString()))) {
+              !RegExp(r'^[0-9a-f]{64}$')
+                  .hasMatch((json['checksum'] ?? '').toString()))) {
         return null;
       }
       if (schema == 2 &&

@@ -94,15 +94,11 @@ class _ExampleCloudKitBridge implements CloudKitBridge {
 
   @override
   Future<void> deleteRecord(String recordName) async {
-    _recordsByPath.removeWhere(
-      (_, record) => record.recordName == recordName,
-    );
+    _recordsByPath.removeWhere((_, record) => record.recordName == recordName);
   }
 
   @override
-  Future<List<CloudKitRecord>> queryByPathPrefix(
-    String pathPrefix,
-  ) async {
+  Future<List<CloudKitRecord>> queryByPathPrefix(String pathPrefix) async {
     if (pathPrefix.isEmpty) {
       return _recordsByPath.values.toList(growable: false);
     }

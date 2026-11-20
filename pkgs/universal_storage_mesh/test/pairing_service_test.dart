@@ -93,7 +93,8 @@ void main() {
           ourPeerId: 'device-b',
         ),
         throwsA(isA<PairingException>()),
-        reason: 'editing the announcement breaks the signature — the '
+        reason:
+            'editing the announcement breaks the signature — the '
             'announcement is as trustworthy as the pairing itself',
       );
     });

@@ -19,8 +19,7 @@ Future<void> _until(bool Function() probe) async {
 }
 
 void main() {
-  test('the envelope roundtrips and the classifier claims only its plane',
-      () {
+  test('the envelope roundtrips and the classifier claims only its plane', () {
     final envelope = RealtimeEnvelope(
       type: 'pointerMove',
       seq: 7,
@@ -37,12 +36,7 @@ void main() {
 
     expect(looksLikeRealtimeFrame(envelope.encode()), isTrue);
     // Foreign planes and garbage never claim the realtime plane.
-    expect(
-      looksLikeRealtimeFrame(
-        Uint8List.fromList([1, 2, 3]),
-      ),
-      isFalse,
-    );
+    expect(looksLikeRealtimeFrame(Uint8List.fromList([1, 2, 3])), isFalse);
     expect(
       looksLikeRealtimeFrame(
         Uint8List.fromList('{"type":"hello","v":2}'.codeUnits),
@@ -53,7 +47,11 @@ void main() {
 
   test('reliable sends dedupe replays on receipt', () async {
     final pair = FakeMeshPair.paired();
-    final link = RealtimeLink(session: await pair.a.connect(const MeshPeerRecord(peerId: 'device-b', displayName: 'b')));
+    final link = RealtimeLink(
+      session: await pair.a.connect(
+        const MeshPeerRecord(peerId: 'device-b', displayName: 'b'),
+      ),
+    );
     final events = <String>[];
     link.inbound.listen((e) => events.add('${e.type}#${e.envelope.seq}'));
 
@@ -80,137 +78,150 @@ void main() {
     await other.close();
   });
 
-  test('droppable sends coalesce: newest wins while one is in flight',
-      () async {
-    final releaseGates = <Completer<void>>[];
-    final sentFrames = <Uint8List>[];
-    final slowSession = _GatedSession(releaseGates, sentFrames);
-    final link = RealtimeLink(session: slowSession);
+  test(
+    'droppable sends coalesce: newest wins while one is in flight',
+    () async {
+      final releaseGates = <Completer<void>>[];
+      final sentFrames = <Uint8List>[];
+      final slowSession = _GatedSession(releaseGates, sentFrames);
+      final link = RealtimeLink(session: slowSession);
 
-    final first = link.sendDroppable('pointerMove', {'n': 1});
-    // The first send parks on gate 1; these two must coalesce into ONE
-    // pending frame without blocking the caller.
-    unawaited(link.sendDroppable('pointerMove', {'n': 2}));
-    final third = link.sendDroppable('pointerMove', {'n': 3});
-    await pumpEventQueue();
-    expect(sentFrames, hasLength(0), reason: 'the gate holds the send');
-    expect(releaseGates, hasLength(1), reason: 'exactly one send in flight');
+      final first = link.sendDroppable('pointerMove', {'n': 1});
+      // The first send parks on gate 1; these two must coalesce into ONE
+      // pending frame without blocking the caller.
+      unawaited(link.sendDroppable('pointerMove', {'n': 2}));
+      final third = link.sendDroppable('pointerMove', {'n': 3});
+      await pumpEventQueue();
+      expect(sentFrames, hasLength(0), reason: 'the gate holds the send');
+      expect(releaseGates, hasLength(1), reason: 'exactly one send in flight');
 
-    releaseGates.removeAt(0).complete();
-    await _until(() => sentFrames.isNotEmpty);
-    expect(
-      RealtimeEnvelope.tryDecode(sentFrames.first)!.payload['n'],
-      1,
-      reason: 'the in-flight frame goes first',
-    );
-    await pumpEventQueue();
-    expect(releaseGates, hasLength(1), reason: 'the coalesced newest is in '
-        'flight');
+      releaseGates.removeAt(0).complete();
+      await _until(() => sentFrames.isNotEmpty);
+      expect(
+        RealtimeEnvelope.tryDecode(sentFrames.first)!.payload['n'],
+        1,
+        reason: 'the in-flight frame goes first',
+      );
+      await pumpEventQueue();
+      expect(
+        releaseGates,
+        hasLength(1),
+        reason:
+            'the coalesced newest is in '
+            'flight',
+      );
 
-    releaseGates.removeAt(0).complete();
-    await Future.wait([first, third]);
-    expect(sentFrames, hasLength(2));
-    expect(
-      RealtimeEnvelope.tryDecode(sentFrames.last)!.payload['n'],
-      3,
-      reason: '2 and 3 coalesced into the newest',
-    );
-    await link.close();
-  });
+      releaseGates.removeAt(0).complete();
+      await Future.wait([first, third]);
+      expect(sentFrames, hasLength(2));
+      expect(
+        RealtimeEnvelope.tryDecode(sentFrames.last)!.payload['n'],
+        3,
+        reason: '2 and 3 coalesced into the newest',
+      );
+      await link.close();
+    },
+  );
 
-  test('heartbeats are auto-acked, never surfaced, and stale links die',
-      () async {
-    final pair = FakeMeshPair.paired();
-    var stale = false;
-    final link = RealtimeLink(
-      session: await pair.a.connect(const MeshPeerRecord(peerId: 'device-b', displayName: 'b')),
-      heartbeatInterval: const Duration(milliseconds: 15),
-      staleAfter: const Duration(milliseconds: 40),
-      onStale: (reason) => stale = true,
-    );
-    final appEvents = <String>[];
-    link.inbound.listen((e) => appEvents.add(e.type));
+  test(
+    'heartbeats are auto-acked, never surfaced, and stale links die',
+    () async {
+      final pair = FakeMeshPair.paired();
+      var stale = false;
+      final link = RealtimeLink(
+        session: await pair.a.connect(
+          const MeshPeerRecord(peerId: 'device-b', displayName: 'b'),
+        ),
+        heartbeatInterval: const Duration(milliseconds: 15),
+        staleAfter: const Duration(milliseconds: 40),
+        onStale: (reason) => stale = true,
+      );
+      final appEvents = <String>[];
+      link.inbound.listen((e) => appEvents.add(e.type));
 
-    final other = RealtimeLink(
-      session: await pair.b.incoming.first,
-      heartbeatInterval: const Duration(milliseconds: 15),
-      staleAfter: const Duration(milliseconds: 40),
-    );
-    final otherApp = <String>[];
-    other.inbound.listen((e) => otherApp.add(e.type));
+      final other = RealtimeLink(
+        session: await pair.b.incoming.first,
+        heartbeatInterval: const Duration(milliseconds: 15),
+        staleAfter: const Duration(milliseconds: 40),
+      );
+      final otherApp = <String>[];
+      other.inbound.listen((e) => otherApp.add(e.type));
 
-    // Heartbeats flow; NEITHER side surfaces them as app events.
-    await Future<void>.delayed(const Duration(milliseconds: 60));
-    expect(appEvents, isEmpty);
-    expect(otherApp, isEmpty);
-    expect(stale, isFalse, reason: 'peers keep each other alive');
+      // Heartbeats flow; NEITHER side surfaces them as app events.
+      await Future<void>.delayed(const Duration(milliseconds: 60));
+      expect(appEvents, isEmpty);
+      expect(otherApp, isEmpty);
+      expect(stale, isFalse, reason: 'peers keep each other alive');
 
-    // Silence the peer: the link dies and reports the reason.
-    await other.close();
-    await Future<void>.delayed(const Duration(milliseconds: 80));
-    expect(stale, isTrue);
-    await link.close();
-  });
+      // Silence the peer: the link dies and reports the reason.
+      await other.close();
+      await Future<void>.delayed(const Duration(milliseconds: 80));
+      expect(stale, isTrue);
+      await link.close();
+    },
+  );
 
-  test('tick-driven links own no timers; tick() heartbeats and stale-dies',
-      () async {
-    var now = DateTime.utc(2026, 9, 27, 12);
-    final session = _RecordingSession();
-    final sent = session.sent;
-    var died = '';
-    final link = RealtimeLink(
-      session: session,
-      heartbeatInterval: const Duration(seconds: 1),
-      staleAfter: const Duration(seconds: 3),
-      clock: () => now,
-      tickDriven: true,
-      onStale: (reason) => died = reason,
-    );
+  test(
+    'tick-driven links own no timers; tick() heartbeats and stale-dies',
+    () async {
+      var now = DateTime.utc(2026, 9, 27, 12);
+      final session = _RecordingSession();
+      final sent = session.sent;
+      var died = '';
+      final link = RealtimeLink(
+        session: session,
+        heartbeatInterval: const Duration(seconds: 1),
+        staleAfter: const Duration(seconds: 3),
+        clock: () => now,
+        tickDriven: true,
+        onStale: (reason) => died = reason,
+      );
 
-    // Real time passing decides NOTHING: no heartbeat, no death.
-    await Future<void>.delayed(const Duration(milliseconds: 30));
-    expect(sent, isEmpty);
-    expect(died, isEmpty);
+      // Real time passing decides NOTHING: no heartbeat, no death.
+      await Future<void>.delayed(const Duration(milliseconds: 30));
+      expect(sent, isEmpty);
+      expect(died, isEmpty);
 
-    // A tick before the heartbeat is due sends nothing.
-    now = now.add(const Duration(milliseconds: 500));
-    await link.tick();
-    expect(sent, isEmpty);
+      // A tick before the heartbeat is due sends nothing.
+      now = now.add(const Duration(milliseconds: 500));
+      await link.tick();
+      expect(sent, isEmpty);
 
-    // A tick past the interval sends exactly one heartbeat.
-    now = now.add(const Duration(seconds: 1));
-    await link.tick();
-    expect(sent, hasLength(1));
-    expect(
-      RealtimeEnvelope.tryDecode(sent.single)!.type,
-      RealtimeTypes.heartbeat,
-    );
-    await link.tick();
-    expect(sent, hasLength(1), reason: 'not due again');
+      // A tick past the interval sends exactly one heartbeat.
+      now = now.add(const Duration(seconds: 1));
+      await link.tick();
+      expect(sent, hasLength(1));
+      expect(
+        RealtimeEnvelope.tryDecode(sent.single)!.type,
+        RealtimeTypes.heartbeat,
+      );
+      await link.tick();
+      expect(sent, hasLength(1), reason: 'not due again');
 
-    // An inbound frame refreshes liveness (the tick heartbeat above does
-    // NOT come back — the fake session is unlinked).
-    now = now.add(const Duration(seconds: 2));
-    session.receive(
-      RealtimeEnvelope(
-        type: 'app',
-        seq: 1,
-        reliable: true,
-        issuedAtMs: 0,
-      ).encode(),
-    );
-    await pumpEventQueue();
-    expect(died, isEmpty);
+      // An inbound frame refreshes liveness (the tick heartbeat above does
+      // NOT come back — the fake session is unlinked).
+      now = now.add(const Duration(seconds: 2));
+      session.receive(
+        RealtimeEnvelope(
+          type: 'app',
+          seq: 1,
+          reliable: true,
+          issuedAtMs: 0,
+        ).encode(),
+      );
+      await pumpEventQueue();
+      expect(died, isEmpty);
 
-    // Silence past the stale window dies on the next tick — and only
-    // there.
-    now = now.add(const Duration(seconds: 4));
-    await Future<void>.delayed(const Duration(milliseconds: 20));
-    expect(died, isEmpty, reason: 'no internal timer decides');
-    await link.tick();
-    expect(died, 'peer stale');
-    expect(sent, hasLength(1), reason: 'a dead link sends nothing more');
-  });
+      // Silence past the stale window dies on the next tick — and only
+      // there.
+      now = now.add(const Duration(seconds: 4));
+      await Future<void>.delayed(const Duration(milliseconds: 20));
+      expect(died, isEmpty, reason: 'no internal timer decides');
+      await link.tick();
+      expect(died, 'peer stale');
+      expect(sent, hasLength(1), reason: 'a dead link sends nothing more');
+    },
+  );
 }
 
 /// A session whose sends complete immediately and are recorded — the

@@ -112,12 +112,8 @@ Future<void> main() async {
 }
 
 SessionCipher _cipherPair() {
-  final send = Uint8List.fromList(
-    List.generate(32, (i) => (i + 3) & 0xff),
-  );
-  final receive = Uint8List.fromList(
-    List.generate(32, (i) => (i + 11) & 0xff),
-  );
+  final send = Uint8List.fromList(List.generate(32, (i) => (i + 3) & 0xff));
+  final receive = Uint8List.fromList(List.generate(32, (i) => (i + 11) & 0xff));
   return SessionCipher(
     sendKey: SecretKeyData(send),
     receiveKey: SecretKeyData(receive),
@@ -130,11 +126,7 @@ Future<(SimpleKeyPair, Uint8List, String)> _identity(String id) async {
   return (keyPair, Uint8List.fromList(publicKey.bytes), id);
 }
 
-void _line(
-  String label,
-  double value, {
-  required String unit,
-}) {
+void _line(String label, double value, {required String unit}) {
   // ignore: avoid_print
   print('${label.padRight(64)} ${value.toStringAsFixed(2)} $unit');
 }

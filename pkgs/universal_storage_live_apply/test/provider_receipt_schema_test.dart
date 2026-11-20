@@ -136,10 +136,8 @@ void main() {
       throwsFormatException,
     );
     expect(
-      LiveApplyProviderReceipt.fromMap({
-        ...wire,
-        'namespace': 'é' * 128,
-      }).namespace,
+      LiveApplyProviderReceipt.fromMap({...wire, 'namespace': 'é' * 128})
+          .namespace,
       'é' * 128,
     );
   });
@@ -174,9 +172,11 @@ void main() {
       List.filled(LiveApplyProviderReceipt.maxReceipts, one),
     );
     expect(
-      LiveApplyJournal.fromMap(
-        value.toMap(),
-      ).entries.single.providerReceipts.length,
+      LiveApplyJournal.fromMap(value.toMap())
+          .entries
+          .single
+          .providerReceipts
+          .length,
       1024,
     );
     value.entries.single.providerReceipts.add(one);

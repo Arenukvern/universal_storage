@@ -55,10 +55,8 @@ class DefaultDeviceFlowDelegate implements OAuthFlowDelegate {
               Center(
                 child: SelectableText(
                   userCode,
-                  style: Theme.of(dialogContext).textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 2,
-                  ),
+                  style: Theme.of(dialogContext).textTheme.headlineMedium
+                      ?.copyWith(fontWeight: FontWeight.bold, letterSpacing: 2),
                 ),
               ),
               const SizedBox(height: 12),
@@ -99,9 +97,8 @@ class DefaultDeviceFlowDelegate implements OAuthFlowDelegate {
     required List<String> scopes,
   }) async {
     if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('GitHub connected.')),
-    );
+    ScaffoldMessenger.of(context)
+        .showSnackBar(const SnackBar(content: Text('GitHub connected.')));
   }
 
   @override

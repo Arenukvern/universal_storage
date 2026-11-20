@@ -7,8 +7,7 @@ import 'dart:io';
 /// https://developer.apple.com/documentation/security/app-sandbox#//apple_ref/doc/uid/TP40011183-CH3-SW16
 extension type const MacOSBookmark(String value) {
   /// Creates a [MacOSBookmark] from a Base64 encoded string.
-  factory MacOSBookmark.fromBase64(String base64) =>
-      MacOSBookmark(base64);
+  factory MacOSBookmark.fromBase64(String base64) => MacOSBookmark(base64);
 
   /// Creates a [MacOSBookmark] from a [Directory] path.
   factory MacOSBookmark.fromDirectory(Directory directory) =>

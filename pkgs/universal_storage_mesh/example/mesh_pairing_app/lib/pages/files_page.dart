@@ -107,10 +107,7 @@ class FilesPage extends StatelessWidget {
     );
   }
 
-  Future<void> _showFile(
-    BuildContext context,
-    FileEntry file,
-  ) async {
+  Future<void> _showFile(BuildContext context, FileEntry file) async {
     final content = await state.readFile(file);
     if (!context.mounted) return;
     await showDialog<void>(

@@ -124,10 +124,7 @@ final class SyncQueuePolicy {
     'max_entry_age_ms': maxEntryAgeMs,
   };
 
-  static int _parsePositiveInt(
-    Object? raw, {
-    required int fallback,
-  }) {
+  static int _parsePositiveInt(Object? raw, {required int fallback}) {
     if (raw is int) {
       return raw > 0 ? raw : fallback;
     }
@@ -357,16 +354,13 @@ final class StorageProfile {
     this.metadata = const <String, dynamic>{},
   }) : assert(name != '');
 
-  factory StorageProfile.fromJson(
-    Map<String, dynamic> json,
-  ) => StorageProfile(
+  factory StorageProfile.fromJson(Map<String, dynamic> json) => StorageProfile(
     name: (json['name'] ?? '').toString(),
     version: json['version'] is int ? json['version'] as int : 1,
     namespaces: (json['namespaces'] as List<dynamic>? ?? const [])
         .whereType<Map<dynamic, dynamic>>()
         .map(
-          (e) =>
-              StorageNamespaceProfile.fromJson(Map<String, dynamic>.from(e)),
+          (e) => StorageNamespaceProfile.fromJson(Map<String, dynamic>.from(e)),
         )
         .toList(),
     metadata: json['metadata'] is Map

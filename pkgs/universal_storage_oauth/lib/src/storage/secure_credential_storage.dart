@@ -27,8 +27,7 @@ class SecureCredentialStorage implements CredentialStorage {
   final FlutterSecureStorage _storage;
 
   /// Get the key for the credentials.
-  String _getKey(GitPlatform platform) =>
-      'oauth_credentials_${platform.name}';
+  String _getKey(GitPlatform platform) => 'oauth_credentials_${platform.name}';
 
   @override
   Future<void> storeCredentials(

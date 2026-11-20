@@ -177,8 +177,7 @@ final class _KernelMigrationEndpointFake implements MigrationEndpoint {
     bool pauseForDecisions = false,
     Map<String, MigrationDecisionAction> decisionActions =
         const <String, MigrationDecisionAction>{},
-    Map<String, DecisionState> decisionStates =
-        const <String, DecisionState>{},
+    Map<String, DecisionState> decisionStates = const <String, DecisionState>{},
   }) async {
     executeWithOptionsCalls++;
     lastPlan = plan;
@@ -855,9 +854,7 @@ void main() {
       );
       expect(outbox, isEmpty);
       expect(
-        deadLetter.any(
-          (entry) => entry.id == conflicts.single.outboxEntryId,
-        ),
+        deadLetter.any((entry) => entry.id == conflicts.single.outboxEntryId),
         isTrue,
       );
       expect(remainingConflicts, isEmpty);

@@ -8,11 +8,10 @@ import 'package:meta/meta.dart';
 final class VersionControlCapabilities {
   const VersionControlCapabilities({this.supportsCloneToLocal = false});
 
-  factory VersionControlCapabilities.fromJson(
-    Map<String, dynamic> json,
-  ) => VersionControlCapabilities(
-    supportsCloneToLocal: json['supports_clone_to_local'] == true,
-  );
+  factory VersionControlCapabilities.fromJson(Map<String, dynamic> json) =>
+      VersionControlCapabilities(
+        supportsCloneToLocal: json['supports_clone_to_local'] == true,
+      );
 
   static const none = VersionControlCapabilities();
 
@@ -37,18 +36,17 @@ class VcRepository {
     this.webUrl = '',
   });
 
-  factory VcRepository.fromJson(Map<String, dynamic> json) =>
-      VcRepository(
-        id: (json['id'] ?? '').toString(),
-        name: json['name'] as String? ?? '',
-        description: json['description'] as String? ?? '',
-        cloneUrl: json['clone_url'] as String? ?? '',
-        defaultBranch: json['default_branch'] as String? ?? '',
-        isPrivate: json['is_private'] as bool? ?? false,
-        owner: json['owner'] as String? ?? '',
-        fullName: json['full_name'] as String? ?? '',
-        webUrl: json['web_url'] as String? ?? '',
-      );
+  factory VcRepository.fromJson(Map<String, dynamic> json) => VcRepository(
+    id: (json['id'] ?? '').toString(),
+    name: json['name'] as String? ?? '',
+    description: json['description'] as String? ?? '',
+    cloneUrl: json['clone_url'] as String? ?? '',
+    defaultBranch: json['default_branch'] as String? ?? '',
+    isPrivate: json['is_private'] as bool? ?? false,
+    owner: json['owner'] as String? ?? '',
+    fullName: json['full_name'] as String? ?? '',
+    webUrl: json['web_url'] as String? ?? '',
+  );
 
   final String id;
   final String name;

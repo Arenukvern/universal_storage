@@ -74,15 +74,12 @@ class _FakeClient implements CloudKitWebClient {
 
   @override
   Future<void> deleteRecord(String recordName) async {
-    _records.removeWhere(
-      (_, value) => value.recordName == recordName,
-    );
+    _records.removeWhere((_, value) => value.recordName == recordName);
   }
 
   @override
-  Future<List<CloudKitRecord>> queryByPathPrefix(
-    String pathPrefix,
-  ) async => _records.values.toList(growable: false);
+  Future<List<CloudKitRecord>> queryByPathPrefix(String pathPrefix) async =>
+      _records.values.toList(growable: false);
 
   @override
   Future<CloudKitDelta> fetchChanges({String? serverChangeToken}) async =>

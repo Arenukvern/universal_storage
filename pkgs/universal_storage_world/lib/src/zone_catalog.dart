@@ -31,15 +31,14 @@ final class ZoneMemberEntry {
     if (meta.isNotEmpty) 'meta': meta,
   };
 
-  static ZoneMemberEntry fromJson(Map<String, Object?> json) =>
-      ZoneMemberEntry(
-        docId: json['docId']! as String,
-        title: json['title'] as String?,
-        kind: json['kind'] as String?,
-        meta: Map<String, Object?>.from(
-          json['meta'] as Map<dynamic, dynamic>? ?? const {},
-        ),
-      );
+  static ZoneMemberEntry fromJson(Map<String, Object?> json) => ZoneMemberEntry(
+    docId: json['docId']! as String,
+    title: json['title'] as String?,
+    kind: json['kind'] as String?,
+    meta: Map<String, Object?>.from(
+      json['meta'] as Map<dynamic, dynamic>? ?? const {},
+    ),
+  );
 
   @override
   bool operator ==(Object other) =>
@@ -58,7 +57,11 @@ final class ZoneMemberEntry {
 /// enumerate; ADR 0047 §2). Subscribing to a zone's catalog first, then
 /// warming its members, is the whole border-crossing choreography.
 final class ZoneCatalog {
-  const ZoneCatalog({required this.zoneId, this.title, this.entries = const []});
+  const ZoneCatalog({
+    required this.zoneId,
+    this.title,
+    this.entries = const [],
+  });
 
   /// Stable id of the zone this census describes.
   final String zoneId;
@@ -70,8 +73,7 @@ final class ZoneCatalog {
   final List<ZoneMemberEntry> entries;
 
   /// The member docIds in this census — a warm-up plan's raw material.
-  Set<String> memberDocIds() =>
-      entries.map((entry) => entry.docId).toSet();
+  Set<String> memberDocIds() => entries.map((entry) => entry.docId).toSet();
 
   Map<String, Object?> toJson() => {
     'zoneId': zoneId,
@@ -89,8 +91,7 @@ final class ZoneCatalog {
   );
 
   @override
-  String toString() =>
-      'ZoneCatalog($zoneId, ${entries.length} members)';
+  String toString() => 'ZoneCatalog($zoneId, ${entries.length} members)';
 }
 
 /// Encodes/decodes a [ZoneCatalog] as one kernel register value.

@@ -25,10 +25,7 @@ void main() {
       expect(codec.readValue(d), 'hello');
       // The op shape is exactly the ADR 0010 wire register — wire-format
       // preservation is the whole point of this codec.
-      expect(
-        LwwMapStrategy.readValue(d.state, 'content'),
-        'hello',
-      );
+      expect(LwwMapStrategy.readValue(d.state, 'content'), 'hello');
     });
 
     test('delete tombstones without losing the written flag', () {

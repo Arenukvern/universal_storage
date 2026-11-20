@@ -29,9 +29,7 @@ class MacOSBookmarkManager {
   }
 
   /// Resolves a security-scoped bookmark and starts access to the resource.
-  Future<FileSystemEntity?> resolveBookmark(
-    MacOSBookmark bookmark,
-  ) async {
+  Future<FileSystemEntity?> resolveBookmark(MacOSBookmark bookmark) async {
     try {
       final resolvedEntity = await _secureBookmarks.resolveBookmark(
         bookmark.value,

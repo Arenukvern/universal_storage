@@ -118,9 +118,7 @@ class CloudKitJsInteropClient implements CloudKitWebClient {
   }
 
   @override
-  Future<List<CloudKitRecord>> queryByPathPrefix(
-    String pathPrefix,
-  ) async {
+  Future<List<CloudKitRecord>> queryByPathPrefix(String pathPrefix) async {
     _ensureInitialized();
     if (_mode == _CloudKitClientMode.adapter) {
       final response = await _invokeAdapter(
@@ -132,9 +130,7 @@ class CloudKitJsInteropClient implements CloudKitWebClient {
       }
       return response
           .whereType<Map>()
-          .map(
-            (item) => _toCloudKitRecord(Map<String, Object?>.from(item)),
-          )
+          .map((item) => _toCloudKitRecord(Map<String, Object?>.from(item)))
           .toList(growable: false);
     }
 
@@ -225,29 +221,24 @@ class CloudKitJsInteropClient implements CloudKitWebClient {
 
     JSObject? container;
     if (_hasMethod(cloudKit, 'getDefaultContainer')) {
-      container =
-          await _invokeTarget(
-                cloudKit,
-                'getDefaultContainer',
-                dartifyResult: false,
-              )
-              as JSObject?;
+      container = await _invokeTarget(
+        cloudKit,
+        'getDefaultContainer',
+        dartifyResult: false,
+      ) as JSObject?;
     } else if (_hasMethod(cloudKit, 'getContainer')) {
-      container =
-          await _invokeTarget(
-                cloudKit,
-                'getContainer',
-                args: config.containerId,
-                dartifyResult: false,
-              )
-              as JSObject?;
+      container = await _invokeTarget(
+        cloudKit,
+        'getContainer',
+        args: config.containerId,
+        dartifyResult: false,
+      ) as JSObject?;
     }
 
     if (container == null) {
       throw const CloudKitBridgeException(
         code: CloudKitBridgeErrorCode.unsupported,
-        message:
-            'CloudKit container APIs are unavailable (expected getDefaultContainer/getContainer).',
+        message: 'CloudKit container APIs are unavailable (expected getDefaultContainer/getContainer).',
         details: <String, Object?>{'action': 'load_full_cloudkit_js_sdk'},
       );
     }
@@ -264,14 +255,12 @@ class CloudKitJsInteropClient implements CloudKitWebClient {
         database = databaseValue as JSObject?;
       }
     } else if (_hasMethod(container, 'getDatabaseWithDatabaseScope')) {
-      database =
-          await _invokeTarget(
-                container,
-                'getDatabaseWithDatabaseScope',
-                args: 'private',
-                dartifyResult: false,
-              )
-              as JSObject?;
+      database = await _invokeTarget(
+        container,
+        'getDatabaseWithDatabaseScope',
+        args: 'private',
+        dartifyResult: false,
+      ) as JSObject?;
     }
 
     if (database == null) {
@@ -486,9 +475,7 @@ class CloudKitJsInteropClient implements CloudKitWebClient {
         },
       };
 
-  Map<String, Object?> _nativeConfigurePayload(
-    CloudKitBridgeConfig config,
-  ) {
+  Map<String, Object?> _nativeConfigurePayload(CloudKitBridgeConfig config) {
     final environment = config.environment.name;
     return <String, Object?>{
       'containerIdentifier': config.containerId,
@@ -550,8 +537,7 @@ class CloudKitJsInteropClient implements CloudKitWebClient {
   bool _hasDatabaseMethod(String method) =>
       _database != null && _hasMethod(_database!, method);
 
-  bool _hasMethod(JSObject target, String method) =>
-      target.has(method);
+  bool _hasMethod(JSObject target, String method) => target.has(method);
 
   JSObject _resolveCloudKitGlobal() {
     if (!hasCloudKitGlobal) {
@@ -571,10 +557,7 @@ class CloudKitJsInteropClient implements CloudKitWebClient {
     return global as JSObject;
   }
 
-  Future<Object?> _invokeAdapter(
-    String method, [
-    Object? args,
-  ]) async {
+  Future<Object?> _invokeAdapter(String method, [Object? args]) async {
     final cloudKit = _cloudKit;
     if (cloudKit == null) {
       throw const CloudKitBridgeException(
@@ -585,10 +568,7 @@ class CloudKitJsInteropClient implements CloudKitWebClient {
     return _invokeTarget(cloudKit, method, args: args);
   }
 
-  Future<Object?> _invokeNativeDatabase(
-    String method, [
-    Object? args,
-  ]) async {
+  Future<Object?> _invokeNativeDatabase(String method, [Object? args]) async {
     final database = _database;
     if (database == null) {
       throw const CloudKitBridgeException(
@@ -639,11 +619,7 @@ class CloudKitJsInteropClient implements CloudKitWebClient {
     return dartifyResult ? _normalizeResult(result) : result;
   }
 
-  JSAny? _callJsMethod(
-    JSObject target,
-    String method,
-    Object? args,
-  ) {
+  JSAny? _callJsMethod(JSObject target, String method, Object? args) {
     try {
       return args == null
           ? target.callMethodVarArgs<JSAny?>(method.toJS)

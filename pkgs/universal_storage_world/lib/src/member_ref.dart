@@ -16,13 +16,12 @@ final class WorldMemberRef {
 
   Map<String, Object?> toJson() => {'docId': docId, 'vv': version.toJson()};
 
-  static WorldMemberRef fromJson(Map<String, Object?> json) =>
-      WorldMemberRef(
-        docId: json['docId']! as String,
-        version: VersionVector.fromJson(
-          Map<String, dynamic>.from(json['vv']! as Map<dynamic, dynamic>),
-        ),
-      );
+  static WorldMemberRef fromJson(Map<String, Object?> json) => WorldMemberRef(
+    docId: json['docId']! as String,
+    version: VersionVector.fromJson(
+      Map<String, dynamic>.from(json['vv']! as Map<dynamic, dynamic>),
+    ),
+  );
 
   @override
   bool operator ==(Object other) =>

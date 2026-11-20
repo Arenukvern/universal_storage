@@ -23,10 +23,8 @@ final class PathUrnResolver implements UrnResolver {
   final String defaultWorldId;
 
   @override
-  WorldUrn urnForDoc(String docId, {String? worldId}) => WorldUrn(
-    worldId: worldId ?? defaultWorldId,
-    memberPath: docId,
-  );
+  WorldUrn urnForDoc(String docId, {String? worldId}) =>
+      WorldUrn(worldId: worldId ?? defaultWorldId, memberPath: docId);
 
   @override
   String? docIdForUrn(WorldUrn urn) => urn.memberPath;

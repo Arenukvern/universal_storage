@@ -38,8 +38,7 @@ String normalizeContent(String input) {
 }
 
 /// Compute normalized SHA-256 (hex) for string content.
-String normalizedSha256Hex(String input) =>
-    sha256Hex(normalizeContent(input));
+String normalizedSha256Hex(String input) => sha256Hex(normalizeContent(input));
 
 /// Read a file via [storage] and return normalized SHA-256 hex.
 /// Returns empty string if file doesn't exist.

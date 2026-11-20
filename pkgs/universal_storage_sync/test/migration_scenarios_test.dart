@@ -491,10 +491,8 @@ class _SharedInMemoryLocalDb implements LocalDbI {
   }) async => _bools[key] ?? defaultValue;
 
   @override
-  Future<int> getInt({
-    required String key,
-    int defaultValue = 0,
-  }) async => _ints[key] ?? defaultValue;
+  Future<int> getInt({required String key, int defaultValue = 0}) async =>
+      _ints[key] ?? defaultValue;
 
   @override
   Future<Map<String, dynamic>> getMap(String key) async =>
@@ -544,10 +542,7 @@ class _SharedInMemoryLocalDb implements LocalDbI {
   }
 
   @override
-  Future<void> setBool({
-    required String key,
-    required bool value,
-  }) async {
+  Future<void> setBool({required String key, required bool value}) async {
     _bools[key] = value;
   }
 
@@ -579,10 +574,7 @@ class _SharedInMemoryLocalDb implements LocalDbI {
   }
 
   @override
-  Future<void> setString({
-    required String key,
-    required String value,
-  }) async {
+  Future<void> setString({required String key, required String value}) async {
     _strings[key] = value;
   }
 

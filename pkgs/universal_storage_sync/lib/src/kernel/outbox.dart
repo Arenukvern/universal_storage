@@ -10,10 +10,7 @@ import 'observation_hub.dart';
 
 /// Enqueues durable, deduplicated outbox entries for local operations.
 final class OutboxManager {
-  OutboxManager({
-    required this._queueStore,
-    required this._observations,
-  });
+  OutboxManager({required this._queueStore, required this._observations});
 
   final SyncQueueStore _queueStore;
   final ObservationHub _observations;

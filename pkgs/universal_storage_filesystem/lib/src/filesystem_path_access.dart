@@ -32,10 +32,12 @@ final class DefaultFileSystemPathAccess implements FileSystemPathAccess {
   Future<void> releaseDirectory(FilePathConfig config) async {}
 }
 
-typedef ResolveDirectoryForConfig =
-    Future<Directory?> Function(FilePathConfig config);
-typedef ReleaseDirectoryForConfig =
-    Future<void> Function(FilePathConfig config);
+typedef ResolveDirectoryForConfig = Future<Directory?> Function(
+  FilePathConfig config,
+);
+typedef ReleaseDirectoryForConfig = Future<void> Function(
+  FilePathConfig config,
+);
 
 /// Callback-based [FileSystemPathAccess] helper for local overrides.
 final class CallbackFileSystemPathAccess implements FileSystemPathAccess {

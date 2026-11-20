@@ -172,9 +172,8 @@ final class ConvergenceDoc {
   /// how many were dropped. Expiry is commutative and idempotent: any
   /// replica applying the same (expired) op set converges identically.
   int sweepEphemeral(DateTime now) {
-    final live =
-        _ephemeralLog.where((op) => !op.isExpiredAt(now)).toList()
-          ..sort((a, b) => a.hlc.compareTo(b.hlc));
+    final live = _ephemeralLog.where((op) => !op.isExpiredAt(now)).toList()
+      ..sort((a, b) => a.hlc.compareTo(b.hlc));
     final dropped = _ephemeralLog.length - live.length;
     if (dropped == 0) return 0;
     _ephemeralState = strategy.initialState();
@@ -288,8 +287,7 @@ final class ConvergenceDoc {
     }
     if (durable.isNotEmpty) {
       applied += durable.length;
-      _log = [..._log, ...durable]
-        ..sort((a, b) => a.hlc.compareTo(b.hlc));
+      _log = [..._log, ...durable]..sort((a, b) => a.hlc.compareTo(b.hlc));
     }
     return applied;
   }

@@ -131,11 +131,10 @@ class TodoListPage extends StatelessWidget {
       ],
     ),
     floatingActionButton: Consumer<AppState>(
-      builder: (context, appState, child) =>
-          FloatingActionButton(
-            onPressed: appState.busy ? null : () => _showAddTodoDialog(context),
-            child: const Icon(Icons.add),
-          ),
+      builder: (context, appState, child) => FloatingActionButton(
+        onPressed: appState.busy ? null : () => _showAddTodoDialog(context),
+        child: const Icon(Icons.add),
+      ),
     ),
   );
 
@@ -144,9 +143,7 @@ class TodoListPage extends StatelessWidget {
     builder: (context) => const TodoEditorDialog(),
   );
 
-  void _showChangeWorkspaceDialog(
-    BuildContext context,
-  ) => showDialog<void>(
+  void _showChangeWorkspaceDialog(BuildContext context) => showDialog<void>(
     context: context,
     builder: (context) => AlertDialog(
       title: const Text('Change Workspace'),

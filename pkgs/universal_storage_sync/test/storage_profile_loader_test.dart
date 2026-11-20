@@ -48,17 +48,17 @@ class _LoaderFakeStorageProvider extends StorageProvider {
   }
 
   @override
-  Future<List<FileEntry>> listDirectory(String directoryPath) async =>
-      files.keys
-          .map(
-            (path) => FileEntry(
-              name: path,
-              isDirectory: false,
-              size: files[path]!.length,
-              modifiedAt: DateTime.now(),
-            ),
-          )
-          .toList(growable: false);
+  Future<List<FileEntry>> listDirectory(String directoryPath) async => files
+      .keys
+      .map(
+        (path) => FileEntry(
+          name: path,
+          isDirectory: false,
+          size: files[path]!.length,
+          modifiedAt: DateTime.now(),
+        ),
+      )
+      .toList(growable: false);
 
   @override
   Future<void> restore(String path, {String? versionId}) async {}
@@ -159,10 +159,8 @@ void main() {
       );
 
       await expectLater(
-        () => loader.load(
-          profile: profile,
-          serviceFactory: (_) async => service,
-        ),
+        () =>
+            loader.load(profile: profile, serviceFactory: (_) async => service),
         throwsA(isA<ConfigurationException>()),
       );
     });

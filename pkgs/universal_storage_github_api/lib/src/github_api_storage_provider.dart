@@ -534,10 +534,7 @@ class GitHubApiStorageProvider extends StorageProvider
   }
 
   @override
-  Future<void> cloneRepository(
-    VcRepository repository,
-    String localPath,
-  ) {
+  Future<void> cloneRepository(VcRepository repository, String localPath) {
     _ensureInitialized();
 
     final resolvedOwner = repository.owner.isNotEmpty
@@ -606,9 +603,7 @@ class GitHubApiStorageProvider extends StorageProvider
     _isInitialized = false;
   }
 
-  _RepositoryReference _parseRepositoryReference(
-    String repositoryReference,
-  ) {
+  _RepositoryReference _parseRepositoryReference(String repositoryReference) {
     final normalized = repositoryReference.trim();
     if (normalized.isEmpty) {
       throw ArgumentError('repositoryId cannot be empty');

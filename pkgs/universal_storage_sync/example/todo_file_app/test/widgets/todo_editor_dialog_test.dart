@@ -25,9 +25,7 @@ void main() {
       expect(find.text('Edit Todo'), findsOneWidget);
     });
 
-    testWidgets('populates fields when editing existing todo', (
-      tester,
-    ) async {
+    testWidgets('populates fields when editing existing todo', (tester) async {
       final todo = Todo.create(
         id: const TodoId('test-id'),
         title: 'Test Todo',
@@ -94,9 +92,7 @@ void main() {
       expect(find.text('Create'), findsNothing);
     });
 
-    testWidgets('shows Create button when creating new todo', (
-      tester,
-    ) async {
+    testWidgets('shows Create button when creating new todo', (tester) async {
       await tester.pumpWidget(
         createTestWidget(child: const TodoEditorDialog()),
       );

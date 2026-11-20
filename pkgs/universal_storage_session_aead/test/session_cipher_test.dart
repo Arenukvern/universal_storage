@@ -53,8 +53,7 @@ void main() {
     final payload = Uint8List.fromList(utf8.encode('a very secret frame'));
 
     Uint8List flipped(Uint8List record, int index) =>
-        Uint8List.fromList(record)
-          ..[index] = record[index] ^ 0x01;
+        Uint8List.fromList(record)..[index] = record[index] ^ 0x01;
 
     final sealed = initiator.seal(payload);
     const ciphertextIndex = SessionAeadProtocol.headerLength + 2;

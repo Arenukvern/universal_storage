@@ -26,8 +26,7 @@ void main() {
     expect(routed, contains(('mac-controller', 'm1')));
   });
 
-  test('re-open replaces only that peer; send/close semantics hold',
-      () async {
+  test('re-open replaces only that peer; send/close semantics hold', () async {
     final hub = FakeMeshHub();
     final first = hub.openSession('phone');
     hub.openSession('phone'); // reconnect under the same peer id

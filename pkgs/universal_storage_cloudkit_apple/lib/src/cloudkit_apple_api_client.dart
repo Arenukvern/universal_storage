@@ -10,9 +10,7 @@ abstract interface class CloudKitAppleApiClient {
 
   Future<void> deleteRecord(String recordName);
 
-  Future<List<CloudKitAppleRecordData>> queryByPathPrefix(
-    String pathPrefix,
-  );
+  Future<List<CloudKitAppleRecordData>> queryByPathPrefix(String pathPrefix);
 
   Future<CloudKitAppleDeltaData> fetchChanges(String? serverChangeToken);
 
@@ -39,18 +37,15 @@ class PigeonCloudKitAppleApiClient implements CloudKitAppleApiClient {
       _api.saveRecord(record);
 
   @override
-  Future<void> deleteRecord(String recordName) =>
-      _api.deleteRecord(recordName);
+  Future<void> deleteRecord(String recordName) => _api.deleteRecord(recordName);
 
   @override
-  Future<List<CloudKitAppleRecordData>> queryByPathPrefix(
-    String pathPrefix,
-  ) => _api.queryByPathPrefix(pathPrefix);
+  Future<List<CloudKitAppleRecordData>> queryByPathPrefix(String pathPrefix) =>
+      _api.queryByPathPrefix(pathPrefix);
 
   @override
-  Future<CloudKitAppleDeltaData> fetchChanges(
-    String? serverChangeToken,
-  ) => _api.fetchChanges(serverChangeToken);
+  Future<CloudKitAppleDeltaData> fetchChanges(String? serverChangeToken) =>
+      _api.fetchChanges(serverChangeToken);
 
   @override
   Future<void> dispose() => _api.dispose();

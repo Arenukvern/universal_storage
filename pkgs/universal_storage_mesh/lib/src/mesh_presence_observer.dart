@@ -113,10 +113,7 @@ final class MeshPresenceObserver {
         .catchError((Object _) {});
   }
 
-  Future<void> _processFrame(
-    MeshEphemeralFrame frame,
-    bool owned,
-  ) async {
+  Future<void> _processFrame(MeshEphemeralFrame frame, bool owned) async {
     if (_disposed || owned) return;
     if (frame.fromPeerId == selfId) return; // local echo
     final authentic = await authenticator.verify(frame);

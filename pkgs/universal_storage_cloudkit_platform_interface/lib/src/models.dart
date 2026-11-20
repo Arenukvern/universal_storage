@@ -84,18 +84,17 @@ class CloudKitRecord {
     this.changeTag,
   });
 
-  factory CloudKitRecord.fromMap(Map<String, Object?> map) =>
-      CloudKitRecord(
-        recordName: (map['recordName'] ?? '').toString(),
-        path: (map['path'] ?? '').toString(),
-        content: (map['content'] ?? '').toString(),
-        checksum: (map['checksum'] ?? '').toString(),
-        size: (map['size'] as num?)?.toInt() ?? 0,
-        updatedAt:
-            DateTime.tryParse((map['updatedAt'] ?? '').toString()) ??
-            DateTime.fromMillisecondsSinceEpoch(0).toUtc(),
-        changeTag: map['changeTag']?.toString(),
-      );
+  factory CloudKitRecord.fromMap(Map<String, Object?> map) => CloudKitRecord(
+    recordName: (map['recordName'] ?? '').toString(),
+    path: (map['path'] ?? '').toString(),
+    content: (map['content'] ?? '').toString(),
+    checksum: (map['checksum'] ?? '').toString(),
+    size: (map['size'] as num?)?.toInt() ?? 0,
+    updatedAt:
+        DateTime.tryParse((map['updatedAt'] ?? '').toString()) ??
+        DateTime.fromMillisecondsSinceEpoch(0).toUtc(),
+    changeTag: map['changeTag']?.toString(),
+  );
 
   final String recordName;
   final String path;
