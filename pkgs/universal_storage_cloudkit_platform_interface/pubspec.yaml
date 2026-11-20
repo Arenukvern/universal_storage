@@ -1,6 +1,6 @@
 name: universal_storage_cloudkit_platform_interface
 description: Platform bridge contracts and models for universal_storage CloudKit provider.
-version: 0.1.0-dev.1
+version: 1.0.0-dev.1+-dev.1
 license: MIT
 homepage: https://github.com/Arenukvern/universal_storage
 repository: https://github.com/Arenukvern/universal_storage
