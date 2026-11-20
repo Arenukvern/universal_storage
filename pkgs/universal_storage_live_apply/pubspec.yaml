@@ -3,7 +3,7 @@ description: >
   Live-apply transaction layer for universal_storage providers: footprint
   journals, verified inverse replay, and rollback windows. Git-free by
   design — structural changes apply in place and stay undoable until commit.
-version: 0.1.0-dev.1
+version: 1.0.0-dev.1+-dev.1
 license: MIT
 homepage: https://github.com/Arenukvern/universal_storage
 repository: https://github.com/Arenukvern/universal_storage
