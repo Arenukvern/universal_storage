@@ -3,7 +3,7 @@ description: >-
   Content-addressed chunk store for large binary members (ADR 0042):
   content-defined chunking, sha256 addressing, additive immutable stores,
   kernel-doc manifests, and chunk frames over a MeshSession. Pure Dart.
-version: 0.1.0-dev.1
+version: 1.0.0-dev.1+-dev.1
 license: MIT
 homepage: https://github.com/Arenukvern/universal_storage
 repository: https://github.com/Arenukvern/universal_storage
