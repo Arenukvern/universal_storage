@@ -4,7 +4,7 @@ description: >-
   mutually-authenticated handshake over pairing identity keys derives
   ChaCha20-Poly1305 session keys, and a MeshTransport wrapper seals every
   frame (ADR 0010 §1 confidentiality obligation, ADR 0039).
-version: 0.1.0-dev.1
+version: 1.0.0-dev.1+-dev.1
 license: MIT
 homepage: https://github.com/Arenukvern/universal_storage
 repository: https://github.com/Arenukvern/universal_storage
