@@ -3,7 +3,7 @@ description: >-
   Transport seam for Universal Storage mesh sync: peer/session interfaces,
   message framing, and a deterministic fake transport for headless tests
   (ADR 0010).
-version: 0.1.0-dev.1
+version: 1.0.0-dev.1+-dev.1
 license: MIT
 homepage: https://github.com/Arenukvern/universal_storage
 repository: https://github.com/Arenukvern/universal_storage
