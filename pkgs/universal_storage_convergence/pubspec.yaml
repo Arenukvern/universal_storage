@@ -3,7 +3,7 @@ description: >-
   Convergence kernel shared by Universal Storage mesh sync and ecsly world
   sync: dual-mode op log + snapshots, hybrid logical clocks, version vectors,
   and pluggable merge strategies (ADR 0011).
-version: 0.1.0-dev.1
+version: 1.0.0-dev.1+-dev.1
 license: MIT
 homepage: https://github.com/Arenukvern/universal_storage
 repository: https://github.com/Arenukvern/universal_storage
