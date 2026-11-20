@@ -1,6 +1,6 @@
 name: universal_storage_cloudkit
 description: CloudKit storage provider for universal_storage with native/web bridge support.
-version: 0.1.0-dev.1
+version: 1.0.0-dev.1+-dev.1
 license: MIT
 homepage: https://github.com/Arenukvern/universal_storage
 repository: https://github.com/Arenukvern/universal_storage
