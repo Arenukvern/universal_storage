@@ -3,7 +3,7 @@ description: >-
   Anti-entropy session core over the convergence kernel: wire codec, delta
   planning, receive watermark. Pure Dart — knows nothing about transports
   or storage.
-version: 0.1.0-dev.1
+version: 1.0.0-dev.1+-dev.1
 license: MIT
 homepage: https://github.com/Arenukvern/universal_storage
 repository: https://github.com/Arenukvern/universal_storage
