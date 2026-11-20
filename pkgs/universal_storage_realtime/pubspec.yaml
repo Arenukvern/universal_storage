@@ -12,7 +12,7 @@ repository: https://github.com/Arenukvern/universal_storage
 issue_tracker: https://github.com/Arenukvern/universal_storage/issues
 
 environment:
-  sdk: ^3.13.0
+  sdk: ^3.14.0
 
 resolution: workspace
 

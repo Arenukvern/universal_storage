@@ -8,14 +8,14 @@ issue_tracker: https://github.com/Arenukvern/universal_storage/issues
 documentation: https://github.com/Arenukvern/universal_storage/tree/main/pkgs/universal_storage_local_db
 
 environment:
-  sdk: ^3.13.0
-  flutter: ">=3.44.0"
+  sdk: ^3.14.0
+  flutter: ">=3.50.0"
 
 resolution: workspace
 
 dependencies:
-  from_json_to_json: ^0.5.0
-  is_dart_empty_or_not: ^0.4.0
+  from_json_to_json: ^0.6.0
+  is_dart_empty_or_not: ^0.6.0
   universal_storage_interface: ^0.1.0-dev.12
   xsoulspace_foundation: ^0.4.0
 dev_dependencies:

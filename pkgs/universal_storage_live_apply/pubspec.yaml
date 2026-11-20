@@ -11,7 +11,7 @@ issue_tracker: https://github.com/Arenukvern/universal_storage/issues
 documentation: https://github.com/Arenukvern/universal_storage/tree/main/pkgs/universal_storage_live_apply
 
 environment:
-  sdk: ^3.13.0
+  sdk: ^3.14.0
 
 resolution: workspace
 
