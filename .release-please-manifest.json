@@ -6,7 +6,7 @@
   "pkgs/universal_storage_cloudkit_web": "0.1.0-dev.1",
   "pkgs/universal_storage_conformance": "0.1.0-dev.1",
   "pkgs/universal_storage_convergence": "0.1.0-dev.1",
-  "pkgs/universal_storage_convergence_session": "0.1.0-dev.1",
+  "pkgs/universal_storage_convergence_session": "1.0.0-dev.1",
   "pkgs/universal_storage_db": "0.1.0-dev.12",
   "pkgs/universal_storage_filesystem": "0.1.0-dev.12",
   "pkgs/universal_storage_git_offline": "0.1.0-dev.3",
