@@ -4,7 +4,7 @@ description: >-
   stable member addressing (WorldUrn), interest policies for zone journeys,
   zone catalogs, the member-codec seam, journey phases, and the host-driven
   pulse contract. Pure Dart: no Flutter, no ecsly, no harness, no transports.
-version: 0.1.0-dev.1
+version: 1.0.0
 license: MIT
 homepage: https://github.com/Arenukvern/universal_storage
 repository: https://github.com/Arenukvern/universal_storage
@@ -17,7 +17,7 @@ resolution: workspace
 
 dependencies:
   meta: ^1.19.0
-  universal_storage_convergence: ^0.1.0-dev.1
+  universal_storage_convergence: ^1.0.0
 
 dev_dependencies:
   lints: ^6.1.0

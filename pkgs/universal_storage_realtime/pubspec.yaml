@@ -5,7 +5,7 @@ description: >-
   reliable dedupe, and a multi-sender host with a pluggable arbitration
   policy — the out-of-box half of any app's realtime needs (vosges's
   gesture stream is the reference consumer shape).
-version: 0.1.0-dev.1
+version: 1.0.0
 license: MIT
 homepage: https://github.com/Arenukvern/universal_storage
 repository: https://github.com/Arenukvern/universal_storage
@@ -18,7 +18,7 @@ resolution: workspace
 
 dependencies:
   meta: ^1.19.0
-  universal_storage_mesh_transport: ^0.1.0-dev.1
+  universal_storage_mesh_transport: ^1.0.0
 
 dev_dependencies:
   lints: ^6.1.0

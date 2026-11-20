@@ -3,7 +3,7 @@ description: >-
   Serverless peer-to-peer storage provider for universal_storage_interface:
   QR pairing records, opportunistic sync sessions over a MeshTransport, and
   convergence via the shared kernel (ADR 0010).
-version: 0.1.0-dev.1
+version: 1.0.0
 license: MIT
 homepage: https://github.com/Arenukvern/universal_storage
 repository: https://github.com/Arenukvern/universal_storage
@@ -17,12 +17,12 @@ resolution: workspace
 dependencies:
   cryptography: ^2.7.0
   meta: ^1.19.0
-  universal_storage_chunks: ^0.1.0-dev.1
-  universal_storage_convergence: ^0.1.0-dev.1
-  universal_storage_convergence_session: ^0.1.0-dev.1
-  universal_storage_interface: ^0.1.0-dev.12
-  universal_storage_mesh_transport: ^0.1.0-dev.1
-  universal_storage_world: ^0.1.0-dev.1
+  universal_storage_chunks: ^1.0.0
+  universal_storage_convergence: ^1.0.0
+  universal_storage_convergence_session: ^1.0.0
+  universal_storage_interface: ^1.0.0
+  universal_storage_mesh_transport: ^1.0.0
+  universal_storage_world: ^1.0.0
   web: ^1.1.0
 
 dev_dependencies:

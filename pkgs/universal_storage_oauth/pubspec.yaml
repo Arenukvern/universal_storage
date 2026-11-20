@@ -4,7 +4,7 @@ description: >-
   flow-delegate interfaces, models, and credential storage. Platform
   implementations live in their own packages (e.g.
   universal_storage_github_oauth).
-version: 0.1.0-dev.3
+version: 1.0.0
 license: MIT
 homepage: https://github.com/Arenukvern/universal_storage
 repository: https://github.com/Arenukvern/universal_storage

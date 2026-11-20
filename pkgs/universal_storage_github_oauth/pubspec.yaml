@@ -4,7 +4,7 @@ description: >-
   (works uniformly on Android, iOS, macOS, Linux, Windows), with a
   configurable token endpoint for web proxy setups and a ready-made
   device-code UI delegate.
-version: 0.1.0-dev.1
+version: 1.0.0
 license: MIT
 homepage: https://github.com/Arenukvern/universal_storage
 repository: https://github.com/Arenukvern/universal_storage
@@ -22,7 +22,7 @@ dependencies:
   from_json_to_json: ^0.6.0
   github: ^9.25.1
   http: ^1.6.0
-  universal_storage_oauth: ^0.1.0-dev.3
+  universal_storage_oauth: ^1.0.0
   url_launcher: ^6.3.0
 
 dev_dependencies:

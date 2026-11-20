@@ -1,6 +1,6 @@
 name: universal_storage_cloudkit_web
 description: Web CloudKit JS bridge for universal_storage_cloudkit.
-version: 0.1.0-dev.1
+version: 1.0.0
 license: MIT
 homepage: https://github.com/Arenukvern/universal_storage
 repository: https://github.com/Arenukvern/universal_storage
@@ -12,7 +12,7 @@ environment:
 resolution: workspace
 
 dependencies:
-  universal_storage_cloudkit_platform_interface: ^0.1.0-dev.1
+  universal_storage_cloudkit_platform_interface: ^1.0.0
 dev_dependencies:
   lints: ^6.1.0
   path: ^1.9.1

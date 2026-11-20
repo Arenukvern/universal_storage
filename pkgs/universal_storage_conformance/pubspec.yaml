@@ -3,7 +3,7 @@ description: >-
   Shared behavioral conformance suite for Universal Storage backends.
   Every StorageProvider implementation must pass this suite to guarantee
   swappability under the StorageKernelContract.
-version: 0.1.0-dev.1
+version: 1.0.0
 license: MIT
 
 environment:
@@ -13,7 +13,7 @@ resolution: workspace
 
 dependencies:
   meta: ^1.19.0
-  universal_storage_interface: ^0.1.0-dev.12
+  universal_storage_interface: ^1.0.0
 
   test: any
 dev_dependencies:

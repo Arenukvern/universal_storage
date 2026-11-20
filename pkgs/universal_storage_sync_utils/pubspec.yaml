@@ -1,7 +1,7 @@
 name: universal_storage_sync_utils
 description: |
   Pure Dart utility functions for universal_storage_sync profile and repository workflows.
-version: 0.1.0-dev.13
+version: 1.0.0
 license: MIT
 homepage: https://github.com/Arenukvern/universal_storage/tree/main/pkgs/universal_storage_sync_utils
 repository: https://github.com/Arenukvern/universal_storage
@@ -21,8 +21,8 @@ dependencies:
   meta: ^1.19.0
   path: ^1.9.1
   universal_io: ^2.3.1
-  universal_storage_interface: ^0.1.0-dev.12
-  universal_storage_sync: ^0.1.0-dev.12
+  universal_storage_interface: ^1.0.0
+  universal_storage_sync: ^1.0.0
   yaml: ^3.1.3
 
 dev_dependencies:

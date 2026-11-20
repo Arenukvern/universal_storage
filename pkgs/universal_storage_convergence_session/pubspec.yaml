@@ -3,7 +3,7 @@ description: >-
   Anti-entropy session core over the convergence kernel: wire codec, delta
   planning, receive watermark. Pure Dart — knows nothing about transports
   or storage.
-version: 0.1.0-dev.1
+version: 1.0.0
 license: MIT
 homepage: https://github.com/Arenukvern/universal_storage
 repository: https://github.com/Arenukvern/universal_storage
@@ -16,11 +16,11 @@ resolution: workspace
 
 dependencies:
   meta: ^1.19.0
-  universal_storage_convergence: ^0.1.0-dev.1
+  universal_storage_convergence: ^1.0.0
   # The `sub` wire envelope publishes an InterestSelection (ADR 0048 §2);
   # the type lives in universal_storage_world, which is pure Dart over the
   # kernel — same constraint class as the kernel itself.
-  universal_storage_world: ^0.1.0-dev.1
+  universal_storage_world: ^1.0.0
 
 dev_dependencies:
   lints: ^6.1.0
