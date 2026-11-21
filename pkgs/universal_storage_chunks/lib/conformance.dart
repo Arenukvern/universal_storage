@@ -16,7 +16,8 @@
 /// ```
 library;
 
-import 'package:test/test.dart';
+import 'package:test_api/test_api.dart';
+import 'package:matcher/expect.dart';
 
 import 'src/chunk_store.dart';
 
