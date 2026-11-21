@@ -13,7 +13,7 @@
   "pkgs/universal_storage_github_api": "0.1.0",
   "pkgs/universal_storage_github_oauth": "0.1.0",
   "pkgs/universal_storage_interface": "1.0.0",
-  "pkgs/universal_storage_live_apply": "0.1.0",
+  "pkgs/universal_storage_live_apply": "1.0.0",
   "pkgs/universal_storage_local_db": "1.0.0",
   "pkgs/universal_storage_mesh": "0.1.0",
   "pkgs/universal_storage_mesh_transport": "1.0.0",
