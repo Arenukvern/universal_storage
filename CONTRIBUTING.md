@@ -28,20 +28,31 @@ folder before merge. Classify `north_star_impact` per AGENTS.md.
 - [SECURITY.md](SECURITY.md) — report vulnerabilities privately to
   anton@xsoulspace.dev
 
-## Releases (release-please)
+## Releases (dart_changesets)
 
-Per-package versions are managed by [release-please](https://github.com/googleapis/release-please)
-on `main`:
+Per-package versions are managed by [dart_changesets](https://github.com/Arenukvern/dart_changesets)
+intent files on `main`:
 
-- Config: [release-please-config.json](release-please-config.json)
-- Manifest: [.release-please-manifest.json](.release-please-manifest.json)
-- Workflow: [.github/workflows/release-please.yml](.github/workflows/release-please.yml)
+- Intents: `.changesets/*.md` — one file per release intent
+- Config: [changesets.yaml](changesets.yaml)
+- Train workflow: [.github/workflows/dart_changesets.yml](.github/workflows/dart_changesets.yml)
+- Publish workflow (per tag): [.github/workflows/pub_publish.yml](.github/workflows/pub_publish.yml)
 
-Merging a release-please PR bumps `pubspec.yaml` / `CHANGELOG.md` for that
-package and creates a tag `<package_name>-v<version>`.
+Open a PR with an intent file:
 
-Optional: set `RELEASE_PLEASE_TOKEN` if the default `GITHUB_TOKEN` lacks permission
-to open release PRs.
+```markdown
+---
+'universal_storage_sync': patch
+---
+
+What changed, as changelog prose.
+```
+
+Merging it to `main` makes the train open/update the `chore: version packages`
+PR (version bumps + dependent-constraint cascades + changelogs). Merging THAT
+PR (use **squash** — the release leg detects the merge by the commit subject)
+pushes one `<package_name>-v<version>` tag per release; each tag runs the
+publish workflow.
 
 ## Package publishing (pub.dev)
 
