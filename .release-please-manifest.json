@@ -1,5 +1,5 @@
 {
-  "pkgs/universal_storage_chunks": "0.1.0",
+  "pkgs/universal_storage_chunks": "1.0.0",
   "pkgs/universal_storage_cloudkit": "0.1.0",
   "pkgs/universal_storage_cloudkit_apple": "0.1.0",
   "pkgs/universal_storage_cloudkit_platform_interface": "1.0.0",
