@@ -3,7 +3,7 @@
   "pkgs/universal_storage_cloudkit": "0.1.0",
   "pkgs/universal_storage_cloudkit_apple": "0.1.0",
   "pkgs/universal_storage_cloudkit_platform_interface": "0.1.0",
-  "pkgs/universal_storage_cloudkit_web": "0.1.0",
+  "pkgs/universal_storage_cloudkit_web": "1.0.0",
   "pkgs/universal_storage_conformance": "0.1.0",
   "pkgs/universal_storage_convergence": "1.0.0",
   "pkgs/universal_storage_convergence_session": "0.1.0",
