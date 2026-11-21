@@ -23,5 +23,5 @@
   "pkgs/universal_storage_sync": "0.1.0",
   "pkgs/universal_storage_sync_utils": "0.1.0",
   "pkgs/universal_storage_sync_utils_flutter": "0.1.0",
-  "pkgs/universal_storage_world": "0.1.0"
+  "pkgs/universal_storage_world": "1.0.0"
 }
